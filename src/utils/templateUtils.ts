@@ -145,3 +145,35 @@ export async function createAndNavigateToMultiPageApp(
     )
   }
 }
+
+export async function createAndNavigateToMobileCommerce(
+  navigate: (path: string) => void,
+  showNotification?: (message: string, type: 'success' | 'error' | 'info') => void
+): Promise<void> {
+  try {
+    showNotification?.('Creating mobile commerce application...', 'info')
+
+    const projectId = await createProjectFromTemplate('mobile-commerce', {
+      name: 'Mobile Commerce',
+      description: 'A comprehensive mobile-first e-commerce application with product catalog, shopping cart, checkout, and user account features optimized for mobile devices',
+      theme: '#FF6B35'
+    })
+
+    // Update the project store with the new project
+    const { loadProject } = useProjectStore.getState()
+    await loadProject(projectId)
+
+    // Show success notification
+    showNotification?.('Mobile commerce application created successfully!', 'success')
+
+    // Navigate to the project
+    navigate(`/project/${projectId}`)
+
+  } catch (error) {
+    console.error('Failed to create mobile commerce application:', error)
+    showNotification?.(
+      error instanceof Error ? error.message : 'Failed to create mobile commerce application',
+      'error'
+    )
+  }
+}

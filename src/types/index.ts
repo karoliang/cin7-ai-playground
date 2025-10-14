@@ -145,6 +145,7 @@ export type ProjectTemplate =
   | 'cin7-sales'
   | 'cin7-inventory'
   | 'cin7-analytics'
+  | 'mobile-commerce'
 
 export interface BuildConfig {
   bundler?: 'vite' | 'webpack' | 'rollup' | 'esbuild'

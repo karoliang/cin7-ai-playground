@@ -84,6 +84,8 @@ export class TemplateService {
         return this.getSalesDashboardTemplate()
       case 'multi-page-app':
         return this.getMultiPageAppTemplate()
+      case 'mobile-commerce':
+        return this.getMobileCommerceTemplate()
       default:
         throw new Error(`Template ${templateType} not found`)
     }
@@ -4218,6 +4220,799 @@ export function DateFilter({ value, onChange, className = '' }: DateFilterProps)
         editable: true,
         required: true
     }
+    ]
+  }
+
+  private getMobileCommerceTemplate(): Template {
+    return {
+      id: 'mobile-commerce-template',
+      name: 'Mobile Commerce',
+      description: 'A comprehensive mobile-first e-commerce application with product catalog, shopping cart, checkout, and user account features optimized for mobile devices',
+      category: 'e-commerce',
+      framework: 'react',
+      architecture: {
+        type: 'e-commerce',
+        pages: [
+          {
+            id: 'home',
+            name: 'Home',
+            path: '/',
+            title: 'Shop Mobile',
+            components: ['HeroBanner', 'FeaturedProducts', 'Categories', 'PromoBanner']
+          },
+          {
+            id: 'products',
+            name: 'Products',
+            path: '/products',
+            title: 'All Products',
+            components: ['ProductFilters', 'ProductGrid', 'SortOptions', 'LoadMore']
+          },
+          {
+            id: 'product-detail',
+            name: 'Product Detail',
+            path: '/product/:id',
+            title: 'Product Details',
+            components: ['ProductImageGallery', 'ProductInfo', 'AddToCart', 'ProductReviews']
+          },
+          {
+            id: 'cart',
+            name: 'Shopping Cart',
+            path: '/cart',
+            title: 'Shopping Cart',
+            components: ['CartItems', 'CartSummary', 'CheckoutButton', 'CouponCode']
+          },
+          {
+            id: 'checkout',
+            name: 'Checkout',
+            path: '/checkout',
+            title: 'Checkout',
+            components: ['CheckoutSteps', 'ShippingForm', 'PaymentForm', 'OrderReview']
+          },
+          {
+            id: 'confirmation',
+            name: 'Order Confirmation',
+            path: '/order-confirmation/:id',
+            title: 'Order Confirmation',
+            components: ['OrderSummary', 'OrderDetails', 'TrackingInfo', 'ContinueShopping']
+          },
+          {
+            id: 'account',
+            name: 'My Account',
+            path: '/account',
+            title: 'My Account',
+            components: ['AccountMenu', 'OrderHistory', 'ProfileInfo', 'Addresses']
+          }
+        ],
+        routing: {
+          type: 'client-side',
+          routes: [
+            { path: '/', component: 'HomePage', exact: true },
+            { path: '/products', component: 'ProductsPage', exact: true },
+            { path: '/product/:id', component: 'ProductDetailPage' },
+            { path: '/cart', component: 'CartPage' },
+            { path: '/checkout', component: 'CheckoutPage' },
+            { path: '/order-confirmation/:id', component: 'OrderConfirmationPage' },
+            { path: '/account', component: 'AccountPage' }
+          ]
+        },
+        components: [
+          { name: 'HeroBanner', type: 'ui' },
+          { name: 'FeaturedProducts', type: 'business' },
+          { name: 'Categories', type: 'ui' },
+          { name: 'PromoBanner', type: 'ui' },
+          { name: 'ProductFilters', type: 'ui' },
+          { name: 'ProductGrid', type: 'business' },
+          { name: 'SortOptions', type: 'ui' },
+          { name: 'LoadMore', type: 'ui' },
+          { name: 'ProductImageGallery', type: 'ui' },
+          { name: 'ProductInfo', type: 'business' },
+          { name: 'AddToCart', type: 'business' },
+          { name: 'ProductReviews', type: 'ui' },
+          { name: 'CartItems', type: 'business' },
+          { name: 'CartSummary', type: 'business' },
+          { name: 'CheckoutButton', type: 'ui' },
+          { name: 'CouponCode', type: 'ui' },
+          { name: 'CheckoutSteps', type: 'ui' },
+          { name: 'ShippingForm', type: 'business' },
+          { name: 'PaymentForm', type: 'business' },
+          { name: 'OrderReview', type: 'business' },
+          { name: 'OrderSummary', type: 'business' },
+          { name: 'OrderDetails', type: 'business' },
+          { name: 'TrackingInfo', type: 'business' },
+          { name: 'ContinueShopping', type: 'ui' },
+          { name: 'AccountMenu', type: 'ui' },
+          { name: 'OrderHistory', type: 'business' },
+          { name: 'ProfileInfo', type: 'business' },
+          { name: 'Addresses', type: 'business' }
+        ]
+      },
+      files: this.generateMobileCommerceFiles(),
+      settings: {
+        theme: {
+          mode: 'light',
+          primary_color: '#FF6B35',
+          framework: 'react'
+        },
+        editor: {
+          tab_size: 2,
+          word_wrap: true,
+          minimap: true,
+          line_numbers: true,
+          font_size: 14,
+          theme: 'vs-dark'
+        },
+        preview: {
+          auto_refresh: true,
+          device: 'mobile',
+          orientation: 'portrait',
+          size: { width: 375, height: 812 }
+        },
+        ai: {
+          model: 'claude-3-5-sonnet',
+          temperature: 0.7,
+          max_tokens: 4000,
+          context_window: 200000,
+          auto_suggestions: true,
+          code_completion: true
+        },
+        collaboration: {
+          real_time: false,
+          permissions: []
+        }
+      },
+      preview: {
+        images: ['/templates/mobile-commerce-preview.jpg'],
+        features: [
+          'Mobile-first responsive design',
+          'Touch-friendly navigation',
+          'Product catalog with filters',
+          'Shopping cart functionality',
+          'Multi-step checkout process',
+          'Order tracking and history',
+          'User account management',
+          'PWA-ready architecture',
+          'Swipe gestures for product images',
+          'Mobile payment integration UI',
+          'Push notification support',
+          'Offline functionality'
+        ]
+      },
+      metadata: {
+        author: 'CIN7 AI Team',
+        version: '1.0.0',
+        tags: ['mobile', 'e-commerce', 'shopping', 'cart', 'checkout', 'pwa', 'responsive', 'touch'],
+        difficulty: 'advanced',
+        estimated_time: 60,
+        dependencies: ['react', 'react-router-dom', 'lucide-react', 'framer-motion', 'react-query', 'zustand']
+      }
+    }
+  }
+
+  private generateMobileCommerceFiles() {
+    return [
+      {
+        name: 'package.json',
+        type: 'json' as const,
+        content: JSON.stringify({
+          name: 'mobile-commerce-app',
+          version: '1.0.0',
+          type: 'module',
+          scripts: {
+            dev: 'vite',
+            build: 'tsc && vite build',
+            preview: 'vite preview',
+            lint: 'eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0'
+          },
+          dependencies: {
+            "react": "^18.2.0",
+            "react-dom": "^18.2.0",
+            "react-router-dom": "^6.8.0",
+            "lucide-react": "^0.292.0",
+            "framer-motion": "^10.16.0",
+            "@tanstack/react-query": "^4.32.0",
+            "zustand": "^4.4.0",
+            "react-swipeable": "^7.0.0"
+          },
+          devDependencies: {
+            "@types/react": "^18.2.37",
+            "@types/react-dom": "^18.2.15",
+            "@vitejs/plugin-react": "^4.1.1",
+            "vite": "^4.5.0",
+            "typescript": "^5.2.2",
+            "autoprefixer": "^10.4.16",
+            "postcss": "^8.4.31",
+            "tailwindcss": "^3.3.5"
+          }
+        }, null, 2),
+        description: "Package dependencies and scripts for mobile commerce app",
+        editable: false,
+        required: true
+      },
+      {
+        name: 'index.html',
+        type: 'html' as const,
+        content: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#FF6B35">
+    <title>Mobile Commerce - Shop on the Go</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            color: white;
+        }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+        .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading Mobile Commerce...</div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>`,
+        description: "Main HTML file with mobile optimization and PWA meta tags",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/main.tsx',
+        type: 'typescript' as const,
+        content: `import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
+import App from './App'
+import './styles/globals.css'
+import './styles/animations.css'
+
+// Create a client for React Query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      staleTime: 60 * 1000, // 1 minute
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration)
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError)
+      })
+  })
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <App />
+        </motion.div>
+      </BrowserRouter>
+    </QueryClientProvider>
+  </React.StrictMode>
+)`,
+        description: "Main application entry point with PWA support and React Query setup",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/App.tsx',
+        type: 'typescript' as const,
+        content: `import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import { MobileLayout } from './components/layout/MobileLayout'
+import { HomePage } from './pages/HomePage'
+import { ProductsPage } from './pages/ProductsPage'
+import { ProductDetailPage } from './pages/ProductDetailPage'
+import { CartPage } from './pages/CartPage'
+import { CheckoutPage } from './pages/CheckoutPage'
+import { OrderConfirmationPage } from './pages/OrderConfirmationPage'
+import { AccountPage } from './pages/AccountPage'
+import { useCartStore } from './stores/cartStore'
+import { useProducts } from './hooks/useProducts'
+
+function App() {
+  // Initialize cart store
+  const initializeCart = useCartStore((state) => state.initializeCart)
+
+  // Load products data
+  const { isLoading, error } = useProducts()
+
+  React.useEffect(() => {
+    initializeCart()
+  }, [initializeCart])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading amazing products...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Oops!</h2>
+          <p className="text-gray-600">Failed to load products. Please try again.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <MobileLayout>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/product/:id" element={<ProductDetailPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-confirmation/:id" element={<OrderConfirmationPage />} />
+        <Route path="/account" element={<AccountPage />} />
+      </Routes>
+    </MobileLayout>
+  )
+}
+
+export default App`,
+        description: "Main application component with routing setup",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/styles/globals.css',
+        type: 'css' as const,
+        content: `/* Mobile-First Global Styles */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  --color-primary: #FF6B35;
+  --color-primary-dark: #E55A2B;
+  --color-secondary: #F7931E;
+  --color-success: #10B981;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-gray-50: #F9FAFB;
+  --color-gray-100: #F3F4F6;
+  --color-gray-200: #E5E7EB;
+  --color-gray-300: #D1D5DB;
+  --color-gray-400: #9CA3AF;
+  --color-gray-500: #6B7280;
+  --color-gray-600: #4B5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1F2937;
+  --color-gray-900: #111827;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --transition: all 0.3s ease;
+}
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--color-gray-800);
+  background-color: var(--color-gray-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Touch-friendly button sizing */
+button,
+input[type="button"],
+input[type="submit"],
+a {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Remove default button styles */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Form elements */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: 16px; /* Prevents zoom on iOS */
+  border: 1px solid var(--color-gray-300);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  transition: var(--transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Utility Classes */
+.container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0 12px;
+  }
+}
+
+/* Safe area insets for modern mobile devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+}`,
+        description: "Global styles with mobile-first approach and CSS variables",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/styles/animations.css',
+        type: 'css' as const,
+        content: `/* Animation and Transition Styles */
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Button animations */
+.btn-bounce:active {
+  transform: scale(0.95);
+}
+
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-shine:active::before {
+  left: 100%;
+}
+
+/* Cart animation */
+.cart-bounce {
+  animation: cartBounce 0.5s ease;
+}
+
+@keyframes cartBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* Slide up animation */
+.slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Pulse animation for notifications */
+.pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Shake animation for errors */
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* Loading spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Product card hover effect */
+.product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:active {
+  transform: scale(0.98);
+}
+
+/* Swipe indicator */
+.swipe-indicator {
+  animation: swipeHint 2s ease-in-out infinite;
+}
+
+@keyframes swipeHint {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+}
+
+/* Success checkmark animation */
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 2;
+  stroke: white;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px var(--color-success);
+  animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+}
+
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 2;
+  stroke-miterlimit: 10;
+  stroke: var(--color-success);
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes scale {
+  0%, 100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px var(--color-success);
+  }
+}`,
+        description: "Animation styles for mobile interactions and transitions",
+        editable: true,
+        required: true
+      }
     ]
   }
 }

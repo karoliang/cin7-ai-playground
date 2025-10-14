@@ -21,7 +21,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSearchField } from '@/hooks/useProjectSearch'
-import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement, createAndNavigateToMultiPageApp } from '@/utils/templateUtils'
+import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement, createAndNavigateToMultiPageApp, createAndNavigateToMobileCommerce } from '@/utils/templateUtils'
 import { useNotifications } from '@/utils/notifications'
 
 interface LayoutProps {
@@ -243,11 +243,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {
               label: 'Mobile Commerce',
               icon: MobileMajor,
-              onClick: () => {
-                // TODO: Create mobile commerce template
-                navigate('/')
+              onClick: async () => {
+                await createAndNavigateToMobileCommerce(navigate, showNotification)
               },
-              selected: false
+              selected: false,
+              badge: 'New'
             }
           ]}
         />
