@@ -1,5 +1,5 @@
 import React from 'react'
-import { TopBar, Frame, Navigation, Card, Text, Badge, Button } from '@shopify/polaris'
+import { TopBar, Frame, Navigation, Card, Text, Badge, Button, Icon, Stack } from '@shopify/polaris'
 import {
   HomeMinor,
   OrdersMinor,
@@ -13,11 +13,14 @@ import {
   ImportMinor,
   CodeMajor,
   MobileMajor,
-  DesktopMajor
+  DesktopMajor,
+  NotesMajor,
+  FileMajor
 } from '@shopify/polaris-icons'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSearchField } from '@/hooks/useProjectSearch'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -29,9 +32,23 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const [searchValue, setSearchValue] = React.useState('')
-  const [searchActive, setSearchActive] = React.useState(false)
   const [mobileNavigationActive, setMobileNavigationActive] = React.useState(false)
+
+  // Use search field hook with debouncing
+  const {
+    inputValue,
+    isFocused,
+    results,
+    suggestions,
+    isLoading,
+    error,
+    handleInputChange,
+    handleFocus,
+    handleBlur,
+    handleSelectResult,
+    handleSelectSuggestion,
+    clearSearch
+  } = useSearchField(300)
 
   const handleLogout = async () => {
     await signOut()
@@ -47,25 +64,49 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     setMobileNavigationActive(false)
   }
 
-  const handleSearch = (value: string) => {
-    setSearchValue(value)
-    // TODO: Implement project search functionality
-    if (value.length > 2) {
-      console.log('Searching for:', value)
+  const handleSearchResultClick = (result: any) => {
+    if (result.type === 'project') {
+      // Navigate to project detail page
+      navigate(`/project/${result.projectId}`)
+    } else if (result.type === 'file') {
+      // Navigate to project with specific file
+      navigate(`/project/${result.projectId}?file=${result.filePath}`)
     }
+    clearSearch()
   }
+
+  const handleSearch = (value: string) => {
+    handleInputChange(value)
+  }
+
+  // Format search results for TopBar
+  const formattedSearchResults = results.map(result => ({
+    id: result.id,
+    title: result.title,
+    subtitle: result.description,
+    content: result.highlights[0] || '',
+    url: result.type === 'project'
+      ? `/project/${result.projectId}`
+      : `/project/${result.projectId}?file=${result.filePath}`,
+    badge: {
+      content: result.type === 'file' ? result.fileType?.toUpperCase() : 'PROJECT'
+    },
+    icon: result.type === 'file' ? FileMajor : NotesMajor,
+    onClick: () => handleSearchResultClick(result)
+  }))
 
   const topBarMarkup = (
     <TopBar
       showNavigationToggle
-      searchFieldVisible={searchActive}
-      searchResultsVisible={false}
-      searchValue={searchValue}
-      onSearchResultsDismiss={() => setSearchActive(false)}
+      searchFieldVisible={isFocused || inputValue.length > 0}
+      searchResultsVisible={isFocused && results.length > 0}
+      searchValue={inputValue}
+      searchResults={formattedSearchResults}
+      onSearchResultsDismiss={clearSearch}
       onNavigationToggle={() => setMobileNavigationActive(!mobileNavigationActive)}
       onSearchChange={handleSearch}
-      onSearchBlur={() => setSearchActive(false)}
-      onSearchFocus={() => setSearchActive(true)}
+      onSearchBlur={handleBlur}
+      onSearchFocus={handleFocus}
       userMenu={
         user
           ? {
@@ -116,11 +157,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               ]
             }
       }
-      searchResults={[]}
+      searchResults={formattedSearchResults}
       searchPlaceholder="Search projects..."
       additionalMetadata={
         isAuthenticated ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {isLoading && (
+              <Badge status="info">Searching...</Badge>
+            )}
+            {error && (
+              <Badge status="critical">Search Error</Badge>
+            )}
             <Badge status="success">Pro</Badge>
             <Text variant="bodySm" color="subdued">
               {user?.email}
