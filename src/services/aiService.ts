@@ -1,9 +1,22 @@
 import { GenerateRequest, GenerateResponse } from '@/types'
+import { MultiPageArchitecture } from '@/lib/multiPageArchitecture'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://amkkihoeeqpktaxauauk.supabase.co/functions/v1'
 
 export async function generateCodeWithAI(request: GenerateRequest): Promise<GenerateResponse> {
   try {
+    // Enhance prompt with architectural guidance
+    const enhancedPrompt = MultiPageArchitecture.enhancePromptWithArchitecturalGuidance(
+      request.prompt,
+      request.existing_files
+    )
+
+    // Detect architecture for file structure generation
+    const detectedArchitecture = MultiPageArchitecture.detectOptimalStructure(
+      request.prompt,
+      request.existing_files
+    )
+
     const response = await fetch(`${API_URL}/generate-cin7`, {
       method: 'POST',
       headers: {
@@ -11,10 +24,14 @@ export async function generateCodeWithAI(request: GenerateRequest): Promise<Gene
         'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify({
-        prompt: request.prompt,
+        prompt: enhancedPrompt.enhancedPrompt,
         existing_files: request.existing_files,
         chat_history: request.chat_history,
-        context: request.context,
+        context: {
+          ...request.context,
+          architecture: detectedArchitecture,
+          enhancedPrompt: enhancedPrompt
+        },
         options: request.options
       })
     })
@@ -32,16 +49,23 @@ export async function generateCodeWithAI(request: GenerateRequest): Promise<Gene
 
     const data = await response.json()
 
+    // Generate proper file structure if not provided by AI
+    let files = data.files || []
+    if (files.length === 0 && detectedArchitecture.structure !== 'single-page') {
+      files = MultiPageArchitecture.generateFileStructure(detectedArchitecture, 'Generated Project')
+    }
+
     return {
       success: true,
-      files: data.files || [],
+      files,
       operations: data.operations || [],
       reasoning: data.reasoning,
       confidence: data.confidence,
       build_config: data.build_config,
       deployment_config: data.deployment_config,
       next_steps: data.next_steps,
-      warnings: data.warnings
+      warnings: data.warnings,
+      architecture: detectedArchitecture
     }
 
   } catch (error) {
