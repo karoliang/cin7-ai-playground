@@ -1,5 +1,5 @@
 import React from 'react'
-import { TopBar, Frame, Navigation, Card } from '@shopify/polaris'
+import { TopBar, Frame, Navigation, Card, Text, Badge, Button } from '@shopify/polaris'
 import {
   HomeMinor,
   OrdersMinor,
@@ -7,18 +7,27 @@ import {
   AnalyticsMinor,
   SettingsMinor,
   QuestionMarkMajor,
-  CirclePlusMajor
+  CirclePlusMajor,
+  CircleDisabledMajor,
+  ExportMinor,
+  ImportMinor,
+  CodeMajor,
+  MobileMajor,
+  DesktopMajor
 } from '@shopify/polaris-icons'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface LayoutProps {
   children: React.ReactNode
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const { user, signOut } = useAuthStore()
+  const { user, signOut, isAuthenticated } = useAuthStore()
   const { resolvedTheme, setTheme } = useTheme()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const [searchValue, setSearchValue] = React.useState('')
   const [searchActive, setSearchActive] = React.useState(false)
@@ -26,10 +35,24 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleLogout = async () => {
     await signOut()
+    navigate('/')
   }
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+  }
+
+  const handleNavigation = (path: string) => {
+    navigate(path)
+    setMobileNavigationActive(false)
+  }
+
+  const handleSearch = (value: string) => {
+    setSearchValue(value)
+    // TODO: Implement project search functionality
+    if (value.length > 2) {
+      console.log('Searching for:', value)
+    }
   }
 
   const topBarMarkup = (
@@ -40,7 +63,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       searchValue={searchValue}
       onSearchResultsDismiss={() => setSearchActive(false)}
       onNavigationToggle={() => setMobileNavigationActive(!mobileNavigationActive)}
-      onSearchChange={(value) => setSearchValue(value)}
+      onSearchChange={handleSearch}
       onSearchBlur={() => setSearchActive(false)}
       onSearchFocus={() => setSearchActive(true)}
       userMenu={
@@ -57,7 +80,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {
                       content: 'Account settings',
                       icon: SettingsMinor,
-                      onAction: () => console.log('Account settings')
+                      onAction: () => navigate('/settings')
                     },
                     {
                       content: resolvedTheme === 'light' ? 'Dark mode' : 'Light mode',
@@ -65,75 +88,175 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                       onAction: toggleTheme
                     },
                     {
-                      content: 'Log out',
+                      content: 'Documentation',
                       icon: QuestionMarkMajor,
-                      onAction: handleLogout
+                      onAction: () => window.open('https://docs.cin7.com', '_blank')
+                    },
+                    {
+                      content: 'Log out',
+                      icon: CircleDisabledMajor,
+                      onAction: handleLogout,
+                      destructive: true
                     }
                   ]
                 }
               ]
             }
-          : undefined
+          : {
+              actions: [
+                {
+                  items: [
+                    {
+                      content: 'Sign in',
+                      icon: SettingsMinor,
+                      onAction: () => navigate('/auth')
+                    }
+                  ]
+                }
+              ]
+            }
       }
       searchResults={[]}
       searchPlaceholder="Search projects..."
+      additionalMetadata={
+        isAuthenticated ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Badge status="success">Pro</Badge>
+            <Text variant="bodySm" color="subdued">
+              {user?.email}
+            </Text>
+          </div>
+        ) : undefined
+      }
     />
   )
 
   const navigationMarkup = (
-    <Navigation location="/">
+    <Navigation location={location.pathname}>
       <Navigation.Section
         items={[
           {
             label: 'Dashboard',
             icon: HomeMinor,
-            onClick: () => window.location.href = '/',
-            selected: window.location.pathname === '/'
+            onClick: () => handleNavigation('/'),
+            selected: location.pathname === '/',
+            badge: isAuthenticated ? undefined : 'Sign in'
           },
           {
             label: 'New Project',
             icon: CirclePlusMajor,
-            onClick: () => window.location.href = '/',
-            selected: false
+            onClick: () => handleNavigation('/'),
+            selected: false,
+            disabled: !isAuthenticated
           }
         ]}
       />
+
+      {isAuthenticated && (
+        <Navigation.Section
+          title="Templates"
+          items={[
+            {
+              label: 'Sales Dashboard',
+              icon: AnalyticsMinor,
+              onClick: () => {
+                // TODO: Create project with sales dashboard template
+                navigate('/')
+              },
+              selected: false,
+              badge: 'Popular'
+            },
+            {
+              label: 'Inventory Management',
+              icon: ProductsMinor,
+              onClick: () => {
+                // TODO: Create project with inventory template
+                navigate('/')
+              },
+              selected: false
+            },
+            {
+              label: 'Order Management',
+              icon: OrdersMinor,
+              onClick: () => {
+                // TODO: Create project with orders template
+                navigate('/')
+              },
+              selected: false
+            },
+            {
+              label: 'Multi-page App',
+              icon: DesktopMajor,
+              onClick: () => {
+                // TODO: Create multi-page application template
+                navigate('/')
+              },
+              selected: false,
+              badge: 'New'
+            },
+            {
+              label: 'Mobile Commerce',
+              icon: MobileMajor,
+              onClick: () => {
+                // TODO: Create mobile commerce template
+                navigate('/')
+              },
+              selected: false
+            }
+          ]}
+        />
+      )}
+
       <Navigation.Section
-        title="CIN7 Templates"
+        title="Tools"
         items={[
           {
-            label: 'Sales Dashboard',
-            icon: AnalyticsMinor,
-            onClick: () => console.log('Sales dashboard template'),
-            selected: false
+            label: 'Code Generator',
+            icon: CodeMajor,
+            onClick: () => {
+              // TODO: Navigate to code generator
+              console.log('Code generator tool')
+            },
+            selected: false,
+            disabled: !isAuthenticated
           },
           {
-            label: 'Inventory Management',
-            icon: ProductsMinor,
-            onClick: () => console.log('Inventory template'),
-            selected: false
+            label: 'Import Project',
+            icon: ImportMinor,
+            onClick: () => {
+              // TODO: Open import dialog
+              console.log('Import project')
+            },
+            selected: false,
+            disabled: !isAuthenticated
           },
           {
-            label: 'Order Management',
-            icon: OrdersMinor,
-            onClick: () => console.log('Orders template'),
-            selected: false
+            label: 'Export All',
+            icon: ExportMinor,
+            onClick: () => {
+              // TODO: Export all projects
+              console.log('Export all projects')
+            },
+            selected: false,
+            disabled: !isAuthenticated
           }
         ]}
       />
+
       <Navigation.Section
         items={[
           {
             label: 'Settings',
             icon: SettingsMinor,
-            onClick: () => console.log('Settings'),
-            selected: false
+            onClick: () => handleNavigation('/settings'),
+            selected: location.pathname === '/settings'
           },
           {
             label: 'Help & Support',
             icon: QuestionMarkMajor,
-            onClick: () => console.log('Help'),
-            selected: false
+            onClick: () => window.open('https://support.cin7.com', '_blank'),
+            selected: false,
+            external: true
           }
         ]}
       />
@@ -158,8 +281,29 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       showMobileNavigation={mobileNavigationActive}
       onNavigationDismiss={() => setMobileNavigationActive(false)}
     >
-      <div style={{ height: '100vh' }}>
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         {children}
+
+        {/* Global Footer */}
+        {!isAuthenticated && (
+          <div style={{
+            padding: '1rem',
+            backgroundColor: 'var(--p-color-bg-surface-subdued)',
+            borderTop: '1px solid var(--p-color-border)',
+            textAlign: 'center'
+          }}>
+            <Text variant="bodySm" color="subdued" as="p">
+              Build professional multi-page applications with AI •
+              <Button
+                onClick={() => navigate('/')}
+                plain
+                monochrome
+              >
+                Sign in to get started
+              </Button>
+            </Text>
+          </div>
+        )}
       </div>
     </Frame>
   )

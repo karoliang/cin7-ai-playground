@@ -10,7 +10,8 @@ import {
   Grid,
   Thumbnail,
   Badge,
-  Icon
+  Icon,
+  Banner
 } from '@shopify/polaris'
 import {
   MobileMajor,
@@ -18,11 +19,13 @@ import {
   StoreMajor,
   AnalyticsMajor,
   ChatMajor,
-  CodeMajor
+  CodeMajor,
+  CircleCheckMajor
 } from '@shopify/polaris-icons'
 import { useNavigate } from 'react-router-dom'
 import { useProjectStore } from '@/stores/projectStore'
 import { useAuthStore } from '@/stores/authStore'
+import { TemplateCard, StatsGrid, FeatureGrid, CustomEmptyState } from '@/components/ui/PolarisComponents'
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate()
@@ -184,46 +187,57 @@ export const HomePage: React.FC = () => {
         </Layout.Section>
 
         <Layout.Section>
+          {/* Features Overview */}
+          <Card title="AI-Powered Development Features" sectioned>
+            <FeatureGrid
+              features={[
+                {
+                  icon: CodeMajor,
+                  title: 'Multi-Page Generation',
+                  description: 'Generate complete multi-page applications with routing and navigation'
+                },
+                {
+                  icon: AnalyticsMajor,
+                  title: 'Smart Architecture',
+                  description: 'AI detects optimal structure and generates production-ready code'
+                },
+                {
+                  icon: StoreMajor,
+                  title: 'CIN7 Integration',
+                  description: 'Built-in CIN7 design system and Polaris components'
+                },
+                {
+                  icon: ChatMajor,
+                  title: 'Contextual Updates',
+                  description: 'Chat with AI to modify and improve your projects iteratively'
+                },
+                {
+                  icon: DesktopMajor,
+                  title: 'Real-time Preview',
+                  description: 'See your changes instantly with live preview functionality'
+                },
+                {
+                  icon: MobileMajor,
+                  title: 'Mobile-First',
+                  description: 'Responsive designs that work perfectly on all devices'
+                }
+              ]}
+              columns={3}
+            />
+          </Card>
+        </Layout.Section>
+
+        <Layout.Section>
           {/* Template Gallery */}
           <Card title="Start with a Template" sectioned>
             <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4 }} gap="4">
               {templates.map((template, index) => (
                 <div key={index} style={{ height: '100%' }}>
-                  <Card
-                    background={template.featured ? 'bg-surface-subdued' : 'bg-surface'}
-                    sectioned
-                    actions={[
-                      {
-                        content: 'Use Template',
-                        onAction: () => handleTemplateClick(template.prompt),
-                        disabled: !isAuthenticated || isLoading
-                      }
-                    ]}
-                  >
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ marginBottom: '1rem' }}>
-                        <Icon
-                          source={template.icon}
-                          size="large"
-                          color="base"
-                        />
-                      </div>
-                      <Text variant="headingMd" as="h3" alignment="center">
-                        {template.title}
-                      </Text>
-                      <div style={{ margin: '0.5rem 0' }}>
-                        <Badge>{template.category}</Badge>
-                        {template.featured && (
-                          <Badge status="attention" style={{ marginLeft: '0.5rem' }}>
-                            Featured
-                          </Badge>
-                        )}
-                      </div>
-                      <Text variant="bodySm" as="p" color="subdued" alignment="center">
-                        {template.description}
-                      </Text>
-                    </div>
-                  </Card>
+                  <TemplateCard
+                    template={template}
+                    onSelect={handleTemplateClick}
+                    disabled={!isAuthenticated || isLoading}
+                  />
                 </div>
               ))}
             </Grid>
