@@ -37,6 +37,7 @@ import { useProjectStore } from '@/stores/projectStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { ExportModal } from '@/components/export/ExportModal'
 import { FileEditor } from '@/components/editor/FileEditor'
+import { FilePreviewSnippet } from './FilePreviewSnippet'
 
 export const ProjectWorkspace: React.FC = () => {
   const {
@@ -434,14 +435,14 @@ export const ProjectWorkspace: React.FC = () => {
                 )}
 
                 {activeFile && (
-                  <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'var(--p-color-bg-surface-subdued)', borderRadius: '0.5rem' }}>
-                    <Text variant="bodySm" fontWeight="semibold">
-                      Currently Editing: {activeFile.name}
+                  <div style={{ marginTop: '1rem' }}>
+                    <Text variant="bodySm" fontWeight="semibold" style={{ marginBottom: '0.5rem', display: 'block' }}>
+                      Currently Editing
                     </Text>
-                    <Text variant="bodyXs" color="subdued">
-                      {/* TODO: Add file preview snippet */}
-                      Click to edit in the code editor
-                    </Text>
+                    <FilePreviewSnippet
+                      file={activeFile}
+                      onEdit={handleEditFile}
+                    />
                   </div>
                 )}
               </Card.Section>
