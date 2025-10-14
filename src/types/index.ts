@@ -79,7 +79,7 @@ export interface ProjectMetadata {
   architecture?: ProjectArchitecture
   framework?: SupportedFramework
   template?: ProjectTemplate
-  build_config?: BuildConfig
+  build_config?: ProjectBuildConfig
   deployment?: DeploymentConfig
   tags?: string[]
   last_modified?: string
@@ -147,7 +147,7 @@ export type ProjectTemplate =
   | 'cin7-analytics'
   | 'mobile-commerce'
 
-export interface BuildConfig {
+export interface ProjectBuildConfig {
   bundler?: 'vite' | 'webpack' | 'rollup' | 'esbuild'
   output_dir?: string
   public_path?: string
@@ -456,4 +456,58 @@ export interface Notification {
 export interface NotificationAction {
   label: string
   action: () => void
+}
+
+// Import Types
+export interface ImportProgress {
+  stage: 'analyzing' | 'extracting' | 'validating' | 'processing' | 'completed' | 'error'
+  progress: number
+  message: string
+  currentFile?: string
+}
+
+export interface ImportResult {
+  success: boolean
+  project?: Project
+  error?: string
+  warnings?: string[]
+  importedFiles?: number
+  skippedFiles?: string[]
+}
+
+export interface ImportOptions {
+  format: 'zip' | 'github'
+  createNewProject: boolean
+  projectName?: string
+  projectDescription?: string
+  overwriteExisting?: boolean
+  skipDependencies?: boolean
+  includeTests?: boolean
+  frameworkDetection?: boolean
+}
+
+export interface ImportSource {
+  type: 'file' | 'github'
+  file?: File
+  url?: string
+  branch?: string
+}
+
+export interface ImportValidation {
+  isValid: boolean
+  errors: string[]
+  warnings: string[]
+  detectedFramework?: SupportedFramework
+  detectedFiles?: ProjectFile[]
+  estimatedSize?: number
+}
+
+export interface GitHubRepoInfo {
+  name: string
+  description?: string
+  defaultBranch: string
+  languages: string[]
+  size: number
+  isPrivate: boolean
+  fileCount: number
 }

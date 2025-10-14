@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useSearchField } from '@/hooks/useProjectSearch'
 import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement, createAndNavigateToMultiPageApp, createAndNavigateToMobileCommerce } from '@/utils/templateUtils'
 import { useNotifications } from '@/utils/notifications'
+import { ImportModal } from '@/components/import/ImportModal'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -36,6 +37,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { showNotification, NotificationComponent } = useNotifications()
 
   const [mobileNavigationActive, setMobileNavigationActive] = React.useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
 
   // Use search field hook with debouncing
   const {
@@ -80,6 +82,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleSearch = (value: string) => {
     handleInputChange(value)
+  }
+
+  const handleOpenImportModal = () => {
+    setIsImportModalOpen(true)
+  }
+
+  const handleCloseImportModal = () => {
+    setIsImportModalOpen(false)
   }
 
   // Format search results for TopBar
@@ -267,10 +277,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           {
             label: 'Import Project',
             icon: ImportMinor,
-            onClick: () => {
-              // TODO: Open import dialog
-              console.log('Import project')
-            },
+            onClick: handleOpenImportModal,
             selected: false,
             disabled: !isAuthenticated
           },
@@ -328,6 +335,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         {children}
         <NotificationComponent />
+
+        {/* Import Modal */}
+        <ImportModal
+          open={isImportModalOpen}
+          onClose={handleCloseImportModal}
+        />
 
         {/* Global Footer */}
         {!isAuthenticated && (
