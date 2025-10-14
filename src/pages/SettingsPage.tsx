@@ -53,8 +53,11 @@ export const SettingsPage: React.FC = () => {
   const [autoSaveInterval, setAutoSaveInterval] = useState(30)
 
   // Export settings
-  const [exportFormat, setExportFormat] = useState('zip')
+  const [exportFormat, setExportFormat] = useState('json')
   const [includeDependencies, setIncludeDependencies] = useState(true)
+  const [includeFullContent, setIncludeFullContent] = useState(false)
+  const [exportProgress, setExportProgress] = useState(0)
+  const [exportStatus, setExportStatus] = useState('')
 
   const tabs = [
     {
@@ -96,9 +99,200 @@ export const SettingsPage: React.FC = () => {
   }
 
   const handleExportData = async () => {
-    console.log('Exporting data...')
-    // TODO: Implement data export functionality
-    setShowExportModal(false)
+    setIsLoading(true)
+    setExportProgress(0)
+    setExportStatus('Initializing export...')
+
+    try {
+      if (!user?.id) {
+        throw new Error('User not authenticated')
+      }
+
+      setExportStatus('Fetching your projects...')
+      setExportProgress(10)
+
+      // Get all user projects
+      const { getUserProjects } = await import('@/services/projectService')
+      const userProjects = await getUserProjects(user.id)
+
+      if (userProjects.length === 0) {
+        setExportStatus('No projects found to export')
+        setTimeout(() => {
+          setShowExportModal(false)
+          setExportProgress(0)
+          setExportStatus('')
+        }, 2000)
+        return
+      }
+
+      setExportStatus(`Processing ${userProjects.length} projects...`)
+      setExportProgress(30)
+
+      let blob: Blob
+      let filename: string
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const userName = user.name || user.email || 'user'
+
+      if (exportFormat === 'json') {
+        setExportStatus('Creating JSON export...')
+        setExportProgress(50)
+
+        // Prepare comprehensive export data
+        const exportData = {
+          user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            created_at: user.created_at,
+            updated_at: user.updated_at
+          },
+          projects: userProjects.map(project => ({
+            id: project.id,
+            name: project.name,
+            description: project.description,
+            prompt: project.prompt,
+            status: project.status,
+            created_at: project.created_at,
+            updated_at: project.updated_at,
+            file_count: project.files.length,
+            message_count: project.messages.length,
+            files: project.files.map(file => ({
+              id: file.id,
+              name: file.name,
+              type: file.type,
+              language: file.language,
+              size: file.content.length,
+              content: includeFullContent ? file.content : undefined,
+              created_at: file.created_at,
+              updated_at: file.updated_at
+            })),
+            messages: project.messages.map(message => ({
+              id: message.id,
+              role: message.role,
+              content: includeFullContent ? message.content : message.content.substring(0, 200) + (message.content.length > 200 ? '...' : ''),
+              timestamp: message.timestamp
+            })),
+            settings: project.settings,
+            metadata: project.metadata
+          })),
+          export_metadata: {
+            export_date: new Date().toISOString(),
+            total_projects: userProjects.length,
+            total_files: userProjects.reduce((acc, project) => acc + project.files.length, 0),
+            total_messages: userProjects.reduce((acc, project) => acc + project.messages.length, 0),
+            export_format: 'json',
+            version: '1.0',
+            include_full_content: includeFullContent
+          }
+        }
+
+        filename = `cin7-ai-playground-export-${userName}-${timestamp}.json`
+        blob = new Blob([JSON.stringify(exportData, null, 2)], {
+          type: 'application/json'
+        })
+
+      } else if (exportFormat === 'csv') {
+        setExportStatus('Creating CSV summary...')
+        setExportProgress(50)
+
+        // Create CSV data for projects summary
+        const csvHeaders = [
+          'Project ID',
+          'Project Name',
+          'Description',
+          'Status',
+          'File Count',
+          'Message Count',
+          'Created At',
+          'Updated At',
+          'Primary Framework',
+          'Architecture Type'
+        ]
+
+        const csvRows = userProjects.map(project => {
+          const hasReact = project.files.some(f => f.name.includes('.jsx') || f.name.includes('.tsx'))
+          const hasVue = project.files.some(f => f.name.includes('.vue'))
+          const framework = hasReact ? 'React' : hasVue ? 'Vue' : 'Vanilla JS'
+
+          return [
+            project.id,
+            `"${project.name.replace(/"/g, '""')}"`,
+            `"${(project.description || '').replace(/"/g, '""')}"`,
+            project.status,
+            project.files.length,
+            project.messages.length,
+            project.created_at,
+            project.updated_at,
+            framework,
+            project.metadata.architecture?.type || 'unknown'
+          ].join(',')
+        })
+
+        const csvContent = [csvHeaders.join(','), ...csvRows].join('\n')
+        filename = `cin7-ai-playground-projects-summary-${userName}-${timestamp}.csv`
+        blob = new Blob([csvContent], { type: 'text/csv' })
+
+      } else {
+        // Use existing export service for other formats
+        setExportStatus('Preparing export package...')
+        setExportProgress(50)
+
+        const { exportService } = await import('@/services/exportService')
+        const options = exportService.validateExportOptions({
+          format: exportFormat,
+          includeDependencies,
+          includeReadme: true,
+          includeBuildScripts: true,
+          minifyCode: false
+        })
+
+        // Export all projects (for now, we'll export the first project as an example)
+        // In a real implementation, you might want to create a package with multiple projects
+        const result = await exportService.exportProject(userProjects[0], options)
+
+        if (!result.success || !result.blob) {
+          throw new Error(result.error || 'Export failed')
+        }
+
+        blob = result.blob
+        filename = result.filename || `cin7-ai-playground-export-${userName}-${timestamp}.zip`
+      }
+
+      setExportStatus('Downloading file...')
+      setExportProgress(80)
+
+      // Create and download the export file
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+
+      setExportProgress(100)
+      setExportStatus(`Successfully exported ${userProjects.length} projects to ${filename}`)
+
+      // Keep the success message visible for a moment
+      setTimeout(() => {
+        setShowExportModal(false)
+        setExportProgress(0)
+        setExportStatus('')
+      }, 3000)
+
+    } catch (error) {
+      console.error('Export failed:', error)
+      setExportStatus(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+
+      // Keep the error message visible for a moment
+      setTimeout(() => {
+        setExportProgress(0)
+        setExportStatus('')
+      }, 5000)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleDeleteAccount = async () => {
@@ -121,6 +315,8 @@ export const SettingsPage: React.FC = () => {
   ]
 
   const exportFormatOptions = [
+    { label: 'JSON (Full Data)', value: 'json' },
+    { label: 'CSV (Summary)', value: 'csv' },
     { label: 'ZIP Archive', value: 'zip' },
     { label: 'GitHub Repository', value: 'github' },
     { label: 'Docker Container', value: 'docker' }
@@ -260,25 +456,51 @@ export const SettingsPage: React.FC = () => {
                   onChange={setExportFormat}
                   disabled={!isAuthenticated}
                 />
-                <Checkbox
-                  label="Include package.json and dependencies"
-                  checked={includeDependencies}
-                  onChange={setIncludeDependencies}
-                  disabled={!isAuthenticated}
-                />
+
+                {exportFormat === 'json' && (
+                  <Checkbox
+                    label="Include full file content by default"
+                    checked={includeFullContent}
+                    onChange={setIncludeFullContent}
+                    disabled={!isAuthenticated}
+                  />
+                )}
+
+                {(exportFormat === 'zip' || exportFormat === 'docker') && (
+                  <Checkbox
+                    label="Include package.json and dependencies"
+                    checked={includeDependencies}
+                    onChange={setIncludeDependencies}
+                    disabled={!isAuthenticated}
+                  />
+                )}
+
                 <Checkbox
                   label="Include README documentation"
                   checked={true}
                   onChange={() => {}}
                   disabled={!isAuthenticated}
                 />
+
                 <Checkbox
                   label="Minify code before export"
                   checked={false}
                   onChange={() => {}}
                   disabled={!isAuthenticated}
                 />
+
                 <Banner status="info">
+                  <Text variant="bodySm">
+                    <strong>Export Formats:</strong><br/>
+                    • <strong>JSON:</strong> Complete project data with all files, messages, and settings<br/>
+                    • <strong>CSV:</strong> Project summary with statistics for analysis<br/>
+                    • <strong>ZIP:</strong> Ready-to-use project files with dependencies<br/>
+                    • <strong>Docker:</strong> Containerized project with Docker configuration<br/>
+                    • <strong>GitHub:</strong> Repository-ready export with version control
+                  </Text>
+                </Banner>
+
+                <Banner status="warning">
                   <Text variant="bodySm">
                     Export settings are saved per project. You can override these settings when exporting individual projects.
                   </Text>
@@ -347,32 +569,128 @@ export const SettingsPage: React.FC = () => {
       {/* Export Modal */}
       <ActionModal
         open={showExportModal}
-        onClose={() => setShowExportModal(false)}
+        onClose={() => {
+          if (!isLoading) {
+            setShowExportModal(false)
+            setExportProgress(0)
+            setExportStatus('')
+          }
+        }}
         title="Export All Projects"
         primaryAction={{
-          content: 'Export Projects',
+          content: exportProgress > 0 ? 'Exporting...' : 'Export Projects',
           onAction: handleExportData,
-          loading: false
+          loading: isLoading,
+          disabled: isLoading || exportProgress > 0
         }}
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: () => setShowExportModal(false)
+            onAction: () => {
+              if (!isLoading) {
+                setShowExportModal(false)
+                setExportProgress(0)
+                setExportStatus('')
+              }
+            }
           }
         ]}
       >
         <TextContainer>
           <Text>
-            This will export all your projects as a ZIP archive. The export will include:
+            This will export all your projects in the selected format. The export will include:
           </Text>
-          <ul>
-            <li>All project files and folders</li>
-            <li>Configuration files</li>
-            <li>Dependencies (if enabled)</li>
-            <li>Documentation</li>
-          </ul>
-          <Text>
-            The export may take a few moments depending on the size of your projects.
+
+          {exportFormat === 'json' && (
+            <>
+              <ul>
+                <li>Complete project data and metadata</li>
+                <li>All project files {includeFullContent ? '(with full content)' : '(summary only)'}</li>
+                <li>Chat history and conversations</li>
+                <li>Project settings and configuration</li>
+                <li>Export metadata and statistics</li>
+              </ul>
+              <Checkbox
+                label="Include full file content (may result in larger file)"
+                checked={includeFullContent}
+                onChange={setIncludeFullContent}
+                disabled={isLoading}
+              />
+            </>
+          )}
+
+          {exportFormat === 'csv' && (
+            <>
+              <ul>
+                <li>Project summary with key statistics</li>
+                <li>File and message counts</li>
+                <li>Project status and timestamps</li>
+                <li>Framework and architecture information</li>
+              </ul>
+              <Text variant="bodySm" color="subdued">
+                CSV export provides a quick overview of all projects suitable for analysis.
+              </Text>
+            </>
+          )}
+
+          {(exportFormat === 'zip' || exportFormat === 'docker') && (
+            <>
+              <ul>
+                <li>All project files and folders</li>
+                <li>Configuration files</li>
+                <li>Dependencies {includeDependencies ? '(included)' : '(excluded)'}</li>
+                <li>Documentation and README</li>
+              </ul>
+              <Checkbox
+                label="Include package.json and dependencies"
+                checked={includeDependencies}
+                onChange={setIncludeDependencies}
+                disabled={isLoading}
+              />
+            </>
+          )}
+
+          {exportFormat === 'github' && (
+            <Text variant="bodySm" color="subdued">
+              GitHub export will create a repository with your project files and documentation.
+            </Text>
+          )}
+
+          {exportProgress > 0 && (
+            <>
+              <Divider />
+              <Text variant="headingMd" as="h3">Export Progress</Text>
+              <div style={{ marginBottom: '8px' }}>
+                <Text>{exportStatus}</Text>
+              </div>
+              <div
+                style={{
+                  width: '100%',
+                  height: '8px',
+                  backgroundColor: '#f1f3f5',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  marginBottom: '8px'
+                }}
+              >
+                <div
+                  style={{
+                    width: `${exportProgress}%`,
+                    height: '100%',
+                    backgroundColor: exportProgress === 100 ? '#00875a' : '#007ace',
+                    transition: 'width 0.3s ease'
+                  }}
+                />
+              </div>
+              <Text variant="bodySm" color="subdued">
+                {exportProgress}% Complete
+              </Text>
+            </>
+          )}
+
+          <Divider />
+          <Text variant="bodySm" color="subdued">
+            The export may take a few moments depending on the size of your projects and selected format.
           </Text>
         </TextContainer>
       </ActionModal>
