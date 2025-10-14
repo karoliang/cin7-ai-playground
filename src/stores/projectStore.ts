@@ -10,6 +10,7 @@ import {
   GenerateResponse,
   ContextItem
 } from '@/types'
+import { useAuthStore } from './authStore'
 
 interface ProjectState {
   // Current project
@@ -148,9 +149,10 @@ export const useProjectStore = create<ProjectState>()(
 
         const projectId = `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
+        const { user } = useAuthStore.getState()
         const newProject: Project = {
           id: projectId,
-          user_id: get().user?.id || 'anonymous',
+          user_id: user?.id || 'anonymous',
           ...createDefaultProject(),
           name: `Project ${projectId.slice(-8).toUpperCase()}`,
           prompt,

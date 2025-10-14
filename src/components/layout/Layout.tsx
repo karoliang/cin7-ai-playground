@@ -21,6 +21,8 @@ import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSearchField } from '@/hooks/useProjectSearch'
+import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement } from '@/utils/templateUtils'
+import { useNotifications } from '@/utils/notifications'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -31,6 +33,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { resolvedTheme, setTheme } = useTheme()
   const location = useLocation()
   const navigate = useNavigate()
+  const { showNotification, NotificationComponent } = useNotifications()
 
   const [mobileNavigationActive, setMobileNavigationActive] = React.useState(false)
 
@@ -206,9 +209,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {
               label: 'Sales Dashboard',
               icon: AnalyticsMinor,
-              onClick: () => {
-                // TODO: Create project with sales dashboard template
-                navigate('/')
+              onClick: async () => {
+                await createAndNavigateToSalesDashboard(navigate, showNotification)
               },
               selected: false,
               badge: 'Popular'
@@ -216,18 +218,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {
               label: 'Inventory Management',
               icon: ProductsMinor,
-              onClick: () => {
-                // TODO: Create project with inventory template
-                navigate('/')
+              onClick: async () => {
+                await createAndNavigateToInventoryDashboard(navigate, showNotification)
               },
               selected: false
             },
             {
               label: 'Order Management',
               icon: OrdersMinor,
-              onClick: () => {
-                // TODO: Create project with orders template
-                navigate('/')
+              onClick: async () => {
+                await createAndNavigateToOrderManagement(navigate, showNotification)
               },
               selected: false
             },
@@ -330,6 +330,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     >
       <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
         {children}
+        <NotificationComponent />
 
         {/* Global Footer */}
         {!isAuthenticated && (
