@@ -2191,6 +2191,547 @@ export const MapSection: React.FC = () => {
         description: "Map section for contact page",
         editable: true,
         required: true
+      },
+      {
+        name: 'src/components/BlogHeader.tsx',
+        type: 'tsx' as const,
+        content: `import React from 'react'
+
+export const BlogHeader: React.FC = () => {
+  return (
+    <section className="hero">
+      <div className="container text-center">
+        <h1 className="text-5xl font-bold mb-6">Our Blog</h1>
+        <p className="text-xl max-w-3xl mx-auto text-gray-100">
+          Insights, tips, and stories from our team about technology, design, and digital innovation.
+        </p>
+      </div>
+    </section>
+  )
+}`,
+        description: "Blog page header section",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/components/BlogGrid.tsx',
+        type: 'tsx' as const,
+        content: `import React from 'react'
+import { Calendar, Clock, User, ArrowRight } from 'lucide-react'
+
+export const BlogGrid: React.FC = () => {
+  const blogPosts = [
+    {
+      id: 1,
+      title: "The Future of Web Development: Trends to Watch in 2024",
+      excerpt: "Explore the latest trends shaping web development, from AI integration to advanced frameworks and tools.",
+      author: "Sarah Johnson",
+      date: "2024-01-15",
+      readTime: "5 min read",
+      category: "Web Development",
+      image: "🚀"
+    },
+    {
+      id: 2,
+      title: "Building Responsive Design: Best Practices and Tips",
+      excerpt: "Learn how to create beautiful, responsive designs that work seamlessly across all devices and screen sizes.",
+      author: "Michael Chen",
+      date: "2024-01-12",
+      readTime: "8 min read",
+      category: "Design",
+      image: "📱"
+    },
+    {
+      id: 3,
+      title: "Mobile App Development: Native vs Cross-Platform",
+      excerpt: "A comprehensive comparison of native and cross-platform development approaches to help you make the right choice.",
+      author: "Emily Rodriguez",
+      date: "2024-01-10",
+      readTime: "10 min read",
+      category: "Mobile",
+      image: "📲"
+    },
+    {
+      id: 4,
+      title: "UX Design Principles for Digital Products",
+      excerpt: "Essential UX principles every designer should know to create user-centered digital experiences.",
+      author: "Alex Thompson",
+      date: "2024-01-08",
+      readTime: "6 min read",
+      category: "Design",
+      image: "🎨"
+    },
+    {
+      id: 5,
+      title: "Introduction to Modern JavaScript Frameworks",
+      excerpt: "Get started with modern JavaScript frameworks and understand their differences and use cases.",
+      author: "Sarah Johnson",
+      date: "2024-01-05",
+      readTime: "12 min read",
+      category: "JavaScript",
+      image: "⚡"
+    },
+    {
+      id: 6,
+      title: "Digital Marketing Strategies for Tech Companies",
+      excerpt: "Effective marketing strategies specifically tailored for technology companies and startups.",
+      author: "Emily Rodriguez",
+      date: "2024-01-03",
+      readTime: "7 min read",
+      category: "Marketing",
+      image: "📈"
+    }
+  ]
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+
+  return (
+    <div className="space-y-8">
+      {blogPosts.map((post) => (
+        <article key={post.id} className="card hover:shadow-lg transition-shadow">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-sm font-medium text-blue-600 bg-blue-100 px-3 py-1 rounded-full">
+                  {post.category}
+                </span>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Calendar size={14} />
+                  <span>{formatDate(post.date)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <Clock size={14} />
+                  <span>{post.readTime}</span>
+                </div>
+              </div>
+              <h2 className="text-2xl font-bold mb-3 text-gray-900 hover:text-blue-600 transition-colors cursor-pointer">
+                {post.title}
+              </h2>
+              <p className="text-gray-600 mb-4">{post.excerpt}</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <User size={16} className="text-gray-400" />
+                  <span className="text-sm text-gray-600">{post.author}</span>
+                </div>
+                <button className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                  Read More
+                  <ArrowRight size={16} />
+                </button>
+              </div>
+            </div>
+            <div className="text-center md:text-right">
+              <div className="text-6xl mb-2">{post.image}</div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  )
+}`,
+        description: "Blog grid component displaying articles",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/components/BlogSidebar.tsx',
+        type: 'tsx' as const,
+        content: `import React from 'react'
+import { Search, Tag, Calendar, User } from 'lucide-react'
+
+export const BlogSidebar: React.FC = () => {
+  const categories = [
+    { name: "Web Development", count: 12 },
+    { name: "Design", count: 8 },
+    { name: "Mobile", count: 6 },
+    { name: "JavaScript", count: 9 },
+    { name: "Marketing", count: 5 },
+    { name: "Technology", count: 15 }
+  ]
+
+  const recentPosts = [
+    { title: "Getting Started with React Hooks", date: "2024-01-15" },
+    { title: "CSS Grid vs Flexbox", date: "2024-01-12" },
+    { title: "Building REST APIs", date: "2024-01-10" },
+    { title: "Introduction to TypeScript", date: "2024-01-08" }
+  ]
+
+  const tags = [
+    "JavaScript", "React", "Vue", "Angular", "Node.js", "CSS", "HTML",
+    "UX Design", "Mobile", "Web Development", "Frontend", "Backend"
+  ]
+
+  return (
+    <div className="space-y-8">
+      {/* Search */}
+      <div className="card">
+        <h3 className="text-lg font-semibold mb-4">Search</h3>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search articles..."
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="card">
+        <h3 className="text-lg font-semibold mb-4">Categories</h3>
+        <div className="space-y-2">
+          {categories.map((category, index) => (
+            <div key={index} className="flex justify-between items-center py-2 hover:bg-gray-50 px-2 rounded cursor-pointer transition-colors">
+              <span className="text-gray-700">{category.name}</span>
+              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                {category.count}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Posts */}
+      <div className="card">
+        <h3 className="text-lg font-semibold mb-4">Recent Posts</h3>
+        <div className="space-y-3">
+          {recentPosts.map((post, index) => (
+            <div key={index} className="border-l-2 border-blue-500 pl-3 hover:bg-gray-50 py-1 transition-colors cursor-pointer">
+              <h4 className="font-medium text-gray-900 text-sm mb-1">{post.title}</h4>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Calendar size={12} />
+                <span>{post.date}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tags */}
+      <div className="card">
+        <h3 className="text-lg font-semibold mb-4">Popular Tags</h3>
+        <div className="flex flex-wrap gap-2">
+          {tags.map((tag, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors cursor-pointer"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}`,
+        description: "Blog sidebar with search, categories, and tags",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/components/PortfolioHeader.tsx',
+        type: 'tsx' as const,
+        content: `import React from 'react'
+
+export const PortfolioHeader: React.FC = () => {
+  return (
+    <section className="hero">
+      <div className="container text-center">
+        <h1 className="text-5xl font-bold mb-6">Our Portfolio</h1>
+        <p className="text-xl max-w-3xl mx-auto text-gray-100">
+          Explore our latest projects and see how we've helped businesses transform their digital presence with innovative solutions.
+        </p>
+      </div>
+    </section>
+  )
+}`,
+        description: "Portfolio page header section",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/components/PortfolioGrid.tsx',
+        type: 'tsx' as const,
+        content: `import React, { useState } from 'react'
+import { ExternalLink, Eye } from 'lucide-react'
+
+export const PortfolioGrid: React.FC = () => {
+  const [filter, setFilter] = useState('all')
+
+  const projects = [
+    {
+      id: 1,
+      title: "E-Commerce Platform",
+      category: "web",
+      description: "Modern e-commerce solution with advanced features and seamless user experience.",
+      image: "🛒",
+      tags: ["React", "Node.js", "MongoDB"],
+      featured: true
+    },
+    {
+      id: 2,
+      title: "Mobile Banking App",
+      category: "mobile",
+      description: "Secure and intuitive mobile banking application with biometric authentication.",
+      image: "🏦",
+      tags: ["React Native", "TypeScript", "Security"],
+      featured: true
+    },
+    {
+      id: 3,
+      title: "SaaS Dashboard",
+      category: "web",
+      description: "Analytics dashboard for SaaS platform with real-time data visualization.",
+      image: "📊",
+      tags: ["Vue.js", "D3.js", "WebSocket"],
+      featured: false
+    },
+    {
+      id: 4,
+      title: "Healthcare Portal",
+      category: "web",
+      description: "Patient management system with appointment scheduling and telemedicine features.",
+      image: "🏥",
+      tags: ["Angular", "Spring Boot", "PostgreSQL"],
+      featured: false
+    },
+    {
+      id: 5,
+      title: "Food Delivery App",
+      category: "mobile",
+      description: "On-demand food delivery platform with real-time tracking and ratings.",
+      image: "🍔",
+      tags: ["Flutter", "Firebase", "Maps API"],
+      featured: true
+    },
+    {
+      id: 6,
+      title: "Educational Platform",
+      category: "web",
+      description: "Online learning management system with video streaming and progress tracking.",
+      image: "📚",
+      tags: ["Next.js", "AWS", "WebRTC"],
+      featured: false
+    }
+  ]
+
+  const categories = [
+    { value: 'all', label: 'All Projects' },
+    { value: 'web', label: 'Web Development' },
+    { value: 'mobile', label: 'Mobile Apps' },
+    { value: 'design', label: 'UI/UX Design' }
+  ]
+
+  const filteredProjects = filter === 'all'
+    ? projects
+    : projects.filter(project => project.category === filter)
+
+  return (
+    <div>
+      {/* Filter Buttons */}
+      <div className="flex justify-center mb-12">
+        <div className="inline-flex bg-white rounded-lg shadow-md p-1">
+          {categories.map((category) => (
+            <button
+              key={category.value}
+              onClick={() => setFilter(category.value)}
+              className={\`px-6 py-2 rounded-md font-medium transition-colors \${
+                filter === category.value
+                  ? 'bg-blue-500 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }\`}
+            >
+              {category.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Projects Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredProjects.map((project) => (
+          <div key={project.id} className="card group hover:shadow-xl transition-all duration-300">
+            <div className="aspect-video bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg mb-6 flex items-center justify-center text-6xl">
+              {project.image}
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+              {project.featured && (
+                <span className="text-xs font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+                  Featured
+                </span>
+              )}
+              <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full uppercase">
+                {project.category}
+              </span>
+            </div>
+            <h3 className="text-xl font-semibold mb-3 group-hover:text-blue-600 transition-colors">
+              {project.title}
+            </h3>
+            <p className="text-gray-600 mb-4">{project.description}</p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {project.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <button className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <Eye size={16} />
+                View Project
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <ExternalLink size={16} />
+                Live Demo
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}`,
+        description: "Portfolio grid showcasing projects",
+        editable: true,
+        required: true
+      },
+      {
+        name: 'src/components/CaseStudyModal.tsx',
+        type: 'tsx' as const,
+        content: `import React, { useState } from 'react'
+import { X, ExternalLink, Calendar, User, Tag } from 'lucide-react'
+
+export const CaseStudyModal: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+
+  const openModal = (project: any) => {
+    setSelectedProject(project)
+    setIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsOpen(false)
+    setSelectedProject(null)
+  }
+
+  return (
+    <>
+      <button
+        onClick={() => openModal({
+          title: "E-Commerce Platform Case Study",
+          client: "RetailTech Inc.",
+          date: "2024-01-15",
+          category: "Web Development",
+          description: "How we helped RetailTech Inc. increase their online sales by 300% through a complete e-commerce platform redesign.",
+          challenges: ["Outdated technology stack", "Poor user experience", "Limited mobile functionality"],
+          solutions: ["Modern React frontend", "Progressive Web App", "Advanced search and filtering"],
+          results: ["300% increase in sales", "50% reduction in bounce rate", "95% mobile user satisfaction"]
+        })}
+        className="btn btn-primary"
+      >
+        View Case Study
+      </button>
+
+      {isOpen && selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white border-b p-6 flex justify-between items-center">
+              <h2 className="text-2xl font-bold">{selectedProject.title}</h2>
+              <button
+                onClick={closeModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="flex items-center gap-3">
+                  <User className="text-gray-400" size={20} />
+                  <div>
+                    <div className="font-semibold">Client</div>
+                    <div className="text-gray-600">{selectedProject.client}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Calendar className="text-gray-400" size={20} />
+                  <div>
+                    <div className="font-semibold">Date</div>
+                    <div className="text-gray-600">{selectedProject.date}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Tag className="text-gray-400" size={20} />
+                  <div>
+                    <div className="font-semibold">Category</div>
+                    <div className="text-gray-600">{selectedProject.category}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ExternalLink className="text-gray-400" size={20} />
+                  <div>
+                    <div className="font-semibold">Live Project</div>
+                    <a href="#" className="text-blue-600 hover:underline">View Live</a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="prose max-w-none">
+                <h3 className="text-xl font-semibold mb-4">Overview</h3>
+                <p className="text-gray-600 mb-8">{selectedProject.description}</p>
+
+                <h3 className="text-xl font-semibold mb-4">Challenges</h3>
+                <ul className="list-disc list-inside text-gray-600 mb-8">
+                  {selectedProject.challenges.map((challenge: string, index: number) => (
+                    <li key={index}>{challenge}</li>
+                  ))}
+                </ul>
+
+                <h3 className="text-xl font-semibold mb-4">Our Solutions</h3>
+                <ul className="list-disc list-inside text-gray-600 mb-8">
+                  {selectedProject.solutions.map((solution: string, index: number) => (
+                    <li key={index}>{solution}</li>
+                  ))}
+                </ul>
+
+                <h3 className="text-xl font-semibold mb-4">Results</h3>
+                <ul className="list-disc list-inside text-gray-600 mb-8">
+                  {selectedProject.results.map((result: string, index: number) => (
+                    <li key={index}>{result}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex gap-4 mt-8">
+                <button className="btn btn-primary">
+                  <ExternalLink size={16} />
+                  View Live Project
+                </button>
+                <button className="btn btn-outline" onClick={closeModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}`,
+        description: "Case study modal component for portfolio",
+        editable: true,
+        required: true
       }
     ]
   }
