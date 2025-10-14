@@ -259,12 +259,10 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           {
             label: 'Code Generator',
             icon: CodeMajor,
-            onClick: () => {
-              // TODO: Navigate to code generator
-              console.log('Code generator tool')
-            },
-            selected: false,
-            disabled: !isAuthenticated
+            onClick: () => handleNavigation('/code-generator'),
+            selected: location.pathname === '/code-generator',
+            disabled: !isAuthenticated,
+            badge: 'AI'
           },
           {
             label: 'Import Project',
