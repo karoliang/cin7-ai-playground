@@ -1,0 +1,64 @@
+{
+  "name": "cin7-ai-playground",
+  "version": "2.0.0",
+  "description": "CIN7 AI-powered multi-page application builder with enhanced contextual updates and modern build system",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "build:generated": "node scripts/build-generated.js",
+    "analyze": "npm run build && npx vite-bundle-analyzer dist/stats.html",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint src --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@shopify/polaris": "^13.9.5",
+    "@shopify/polaris-tokens": "^9.4.2",
+    "@supabase/supabase-js": "^2.55.0",
+    "@anthropic-ai/claude-code": "^1.0.77",
+    "@anthropic-ai/sdk": "^0.59.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.1",
+    "zustand": "^4.4.1",
+    "framer-motion": "^10.16.4",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vite-bundle-analyzer": "^0.7.0",
+    "vitest": "^1.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/karoliang/cin7-ai-playground.git"
+  },
+  "keywords": [
+    "cin7",
+    "ai",
+    "code-generation",
+    "playground",
+    "multi-page",
+    "polaris",
+    "react"
+  ],
+  "author": "Karoliang",
+  "license": "ISC"
+}

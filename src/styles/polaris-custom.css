@@ -1,0 +1,238 @@
+/* Custom overrides for Polaris to match CIN7 design system */
+
+/* Override Polaris primary colors to match CIN7 brand */
+.Polaris-Button--primary {
+  background-color: var(--cin7-primary);
+  color: var(--cin7-primary-contrast);
+  border-color: var(--cin7-primary);
+}
+
+.Polaris-Button--primary:hover {
+  background-color: var(--cin7-primary-hover);
+  border-color: var(--cin7-primary-hover);
+}
+
+.Polaris-Button--primary:active {
+  background-color: var(--cin7-primary-active);
+  border-color: var(--cin7-primary-active);
+}
+
+/* Override link colors */
+.Polaris-Link {
+  color: var(--cin7-primary);
+}
+
+.Polaris-Link:hover {
+  color: var(--cin7-primary-hover);
+}
+
+/* Override badge colors */
+.Polaris-Badge--statusSuccess {
+  background-color: var(--cin7-success);
+  color: var(--cin7-success-contrast);
+}
+
+.Polaris-Badge--statusWarning {
+  background-color: var(--cin7-warning);
+  color: var(--cin7-warning-contrast);
+}
+
+.Polaris-Badge--statusCritical {
+  background-color: var(--cin7-error);
+  color: var(--cin7-error-contrast);
+}
+
+/* Override navigation colors */
+.Polaris-Navigation__Item {
+  color: var(--cin7-text-secondary);
+}
+
+.Polaris-Navigation__Item--active {
+  color: var(--cin7-primary);
+  background-color: var(--cin7-bg-surface-selected);
+}
+
+/* Override top bar */
+.Polaris-TopBar {
+  background-color: var(--cin7-bg-surface);
+  border-bottom: 1px solid var(--cin7-border-light);
+}
+
+/* Override card styling */
+.Polaris-Card {
+  background-color: var(--cin7-bg-surface);
+  border: 1px solid var(--cin7-border-light);
+  box-shadow: var(--cin7-shadow-sm);
+}
+
+.Polaris-Card:hover {
+  box-shadow: var(--cin7-shadow-md);
+}
+
+/* Override text field focus */
+.Polaris-TextField__Input:focus {
+  border-color: var(--cin7-primary);
+  box-shadow: 0 0 0 1px var(--cin7-primary);
+}
+
+/* Override select focus */
+.Polaris-Select__select:focus {
+  border-color: var(--cin7-primary);
+  box-shadow: 0 0 0 1px var(--cin7-primary);
+}
+
+/* Custom CIN7 spacing utilities */
+.cin7-space-1 { margin: var(--cin7-space-1); }
+.cin7-space-2 { margin: var(--cin7-space-2); }
+.cin7-space-3 { margin: var(--cin7-space-3); }
+.cin7-space-4 { margin: var(--cin7-space-4); }
+.cin7-space-5 { margin: var(--cin7-space-5); }
+.cin7-space-6 { margin: var(--cin7-space-6); }
+.cin7-space-8 { margin: var(--cin7-space-8); }
+
+.cin7-space-y-1 > * + * { margin-top: var(--cin7-space-1); }
+.cin7-space-y-2 > * + * { margin-top: var(--cin7-space-2); }
+.cin7-space-y-3 > * + * { margin-top: var(--cin7-space-3); }
+.cin7-space-y-4 > * + * { margin-top: var(--cin7-space-4); }
+.cin7-space-y-5 > * + * { margin-top: var(--cin7-space-5); }
+.cin7-space-y-6 > * + * { margin-top: var(--cin7-space-6); }
+.cin7-space-y-8 > * + * { margin-top: var(--cin7-space-8); }
+
+.cin7-space-x-1 > * + * { margin-left: var(--cin7-space-1); }
+.cin7-space-x-2 > * + * { margin-left: var(--cin7-space-2); }
+.cin7-space-x-3 > * + * { margin-left: var(--cin7-space-3); }
+.cin7-space-x-4 > * + * { margin-left: var(--cin7-space-4); }
+.cin7-space-x-5 > * + * { margin-left: var(--cin7-space-5); }
+.cin7-space-x-6 > * + * { margin-left: var(--cin7-space-6); }
+.cin7-space-x-8 > * + * { margin-left: var(--cin7-space-8); }
+
+/* Custom CIN7 text utilities */
+.cin7-text-xs { font-size: var(--cin7-font-size-xs); }
+.cin7-text-sm { font-size: var(--cin7-font-size-sm); }
+.cin7-text-base { font-size: var(--cin7-font-size-base); }
+.cin7-text-lg { font-size: var(--cin7-font-size-lg); }
+.cin7-text-xl { font-size: var(--cin7-font-size-xl); }
+.cin7-text-2xl { font-size: var(--cin7-font-size-2xl); }
+.cin7-text-3xl { font-size: var(--cin7-font-size-3xl); }
+.cin7-text-4xl { font-size: var(--cin7-font-size-4xl); }
+.cin7-text-5xl { font-size: var(--cin7-font-size-5xl); }
+
+.cin7-font-normal { font-weight: var(--cin7-font-weight-normal); }
+.cin7-font-medium { font-weight: var(--cin7-font-weight-medium); }
+.cin7-font-semibold { font-weight: var(--cin7-font-weight-semibold); }
+.cin7-font-bold { font-weight: var(--cin7-font-weight-bold); }
+
+.cin7-leading-tight { line-height: var(--cin7-line-height-tight); }
+.cin7-leading-normal { line-height: var(--cin7-line-height-normal); }
+.cin7-leading-relaxed { line-height: var(--cin7-line-height-relaxed); }
+
+/* Custom CIN7 color utilities */
+.cin7-text-primary { color: var(--cin7-text-primary); }
+.cin7-text-secondary { color: var(--cin7-text-secondary); }
+.cin7-text-tertiary { color: var(--cin7-text-tertiary); }
+.cin7-text-placeholder { color: var(--cin7-text-placeholder); }
+
+.cin7-bg-surface { background-color: var(--cin7-bg-surface); }
+.cin7-bg-surface-hover { background-color: var(--cin7-bg-surface-hover); }
+.cin7-bg-surface-selected { background-color: var(--cin7-bg-surface-selected); }
+.cin7-bg-backdrop { background-color: var(--cin7-bg-backdrop); }
+
+.cin7-border { border-color: var(--cin7-border-light); }
+.cin7-border-medium { border-color: var(--cin7-border-medium); }
+.cin7-border-dark { border-color: var(--cin7-border-dark); }
+
+/* Custom CIN7 border radius utilities */
+.cin7-rounded-sm { border-radius: var(--cin7-radius-sm); }
+.cin7-rounded { border-radius: var(--cin7-radius-base); }
+.cin7-rounded-md { border-radius: var(--cin7-radius-md); }
+.cin7-rounded-lg { border-radius: var(--cin7-radius-lg); }
+.cin7-rounded-full { border-radius: var(--cin7-radius-full); }
+
+/* Custom CIN7 shadow utilities */
+.cin7-shadow-sm { box-shadow: var(--cin7-shadow-sm); }
+.cin7-shadow { box-shadow: var(--cin7-shadow-md); }
+.cin7-shadow-lg { box-shadow: var(--cin7-shadow-lg); }
+.cin7-shadow-xl { box-shadow: var(--cin7-shadow-xl); }
+
+/* Dark theme overrides */
+[data-theme="dark"] .Polaris-Button--primary {
+  background-color: var(--cin7-primary);
+  color: var(--cin7-primary-contrast);
+}
+
+[data-theme="dark"] .Polaris-Card {
+  background-color: var(--cin7-bg-surface);
+  border-color: var(--cin7-border-medium);
+}
+
+[data-theme="dark"] .Polaris-TopBar {
+  background-color: var(--cin7-bg-surface);
+  border-bottom-color: var(--cin7-border-medium);
+}
+
+/* Custom CIN7 animations */
+@keyframes cin7-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cin7-slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes cin7-scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.cin7-animate-fade-in {
+  animation: cin7-fade-in 0.3s ease-out;
+}
+
+.cin7-animate-slide-in {
+  animation: cin7-slide-in 0.3s ease-out;
+}
+
+.cin7-animate-scale-in {
+  animation: cin7-scale-in 0.2s ease-out;
+}
+
+/* Custom CIN7 layout utilities */
+.cin7-flex { display: flex; }
+.cin7-flex-col { flex-direction: column; }
+.cin7-flex-row { flex-direction: row; }
+.cin7-items-center { align-items: center; }
+.cin7-items-start { align-items: flex-start; }
+.cin7-items-end { align-items: flex-end; }
+.cin7-justify-center { justify-content: center; }
+.cin7-justify-between { justify-content: space-between; }
+.cin7-justify-start { justify-content: flex-start; }
+.cin7-justify-end { justify-content: flex-end; }
+
+.cin7-grid { display: grid; }
+.cin7-grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.cin7-grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cin7-grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cin7-grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+.cin7-hidden { display: none; }
+.cin7-block { display: block; }
+.cin7-inline { display: inline; }
+.cin7-inline-block { display: inline-block; }
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .cin7-sm-hidden { display: none; }
+  .cin7-sm-block { display: block; }
+}
+
+@media (max-width: 768px) {
+  .cin7-md-hidden { display: none; }
+  .cin7-md-block { display: block; }
+}
+
+@media (max-width: 1024px) {
+  .cin7-lg-hidden { display: none; }
+  .cin7-lg-block { display: block; }
+}
