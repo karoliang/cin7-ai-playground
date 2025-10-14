@@ -141,6 +141,7 @@ export type ProjectTemplate =
   | 'saas'
   | 'landing-page'
   | 'admin-panel'
+  | 'multi-page-app'
   | 'cin7-sales'
   | 'cin7-inventory'
   | 'cin7-analytics'

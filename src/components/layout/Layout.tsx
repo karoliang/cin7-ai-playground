@@ -21,7 +21,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useSearchField } from '@/hooks/useProjectSearch'
-import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement } from '@/utils/templateUtils'
+import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement, createAndNavigateToMultiPageApp } from '@/utils/templateUtils'
 import { useNotifications } from '@/utils/notifications'
 
 interface LayoutProps {
@@ -234,9 +234,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             {
               label: 'Multi-page App',
               icon: DesktopMajor,
-              onClick: () => {
-                // TODO: Create multi-page application template
-                navigate('/')
+              onClick: async () => {
+                await createAndNavigateToMultiPageApp(navigate, showNotification)
               },
               selected: false,
               badge: 'New'

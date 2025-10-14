@@ -113,3 +113,35 @@ export async function createAndNavigateToOrderManagement(
     )
   }
 }
+
+export async function createAndNavigateToMultiPageApp(
+  navigate: (path: string) => void,
+  showNotification?: (message: string, type: 'success' | 'error' | 'info') => void
+): Promise<void> {
+  try {
+    showNotification?.('Creating multi-page application...', 'info')
+
+    const projectId = await createProjectFromTemplate('multi-page-app', {
+      name: 'Multi-Page Application',
+      description: 'A professional multi-page application with modern design, responsive layout, and comprehensive features',
+      theme: '#3b82f6'
+    })
+
+    // Update the project store with the new project
+    const { loadProject } = useProjectStore.getState()
+    await loadProject(projectId)
+
+    // Show success notification
+    showNotification?.('Multi-page application created successfully!', 'success')
+
+    // Navigate to the project
+    navigate(`/project/${projectId}`)
+
+  } catch (error) {
+    console.error('Failed to create multi-page application:', error)
+    showNotification?.(
+      error instanceof Error ? error.message : 'Failed to create multi-page application',
+      'error'
+    )
+  }
+}
