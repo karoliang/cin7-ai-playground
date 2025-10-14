@@ -24,6 +24,7 @@ import { useSearchField } from '@/hooks/useProjectSearch'
 import { createAndNavigateToSalesDashboard, createAndNavigateToInventoryDashboard, createAndNavigateToOrderManagement, createAndNavigateToMultiPageApp, createAndNavigateToMobileCommerce } from '@/utils/templateUtils'
 import { useNotifications } from '@/utils/notifications'
 import { ImportModal } from '@/components/import/ImportModal'
+import { BulkExportModal } from '@/components/export/BulkExportModal'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -38,6 +39,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const [mobileNavigationActive, setMobileNavigationActive] = React.useState(false)
   const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
+  const [isBulkExportModalOpen, setIsBulkExportModalOpen] = React.useState(false)
 
   // Use search field hook with debouncing
   const {
@@ -90,6 +92,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const handleCloseImportModal = () => {
     setIsImportModalOpen(false)
+  }
+
+  const handleOpenBulkExportModal = () => {
+    setIsBulkExportModalOpen(true)
+  }
+
+  const handleCloseBulkExportModal = () => {
+    setIsBulkExportModalOpen(false)
   }
 
   // Format search results for TopBar
@@ -284,10 +294,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           {
             label: 'Export All',
             icon: ExportMinor,
-            onClick: () => {
-              // TODO: Export all projects
-              console.log('Export all projects')
-            },
+            onClick: handleOpenBulkExportModal,
             selected: false,
             disabled: !isAuthenticated
           }
@@ -340,6 +347,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         <ImportModal
           open={isImportModalOpen}
           onClose={handleCloseImportModal}
+        />
+
+        {/* Bulk Export Modal */}
+        <BulkExportModal
+          open={isBulkExportModalOpen}
+          onClose={handleCloseBulkExportModal}
         />
 
         {/* Global Footer */}
