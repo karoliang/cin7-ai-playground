@@ -12,6 +12,7 @@ interface AuthState {
   signUp: (email: string, password: string, name?: string) => Promise<void>
   signOut: () => Promise<void>
   updateProfile: (updates: Partial<User>) => Promise<void>
+  deleteAccount: (password: string) => Promise<void>
   clearError: () => void
 }
 
@@ -223,6 +224,32 @@ export const useAuthStore = create<AuthState>()(
           console.error('Update profile error:', error)
           set({
             error: error instanceof Error ? error.message : 'Failed to update profile',
+            isLoading: false
+          })
+          throw error
+        } finally {
+          set({ isLoading: false })
+        }
+      },
+
+      deleteAccount: async (password: string) => {
+        try {
+          set({ isLoading: true, error: null })
+
+          const currentUser = get().user
+          if (!currentUser) throw new Error('No authenticated user')
+
+          // Use the dedicated account deletion service
+          const { initiateAccountDeletion } = await import('@/services/accountDeletionService')
+          await initiateAccountDeletion(currentUser, password)
+
+          // Clear local state after successful deletion
+          set({ user: null, isAuthenticated: false })
+
+        } catch (error) {
+          console.error('Delete account error:', error)
+          set({
+            error: error instanceof Error ? error.message : 'Failed to delete account',
             isLoading: false
           })
           throw error

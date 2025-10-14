@@ -34,13 +34,22 @@ import { useTheme } from '@/components/ui/ThemeProvider'
 import { ActionModal } from '@/components/ui/PolarisComponents'
 
 export const SettingsPage: React.FC = () => {
-  const { user, updateProfile, isAuthenticated } = useAuthStore()
+  const { user, updateProfile, isAuthenticated, deleteAccount, isLoading: authIsLoading, error: authError } = useAuthStore()
   const { resolvedTheme, setTheme } = useTheme()
 
   const [selectedTab, setSelectedTab] = useState(0)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+
+  // Account deletion state
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteConfirmation, setDeleteConfirmation] = useState('')
+  const [deleteProgress, setDeleteProgress] = useState(0)
+  const [deleteStatus, setDeleteStatus] = useState('')
+  const [showPasswordInput, setShowPasswordInput] = useState(false)
+  const [countdown, setCountdown] = useState(0)
+  const [canDelete, setCanDelete] = useState(false)
 
   // Profile settings
   const [profileName, setProfileName] = useState(user?.name || '')
@@ -296,9 +305,138 @@ export const SettingsPage: React.FC = () => {
   }
 
   const handleDeleteAccount = async () => {
-    console.log('Deleting account...')
-    // TODO: Implement account deletion
-    setShowDeleteModal(false)
+    if (!showPasswordInput) {
+      // First step: show password input
+      setShowPasswordInput(true)
+      return
+    }
+
+    // Validate inputs
+    if (!deletePassword) {
+      setDeleteStatus('Please enter your password to confirm deletion')
+      return
+    }
+
+    if (deleteConfirmation !== 'DELETE') {
+      setDeleteStatus('Please type "DELETE" to confirm you understand this action cannot be undone')
+      return
+    }
+
+    // Start countdown if not already started
+    if (countdown === 0 && !canDelete) {
+      setCountdown(10)
+      setDeleteStatus('Account deletion will begin in 10 seconds. You can cancel by closing this dialog.')
+
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer)
+            setCanDelete(true)
+            setDeleteStatus('Starting account deletion now...')
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+
+      return
+    }
+
+    setIsLoading(true)
+    setDeleteProgress(0)
+    setDeleteStatus('Initializing account deletion...')
+
+    try {
+      if (!user?.id) {
+        throw new Error('User not authenticated')
+      }
+
+      // Step 1: Verify password and start deletion process
+      setDeleteStatus('Verifying your identity...')
+      setDeleteProgress(10)
+
+      // Step 2: Get user projects for deletion summary
+      setDeleteStatus('Retrieving your projects...')
+      setDeleteProgress(20)
+
+      const { getAccountDeletionSummary } = await import('@/services/accountDeletionService')
+      const summary = await getAccountDeletionSummary(user.id)
+
+      const { totalProjects, totalFiles, totalMessages, projectNames } = summary
+
+      // Provide feedback about what will be deleted
+      if (totalProjects === 0) {
+        setDeleteStatus('No projects found. Proceeding with account deletion...')
+      } else {
+        setDeleteStatus(`Found ${totalProjects} project${totalProjects === 1 ? '' : 's'} to delete...`)
+      }
+      setDeleteProgress(25)
+
+      // Step 3: Start deletion process
+      setDeleteStatus(`Deleting ${totalProjects} projects, ${totalFiles} files, and ${totalMessages} messages...`)
+      setDeleteProgress(30)
+
+      // Step 4: Delete account (this will also delete all projects)
+      await deleteAccount(deletePassword)
+
+      setDeleteProgress(100)
+      setDeleteStatus('Account deletion completed successfully')
+
+      // Keep success message visible for a moment
+      setTimeout(() => {
+        setShowDeleteModal(false)
+        resetDeleteModalState()
+
+        // Redirect to home or login page after successful deletion
+        window.location.href = '/'
+      }, 3000)
+
+    } catch (error) {
+      console.error('Account deletion failed:', error)
+
+      let errorMessage = 'Unknown error occurred'
+      if (error instanceof Error) {
+        // Provide more user-friendly error messages
+        if (error.message.includes('Invalid password')) {
+          errorMessage = 'Invalid password. Please check your password and try again.'
+        } else if (error.message.includes('No authenticated user')) {
+          errorMessage = 'Your session has expired. Please sign in again.'
+        } else if (error.message.includes('network')) {
+          errorMessage = 'Network error occurred. Please check your connection and try again.'
+        } else if (error.message.includes('permission')) {
+          errorMessage = 'Permission denied. Please contact support for assistance.'
+        } else {
+          errorMessage = error.message
+        }
+      }
+
+      setDeleteStatus(`Deletion failed: ${errorMessage}`)
+
+      // Keep error message visible for longer
+      setTimeout(() => {
+        setDeleteProgress(0)
+        setDeleteStatus('')
+      }, 5000)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const resetDeleteModalState = () => {
+    setDeletePassword('')
+    setDeleteConfirmation('')
+    setDeleteProgress(0)
+    setDeleteStatus('')
+    setShowPasswordInput(false)
+    setCountdown(0)
+    setCanDelete(false)
+  }
+
+  const handleCloseDeleteModal = () => {
+    if (!isLoading) {
+      setShowDeleteModal(false)
+      resetDeleteModalState()
+    }
   }
 
   const themeOptions = [
@@ -698,36 +836,165 @@ export const SettingsPage: React.FC = () => {
       {/* Delete Account Modal */}
       <ActionModal
         open={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
+        onClose={handleCloseDeleteModal}
         title="Delete Account"
         primaryAction={{
-          content: 'Delete Account',
+          content: deleteProgress > 0
+            ? 'Deleting...'
+            : (showPasswordInput
+              ? (countdown > 0
+                ? `Deleting in ${countdown}...`
+                : (canDelete
+                  ? 'Delete Account Permanently'
+                  : 'Start Countdown'))
+              : 'Continue'),
           onAction: handleDeleteAccount,
-          loading: false,
+          loading: isLoading || authIsLoading,
+          disabled: isLoading || authIsLoading || deleteProgress > 0 || countdown > 0,
           destructive: true
         }}
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: () => setShowDeleteModal(false)
+            onAction: handleCloseDeleteModal,
+            disabled: isLoading || authIsLoading || deleteProgress > 0
           }
         ]}
       >
         <TextContainer>
-          <Banner status="critical">
-            <Text>
-              This action cannot be undone. Deleting your account will permanently remove:
-            </Text>
-          </Banner>
-          <ul>
-            <li>All your projects and files</li>
-            <li>Your profile information</li>
-            <li>Account settings and preferences</li>
-            <li>Any shared templates or components</li>
-          </ul>
-          <Text>
-            Please consider exporting your projects before deleting your account.
-          </Text>
+          {!showPasswordInput ? (
+            <>
+              <Banner status="critical">
+                <Text>
+                  <strong>⚠️ WARNING: This action cannot be undone</strong>
+                </Text>
+              </Banner>
+
+              <Text variant="headingMd" as="h3">What will be permanently deleted:</Text>
+              <ul>
+                <li><strong>All your projects</strong> - including code, files, and configurations</li>
+                <li><strong>Chat history</strong> - all conversations and AI interactions</li>
+                <li><strong>Your profile information</strong> - name, email, and settings</li>
+                <li><strong>Account preferences</strong> - themes, templates, and customizations</li>
+                <li><strong>Shared resources</strong> - any templates or components you've created</li>
+              </ul>
+
+              <Banner status="warning">
+                <Text variant="bodySm">
+                  <strong>Before you delete your account:</strong><br/>
+                  • Export any projects you want to keep<br/>
+                  • Save important configurations or settings<br/>
+                  • Inform team members if you have shared projects<br/>
+                  • Cancel any active subscriptions or services
+                </Text>
+              </Banner>
+
+              <Divider />
+
+              <Text variant="headingMd" as="h3">Data Recovery</Text>
+              <Text variant="bodySm" color="subdued">
+                Once your account is deleted, there is no way to recover your data.
+                We recommend exporting your projects before proceeding.
+              </Text>
+
+              <Button
+                onClick={() => setShowExportModal(true)}
+                disabled={isLoading}
+              >
+                Export Projects First
+              </Button>
+            </>
+          ) : (
+            <>
+              <Banner status="critical">
+                <Text>
+                  <strong>⚠️ FINAL CONFIRMATION REQUIRED</strong>
+                </Text>
+              </Banner>
+
+              <Text variant="headingMd" as="h3">Security Verification</Text>
+              <TextField
+                label="Enter your password"
+                type="password"
+                value={deletePassword}
+                onChange={setDeletePassword}
+                placeholder="Enter your current password"
+                disabled={isLoading || authIsLoading}
+                helpText="This verifies your identity before account deletion"
+              />
+
+              <Divider />
+
+              <TextField
+                label='Type "DELETE" to confirm'
+                value={deleteConfirmation}
+                onChange={setDeleteConfirmation}
+                placeholder="DELETE"
+                disabled={isLoading || authIsLoading}
+                helpText="This confirms you understand this action cannot be undone"
+              />
+
+              {deleteProgress > 0 && (
+                <>
+                  <Divider />
+                  <Text variant="headingMd" as="h3">Deletion Progress</Text>
+                  <div style={{ marginBottom: '8px' }}>
+                    <Text>{deleteStatus}</Text>
+                  </div>
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '8px',
+                      backgroundColor: '#f1f3f5',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                      marginBottom: '8px'
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${deleteProgress}%`,
+                        height: '100%',
+                        backgroundColor: deleteProgress === 100 ? '#00875a' : '#de3618',
+                        transition: 'width 0.3s ease'
+                      }}
+                    />
+                  </div>
+                  <Text variant="bodySm" color="subdued">
+                    {deleteProgress}% Complete
+                  </Text>
+                </>
+              )}
+
+              {authError && (
+                <Banner status="critical">
+                  <Text variant="bodySm">{authError}</Text>
+                </Banner>
+              )}
+
+              {countdown > 0 && (
+                <Banner status="warning">
+                  <Text variant="bodySm">
+                    <strong>Countdown:</strong> {countdown} seconds remaining until deletion begins.
+                    You can still cancel by closing this dialog.
+                  </Text>
+                </Banner>
+              )}
+
+              {deleteStatus && deleteProgress === 0 && (
+                <Banner status={deleteStatus.includes('failed') ? 'critical' : 'info'}>
+                  <Text variant="bodySm">{deleteStatus}</Text>
+                </Banner>
+              )}
+
+              <Banner status="warning">
+                <Text variant="bodySm">
+                  <strong>Important:</strong> Account deletion is permanent and cannot be reversed.
+                  All your data will be immediately and permanently removed.
+                </Text>
+              </Banner>
+            </>
+          )}
         </TextContainer>
       </ActionModal>
     </Page>
