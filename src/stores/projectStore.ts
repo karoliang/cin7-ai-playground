@@ -27,6 +27,8 @@ interface ProjectState {
   messages: ChatMessage[]
   isGenerating: boolean
   generationProgress: string
+  streamingMessage: string | null
+  isTyping: boolean
 
   // Contextual updates
   contextualUpdates: ContextItem[]
@@ -50,6 +52,10 @@ interface ProjectState {
   // Chat actions
   addMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void
   generateCode: (prompt: string, options?: any) => Promise<void>
+  sendChatMessage: (message: string) => Promise<void>
+  setStreamingMessage: (message: string | null) => void
+  setIsTyping: (isTyping: boolean) => void
+  clearChat: () => void
 
   // Contextual updates
   addContextualUpdate: (context: Omit<ContextItem, 'id' | 'timestamp' | 'applied'>) => Promise<void>
@@ -129,6 +135,8 @@ export const useProjectStore = create<ProjectState>()(
     messages: [],
     isGenerating: false,
     generationProgress: '',
+    streamingMessage: null,
+    isTyping: false,
     contextualUpdates: [],
     contextualUpdateQueue: [],
     uiState: createDefaultUIState(),
@@ -374,6 +382,115 @@ export const useProjectStore = create<ProjectState>()(
       }
     },
 
+    sendChatMessage: async (message: string) => {
+      try {
+        const { files, messages, currentProject } = get()
+
+        // Add user message immediately
+        get().addMessage({
+          role: 'user',
+          content: message
+        })
+
+        // Set typing state
+        get().setIsTyping(true)
+        get().setStreamingMessage('')
+
+        // Import chat service
+        const { chatService } = await import('@/services/chatService')
+
+        // Send message to chat service
+        await chatService.sendStreamingMessage(
+          {
+            message,
+            conversationHistory: [...messages, { role: 'user', content: message, id: 'temp', timestamp: new Date().toISOString() }],
+            projectFiles: files,
+            projectSettings: currentProject?.settings
+          },
+          {
+            onChunk: (chunk: string) => {
+              const currentMessage = get().streamingMessage || ''
+              get().setStreamingMessage(currentMessage + chunk)
+            },
+            onComplete: async (fullMessage: string, response: GenerateResponse) => {
+              // Add the assistant message
+              get().addMessage({
+                role: 'assistant',
+                content: fullMessage,
+                metadata: {
+                  files: response.files,
+                  operations: response.operations,
+                  reasoning: response.reasoning,
+                  confidence: response.confidence
+                }
+              })
+
+              // Process any files generated
+              if (response.files && response.files.length > 0) {
+                response.files.forEach(file => {
+                  get().addFile(file)
+                })
+              }
+
+              // Clear streaming state
+              get().setStreamingMessage(null)
+              get().setIsTyping(false)
+
+              // Auto-save after chat
+              setTimeout(() => get().saveProject(), 1000)
+            },
+            onError: (error: Error) => {
+              console.error('Chat error:', error)
+
+              // Add error message
+              get().addMessage({
+                role: 'assistant',
+                content: `Sorry, I encountered an error: ${error.message}`
+              })
+
+              // Clear streaming state
+              get().setStreamingMessage(null)
+              get().setIsTyping(false)
+            },
+            onProgress: (progress: string) => {
+              get().updateProject({
+                description: progress
+              })
+            }
+          }
+        )
+
+      } catch (error) {
+        console.error('Send chat message error:', error)
+
+        // Add error message
+        get().addMessage({
+          role: 'assistant',
+          content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        })
+
+        // Clear streaming state
+        get().setStreamingMessage(null)
+        get().setIsTyping(false)
+      }
+    },
+
+    setStreamingMessage: (message: string | null) => {
+      set({ streamingMessage: message })
+    },
+
+    setIsTyping: (isTyping: boolean) => {
+      set({ isTyping })
+    },
+
+    clearChat: () => {
+      set({
+        messages: [],
+        streamingMessage: null,
+        isTyping: false
+      })
+    },
+
     // Contextual updates
     addContextualUpdate: async (contextData) => {
       const context: ContextItem = {
@@ -484,6 +601,8 @@ export const useProjectStore = create<ProjectState>()(
       messages: [],
       isGenerating: false,
       generationProgress: '',
+      streamingMessage: null,
+      isTyping: false,
       contextualUpdates: [],
       contextualUpdateQueue: [],
       uiState: createDefaultUIState()

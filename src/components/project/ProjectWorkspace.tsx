@@ -36,6 +36,7 @@ import {
 import { useProjectStore } from '@/stores/projectStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { ExportModal } from '@/components/export/ExportModal'
+import { FileEditor } from '@/components/editor/FileEditor'
 
 export const ProjectWorkspace: React.FC = () => {
   const {
@@ -44,12 +45,20 @@ export const ProjectWorkspace: React.FC = () => {
     activeFile,
     messages,
     isGenerating,
+    streamingMessage,
+    isTyping,
     setActiveFile,
     addFile,
     deleteFile,
-    updateFile
+    updateFile,
+    sendChatMessage,
+    clearChat,
+    clearError
   } = useProjectStore()
   const { resolvedTheme } = useTheme()
+
+  // Get error state from store
+  const error = useProjectStore(state => state.error)
 
   const [selectedTab, setSelectedTab] = useState(0)
   const [chatMessage, setChatMessage] = useState('')
@@ -58,12 +67,18 @@ export const ProjectWorkspace: React.FC = () => {
   const [newFileName, setNewFileName] = useState('')
   const [showNewFileDialog, setShowNewFileDialog] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
+  const [editingFile, setEditingFile] = useState<string | null>(null)
 
-  const handleChatSend = () => {
-    if (chatMessage.trim()) {
-      // TODO: Implement chat functionality
-      console.log('Sending chat message:', chatMessage)
+  const handleChatSend = async () => {
+    if (chatMessage.trim() && !isTyping) {
+      const messageToSend = chatMessage.trim()
       setChatMessage('')
+
+      try {
+        await sendChatMessage(messageToSend)
+      } catch (error) {
+        console.error('Failed to send chat message:', error)
+      }
     }
   }
 
@@ -78,6 +93,21 @@ export const ProjectWorkspace: React.FC = () => {
       setNewFileName('')
       setShowNewFileDialog(false)
     }
+  }
+
+  const handleEditFile = (fileId: string) => {
+    setEditingFile(fileId)
+  }
+
+  const handleSaveFile = (content: string) => {
+    if (editingFile) {
+      updateFile(editingFile, { content })
+      setEditingFile(null)
+    }
+  }
+
+  const handleCloseEditor = () => {
+    setEditingFile(null)
   }
 
   const tabs = [
@@ -132,23 +162,74 @@ export const ProjectWorkspace: React.FC = () => {
   ]
 
   return (
-    <Layout>
+    <>
+      <Layout>
       <Layout.Section oneHalf>
         <Card>
           <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab}>
             {selectedTab === 0 && (
-              <Card.Section title="AI Assistant">
+              <Card.Section
+                title={
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>AI Assistant</span>
+                    <Button
+                      size="slim"
+                      onClick={clearChat}
+                      disabled={messages.length === 0 || isTyping}
+                    >
+                      Clear Chat
+                    </Button>
+                  </div>
+                }
+              >
                 <div style={{ height: '400px', display: 'flex', flexDirection: 'column' }}>
+                  {/* Error Display */}
+                  {error && (
+                    <div style={{
+                      marginBottom: '1rem',
+                      padding: '0.75rem',
+                      backgroundColor: 'var(--p-color-bg-surface-critical-subdued)',
+                      border: '1px solid var(--p-color-border-critical)',
+                      borderRadius: '0.5rem',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <Text variant="bodySm" color="critical">{error}</Text>
+                      <Button
+                        size="slim"
+                        onClick={clearError}
+                        plain
+                      >
+                        Dismiss
+                      </Button>
+                    </div>
+                  )}
+
                   <Scrollable style={{ flex: 1, marginBottom: '1rem' }}>
                     <div style={{ padding: '1rem', minHeight: '300px' }}>
                       {messages.length === 0 ? (
-                        <div style={{ textAlign: 'center', color: '#6b7280' }}>
+                        <div style={{ textAlign: 'center', color: '#6b7280', padding: '2rem 1rem' }}>
                           <Icon source={ChatMajor} size="large" color="base" />
-                          <Text variant="bodyLg" as="p">
-                            Start a conversation with the AI assistant
+                          <Text variant="bodyLg" as="p" fontWeight="semibold">
+                            Welcome to your AI Assistant
                           </Text>
                           <Text variant="bodySm" as="p" color="subdued">
-                            Ask questions, request changes, or get help with your project
+                            I can help you with your CIN7 project by:
+                          </Text>
+                          <div style={{ marginTop: '1rem', textAlign: 'left', maxWidth: '300px', margin: '1rem auto' }}>
+                            <Text variant="bodySm" as="p" color="subdued">
+                              • Creating new components and pages<br/>
+                              • Writing and updating code<br/>
+                              • Debugging issues<br/>
+                              • Explaining concepts<br/>
+                              • Suggesting improvements<br/>
+                              • Managing inventory workflows<br/>
+                              • Building sales interfaces
+                            </Text>
+                          </div>
+                          <Text variant="bodySm" as="p" color="subdued">
+                            Just ask me anything about your project!
                           </Text>
                         </div>
                       ) : (
@@ -171,12 +252,65 @@ export const ProjectWorkspace: React.FC = () => {
                                 padding: '0.75rem',
                                 borderRadius: '0.5rem',
                                 maxWidth: '80%',
-                                marginLeft: message.role === 'user' ? 'auto' : '0'
+                                marginLeft: message.role === 'user' ? 'auto' : '0',
+                                whiteSpace: 'pre-wrap'
                               }}>
                                 <Text variant="bodySm">{message.content}</Text>
                               </div>
                             </div>
                           ))}
+
+                          {/* Streaming message display */}
+                          {streamingMessage && (
+                            <div style={{ marginBottom: '1rem' }}>
+                              <div style={{
+                                display: 'flex',
+                                justifyContent: 'flex-start',
+                                marginBottom: '0.5rem'
+                              }}>
+                                <Badge status="info">
+                                  AI Assistant
+                                </Badge>
+                                <Spinner size="small" style={{ marginLeft: '0.5rem' }} />
+                              </div>
+                              <div style={{
+                                backgroundColor: 'var(--p-color-bg-surface-subdued)',
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                maxWidth: '80%',
+                                marginLeft: '0',
+                                whiteSpace: 'pre-wrap'
+                              }}>
+                                <Text variant="bodySm">{streamingMessage}</Text>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Typing indicator */}
+                          {isTyping && !streamingMessage && (
+                            <div style={{ marginBottom: '1rem' }}>
+                              <div style={{
+                                display: 'flex',
+                                justifyContent: 'flex-start',
+                                marginBottom: '0.5rem'
+                              }}>
+                                <Badge status="info">
+                                  AI Assistant
+                                </Badge>
+                                <Spinner size="small" style={{ marginLeft: '0.5rem' }} />
+                              </div>
+                              <div style={{
+                                backgroundColor: 'var(--p-color-bg-surface-subdued)',
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                maxWidth: '80%',
+                                marginLeft: '0',
+                                fontStyle: 'italic'
+                              }}>
+                                <Text variant="bodySm" color="subdued">Thinking...</Text>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -189,11 +323,19 @@ export const ProjectWorkspace: React.FC = () => {
                         value={chatMessage}
                         onChange={setChatMessage}
                         multiline={2}
+                        disabled={isTyping}
+                        onKeyPress={(event) => {
+                          if (event.key === 'Enter' && !event.shiftKey) {
+                            event.preventDefault()
+                            handleChatSend()
+                          }
+                        }}
                         connectedRight={
                           <Button
                             onClick={handleChatSend}
-                            disabled={!chatMessage.trim() || isGenerating}
+                            disabled={!chatMessage.trim() || isTyping}
                             primary
+                            loading={isTyping}
                           >
                             Send
                           </Button>
@@ -272,7 +414,7 @@ export const ProjectWorkspace: React.FC = () => {
                               size="slim"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                // TODO: Implement file editing
+                                handleEditFile(file.id)
                               }}
                             />
                             <Button
@@ -469,14 +611,22 @@ export const ProjectWorkspace: React.FC = () => {
       </Layout.Section>
     </Layout>
 
-      {/* Export Modal */}
-      {currentProject && (
-        <ExportModal
-          open={showExportModal}
-          onClose={() => setShowExportModal(false)}
-          project={currentProject}
-        />
-      )}
+    {/* Export Modal */}
+    {currentProject && (
+      <ExportModal
+        open={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        project={currentProject}
+      />
+    )}
+
+    {/* File Editor Modal */}
+    <FileEditor
+      file={files.find(f => f.id === editingFile) || null}
+      isOpen={!!editingFile}
+      onClose={handleCloseEditor}
+      onSave={handleSaveFile}
+    />
     </>
   )
 }
