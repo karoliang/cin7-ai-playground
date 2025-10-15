@@ -100,7 +100,7 @@ const createDefaultProject = (): Omit<Project, 'id' | 'user_id' | 'created_at' |
       size: { width: 1200, height: 800 }
     },
     ai: {
-      model: 'claude-3-5-sonnet',
+      model: 'glm-4',
       temperature: 0.7,
       max_tokens: 4000,
       context_window: 200000,

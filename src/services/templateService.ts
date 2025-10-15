@@ -58,7 +58,7 @@ export class TemplateService {
           size: { width: 1200, height: 800 }
         },
         ai: {
-          model: 'claude-3-5-sonnet',
+          model: 'glm-4',
           temperature: 0.7,
           max_tokens: 4000,
           context_window: 200000,
@@ -186,7 +186,7 @@ export class TemplateService {
           size: { width: 1200, height: 800 }
         },
         ai: {
-          model: 'claude-3-5-sonnet',
+          model: 'glm-4',
           temperature: 0.7,
           max_tokens: 4000,
           context_window: 200000,
@@ -332,7 +332,7 @@ export class TemplateService {
           size: { width: 1200, height: 800 }
         },
         ai: {
-          model: 'claude-3-5-sonnet',
+          model: 'glm-4',
           temperature: 0.7,
           max_tokens: 4000,
           context_window: 200000,
@@ -4348,7 +4348,7 @@ export function DateFilter({ value, onChange, className = '' }: DateFilterProps)
           size: { width: 375, height: 812 }
         },
         ai: {
-          model: 'claude-3-5-sonnet',
+          model: 'glm-4',
           temperature: 0.7,
           max_tokens: 4000,
           context_window: 200000,

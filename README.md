@@ -19,7 +19,7 @@
 - **State Management**: Zustand with persistence
 - **Routing**: React Router v6
 - **Backend**: Supabase (Database + Auth + Edge Functions)
-- **AI Integration**: Claude API via OpenRouter
+- **AI Integration**: GLM API for code generation
 - **Build System**: Vite + PostCSS + ESLint
 
 ## 🚀 Quick Start
@@ -64,7 +64,7 @@ VITE_API_URL=http://localhost:54321/functions/v1
 VITE_APP_URL=http://localhost:3000
 
 # AI Configuration
-VITE_DEFAULT_AI_MODEL=claude-3-5-sonnet
+VITE_DEFAULT_AI_MODEL=glm-4
 VITE_MAX_TOKENS=4000
 ```
 
@@ -223,7 +223,7 @@ export const customTemplate: Template = {
 Customize AI behavior in your environment:
 
 ```env
-VITE_DEFAULT_AI_MODEL=claude-3-5-sonnet
+VITE_DEFAULT_AI_MODEL=glm-4
 VITE_MAX_TOKENS=4000
 VITE_AI_TEMPERATURE=0.7
 ```
@@ -265,7 +265,7 @@ This project is licensed under the ISC License.
 
 - **CIN7** - For the design system and brand guidelines
 - **Shopify** - For the Polaris design system
-- **Anthropic** - For Claude AI and code generation capabilities
+- **GLM** - For AI code generation capabilities
 - **Supabase** - For the backend infrastructure
 - **Vite** - For the modern build tooling
 

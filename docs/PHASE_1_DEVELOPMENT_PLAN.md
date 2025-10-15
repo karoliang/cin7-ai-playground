@@ -14,7 +14,7 @@ Based on the strategic documentation review, the CIN7 AI Playground is evolving 
 - ✅ React 18 + TypeScript + Vite foundation
 - ✅ Shopify Polaris UI framework integration
 - ✅ Supabase configuration (single-user currently)
-- ✅ AI integration with Claude API
+- ✅ AI integration with GLM API
 - ✅ Basic project management UI
 - ✅ Comprehensive 300+ page technical specifications
 - ✅ Complete database schema design (9 tables with RLS)
