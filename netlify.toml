@@ -13,15 +13,6 @@
 
 # SPA routing for React application
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-
-# Explicitly disable Next.js plugin
-[plugins]
-  # No plugins - static site deployment
