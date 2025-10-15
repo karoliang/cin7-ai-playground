@@ -47,10 +47,18 @@ export default defineConfig({
       compress: {
         drop_console: process.env.NODE_ENV === 'production',
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug']
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        // Preserve function declarations for CodeMirror to avoid TDZ issues
+        passes: 2
       },
       mangle: {
-        safari10: true
+        safari10: true,
+        // Preserve variable names that might cause circular dependency issues
+        reserved: ['e', 'j', 't', 'i', 's', 'n', 'o', 'r', 'h', 'l', 'a', 'c', 'd', 'u', 'f', 'p', 'g', 'm', 'v', 'w', 'b', 'y', 'x']
+      },
+      format: {
+        // Preserve certain formatting for better debugging
+        comments: false
       }
     },
     rollupOptions: {
@@ -71,15 +79,9 @@ export default defineConfig({
             if (id.includes('zustand') || id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor'
             }
-            // Break up CodeMirror dependencies to avoid circular issues
-            if (id.includes('@codemirror/state') || id.includes('@codemirror/view')) {
-              return 'codemirror-core'
-            }
-            if (id.includes('@codemirror/lang-') || id.includes('@codemirror/theme-')) {
-              return 'codemirror-extensions'
-            }
-            if (id.includes('@uiw') || id.includes('codemirror')) {
-              return 'editor-vendor'
+            // Consolidate all CodeMirror dependencies to avoid circular dependency issues
+            if (id.includes('@codemirror') || id.includes('codemirror') || id.includes('@uiw/react-codemirror')) {
+              return 'codemirror-complete'
             }
             if (id.includes('framer-motion')) {
               return 'animation-vendor'
@@ -219,11 +221,22 @@ export default defineConfig({
       '@shopify/polaris',
       'framer-motion',
       'jszip',
-      // CodeMirror dependencies to pre-bundle
+      // CodeMirror dependencies to pre-bundle - include ALL packages
       '@codemirror/state',
       '@codemirror/view',
       '@codemirror/language',
-      '@uiw/react-codemirror'
+      '@codemirror/commands',
+      '@codemirror/search',
+      '@codemirror/autocomplete',
+      '@codemirror/lint',
+      '@codemirror/lang-javascript',
+      '@codemirror/lang-css',
+      '@codemirror/lang-html',
+      '@codemirror/lang-json',
+      '@codemirror/theme-one-dark',
+      '@uiw/react-codemirror',
+      '@uiw/codemirror-extensions-basic-setup',
+      'codemirror'
     ]
   }
 })
