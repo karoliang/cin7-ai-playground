@@ -66,10 +66,8 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor'
-            }
-            if (id.includes('@shopify/polaris')) {
+            // Bundle React with Polaris to prevent createContext errors
+            if (id.includes('react') || id.includes('react-dom') || id.includes('@shopify/polaris')) {
               return 'polaris-vendor'
             }
             if (id.includes('react-router-dom')) {
@@ -218,6 +216,8 @@ export default defineConfig({
       'date-fns',
       'clsx',
       '@shopify/polaris',
+      '@shopify/polaris-icons',
+      '@shopify/polaris-tokens',
       'framer-motion',
       'jszip',
       '@monaco-editor/react',
