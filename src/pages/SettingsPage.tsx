@@ -94,10 +94,10 @@ export const SettingsPage: React.FC = () => {
   const handleSaveProfile = async () => {
     setIsLoading(true)
     try {
+      // Note: company field is not supported in current User type
       await updateProfile({
         name: profileName,
-        email: profileEmail,
-        company: profileCompany
+        email: profileEmail
       })
       console.log('Profile saved successfully')
     } catch (error) {
@@ -488,7 +488,7 @@ export const SettingsPage: React.FC = () => {
                   Clear Cache
                 </Button>
                 <Divider />
-                <Button icon={DeleteIcon} fullWidth variant="critical" onClick={() => setShowDeleteModal(true)}>
+                <Button icon={DeleteIcon} fullWidth tone="critical" onClick={() => setShowDeleteModal(true)}>
                   Delete Account
                 </Button>
               </BlockStack>
@@ -531,7 +531,7 @@ export const SettingsPage: React.FC = () => {
                     label="Theme Preference"
                     options={themeOptions}
                     value={resolvedTheme}
-                    onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
+                    onChange={(value) => setTheme(value as 'light' | 'dark' | 'auto')}
                   />
                   <Divider />
                   <Text variant="headingMd" as="h3">Account Status</Text>
