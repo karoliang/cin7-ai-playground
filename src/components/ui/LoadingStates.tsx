@@ -23,7 +23,7 @@ export const PageSpinner: React.FC<PageSpinnerProps> = ({
       padding: '40px',
       minHeight: '200px'
     }}>
-      <Spinner size={size} accessibilityLabel={accessibilityLabel} />
+      <Spinner size={size as any} accessibilityLabel={accessibilityLabel} />
     </div>
   )
 }
@@ -225,7 +225,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         minHeight: '200px'
       }}>
         <Text variant="headingMd" as="h2">Something went wrong</Text>
-        <Text color="subdued" as="p">{error.message}</Text>
+        <Text tone="subdued" as="p">{error.message}</Text>
         {retry && (
           <button
             onClick={retry}

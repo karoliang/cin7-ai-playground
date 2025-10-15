@@ -22,7 +22,6 @@ import {
   CodeIcon,
   MobileIcon,
   DesktopIcon,
-  ChartBarIcon,
   PlusCircleIcon,
   ExportIcon,
   ImportIcon
@@ -113,7 +112,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   key={index}
                   size="slim"
                   onClick={action.onAction}
-                  tone={action.destructive ? 'critical' : 'base'}
+                  tone={action.destructive ? 'critical' : undefined}
                 >
                   {action.content}
                 </Button>
@@ -160,7 +159,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
         <div style={{ margin: '0.5rem 0' }}>
           <Badge>{template.category}</Badge>
           {template.featured && (
-            <Badge tone="attention" style={{ marginLeft: '0.5rem' }}>
+            <Badge tone="attention">
               Featured
             </Badge>
           )}
@@ -321,7 +320,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ stats }) => {
 interface TabPanelProps {
   tabs: Array<{
     id: string
-    content: React.ReactNode
+    content: string
     panelID: string
   }>
   selected: number

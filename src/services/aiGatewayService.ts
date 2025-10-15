@@ -142,8 +142,8 @@ export class AIGatewayService {
       console.error('[AI Gateway] Security validation failed:', validation.errors)
 
       // Record security violation
-      if (request.context?.userId) {
-        SecurityMonitor.recordViolation(request.context.userId, 'INPUT_VALIDATION_FAILED')
+      if (request.context?.user_id) {
+        SecurityMonitor.recordViolation(request.context.user_id, 'INPUT_VALIDATION_FAILED')
       }
 
       return {
@@ -155,8 +155,8 @@ export class AIGatewayService {
     }
 
     // SECURITY: Check if user is blocked due to violations
-    if (request.context?.userId && SecurityMonitor.isUserBlocked(request.context.userId)) {
-      console.error('[AI Gateway] User blocked due to security violations:', request.context.userId)
+    if (request.context?.user_id && SecurityMonitor.isUserBlocked(request.context.user_id)) {
+      console.error('[AI Gateway] User blocked due to security violations:', request.context.user_id)
       return {
         success: false,
         files: [],
@@ -205,8 +205,8 @@ export class AIGatewayService {
       console.error('[AI Gateway] Security validation failed:', validation.errors)
 
       // Record security violation
-      if (request.context?.userId) {
-        SecurityMonitor.recordViolation(request.context.userId, 'INPUT_VALIDATION_FAILED')
+      if (request.context?.user_id) {
+        SecurityMonitor.recordViolation(request.context.user_id, 'INPUT_VALIDATION_FAILED')
       }
 
       yield `Error: Security validation failed: ${validation.errors.join(', ')}`
@@ -214,8 +214,8 @@ export class AIGatewayService {
     }
 
     // SECURITY: Check if user is blocked due to violations
-    if (request.context?.userId && SecurityMonitor.isUserBlocked(request.context.userId)) {
-      console.error('[AI Gateway] User blocked due to security violations:', request.context.userId)
+    if (request.context?.user_id && SecurityMonitor.isUserBlocked(request.context.user_id)) {
+      console.error('[AI Gateway] User blocked due to security violations:', request.context.user_id)
       yield 'Error: Access denied due to security violations'
       return
     }
@@ -539,11 +539,11 @@ export class AIGatewayService {
     const provider = this.getProvider(this.config.defaultProvider)
 
     // Build request context
-    const context: RequestContext = {
-      projectId: request.context?.projectId,
-      userId: request.context?.userId,
-      sessionId: this.generateSessionId(),
-      framework: request.context?.framework,
+    const context = {
+      project_id: request.context?.project_id,
+      user_id: request.context?.user_id,
+      session_id: this.generateSessionId(),
+      framework: request.context?.framework || 'react',
       template: request.context?.template,
       architecture: request.context?.architecture,
       constraints: request.context?.constraints,
@@ -566,7 +566,7 @@ export class AIGatewayService {
     if (request.chat_history) {
       for (const msg of request.chat_history) {
         messages.push({
-          role: msg.role === 'assistant' ? 'assistant' : 'user',
+          role: msg.role === 'assistant' ? 'system' : 'user',
           content: msg.content
         })
       }
@@ -675,7 +675,7 @@ export class AIGatewayService {
       },
       metadata: {
         requestId: request.id,
-        providerResponseId: glmResponse.id || '',
+        providerResponseId: (glmResponse as any).id || '',
         model: request.model,
         processingTime: 0, // Would be calculated
         cached: false
@@ -836,8 +836,8 @@ Focus on:
    * Convert error to AIGatewayError
    */
   private convertToGatewayError(error: any): AIGatewayError {
-    if (error instanceof AIGatewayError) {
-      return error
+    if (error && error.code && error.message && error.timestamp) {
+      return error as AIGatewayError
     }
 
     if (error instanceof Error) {
@@ -886,7 +886,7 @@ Focus on:
    * Sanitize error messages to prevent information disclosure
    */
   private sanitizeErrorMessage(error: any): string {
-    if (error instanceof AIGatewayError) {
+    if (error && error.code && error.message && error.timestamp) {
       // For known gateway errors, return a safe message
       switch (error.code) {
         case 'RATE_LIMIT_EXCEEDED':
@@ -995,7 +995,7 @@ export async function getAIGatewayService(): Promise<AIGatewayService> {
 }
 
 export function isAIGatewayInitialized(): boolean {
-  return aiGatewayInstance?.isInitialized || false
+  return aiGatewayInstance ? (aiGatewayInstance as any).isInitialized || false : false
 }
 
 export async function initializeAIGateway(): Promise<AIGatewayService> {

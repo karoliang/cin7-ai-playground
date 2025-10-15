@@ -102,9 +102,9 @@ export interface AIMessage {
 }
 
 export interface RequestContext {
-  projectId?: string
-  userId?: string
-  sessionId?: string
+  project_id?: string
+  user_id?: string
+  session_id?: string
   framework?: string
   template?: string
   architecture?: string

@@ -121,67 +121,42 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const topBarMarkup = (
     <TopBar
       showNavigationToggle
-      searchFieldVisible={isFocused || inputValue.length > 0}
       searchResultsVisible={isFocused && results.length > 0}
-      searchValue={inputValue}
       onSearchResultsDismiss={clearSearch}
       onNavigationToggle={() => setMobileNavigationActive(!mobileNavigationActive)}
-      onSearchChange={handleSearch}
-      onSearchBlur={handleBlur}
-      onSearchFocus={handleFocus}
-      userMenu={
-        user
-          ? {
-              actions: [
-                {
-                  items: [
-                    {
-                      content: 'Account settings',
-                      onAction: () => navigate('/settings')
-                    },
-                    {
-                      content: resolvedTheme === 'light' ? 'Dark mode' : 'Light mode',
-                      onAction: toggleTheme
-                    },
-                    {
-                      content: 'Documentation',
-                      onAction: () => window.open('https://docs.cin7.com', '_blank')
-                    },
-                    {
-                      content: 'Log out',
-                      onAction: handleLogout,
-                      destructive: true
-                    }
-                  ]
-                }
-              ],
-              avatarInitials: user.name
-                ? user.name.split(' ').map(n => n[0]).join('').toUpperCase()
-                : user.email[0].toUpperCase(),
-              name: user.name || user.email,
-              detail: user.email,
-            }
-          : {
-              actions: [
-                {
-                  items: [
-                    {
-                      content: 'Sign in',
-                      onAction: () => navigate('/auth')
-                    }
-                  ]
-                }
-              ]
-            }
+        searchField={
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => handleSearch(e.target.value)}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
+          placeholder="Search projects..."
+          disabled={isLoading}
+          style={{
+            padding: '8px 12px',
+            border: '1px solid var(--p-color-border)',
+            borderRadius: '4px',
+            fontSize: '14px',
+            width: '200px'
+          }}
+        />
       }
-      searchResults={formattedSearchResults.map(result => ({
-        ...result,
-        content: result.title,
-        subcontent: result.subtitle,
-        url: result.url
-      }))}
-      searchPlaceholder="Search projects..."
-      additionalMetadata={
+      searchResults={
+        isFocused && results.length > 0 ? (
+          <div style={{ padding: '1rem' }}>
+            {formattedSearchResults.map((result) => (
+              <div key={result.id} onClick={result.onClick} style={{ cursor: 'pointer', padding: '0.5rem 0' }}>
+                <Text variant="bodySm" as="p">{result.title}</Text>
+                {result.subtitle && (
+                  <Text variant="bodySm" as="p" tone="subdued">{result.subtitle}</Text>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : null
+      }
+      userMenu={
         isAuthenticated ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {isLoading && (

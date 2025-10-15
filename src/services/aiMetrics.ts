@@ -979,6 +979,10 @@ class AlertManager {
     for (const channel of this.config.channels) {
       try {
         switch (channel.type) {
+          case 'email':
+          case 'slack':
+          case 'webhook':
+          case 'sms':
           case 'console':
             console.warn(`[ALERT] ${alert.code}: ${alert.message}`, alert.data)
             break

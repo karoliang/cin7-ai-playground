@@ -140,10 +140,7 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
             icon={EditIcon}
             size="slim"
             variant="plain"
-            onClick={(e) => {
-              e.stopPropagation()
-              handleEdit()
-            }}
+            onClick={handleEdit}
           />
         </InlineStack>
 

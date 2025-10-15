@@ -15,7 +15,7 @@ import {
 export class RateLimiterService {
   private config: RateLimitConfig
   private storage: RateLimitStorageAdapter
-  private strategies: Map<RateLimitStrategy, RateLimitStrategy>
+  private strategies: Map<RateLimitStrategy, RateLimitStrategyImpl>
   private metrics: RateLimitMetrics
 
   constructor(config: RateLimitConfig) {
@@ -97,7 +97,7 @@ export class RateLimiterService {
       const applicableRules = this.getApplicableRules(request)
 
       for (const rule of applicableRules) {
-        const strategy = this.strategies.get(rule.window)
+        const strategy = this.strategies.get(this.config.strategy)
         if (strategy) {
           await strategy.recordRequest(rule, request)
         }
@@ -131,13 +131,15 @@ export class RateLimiterService {
    * Get rate limit statistics
    */
   getStats(): RateLimitStats {
+    const metricsStats = this.metrics.getStats()
     return {
-      ...this.metrics.getStats(),
       config: {
         enabled: this.config.enabled,
         strategy: this.config.strategy,
         rulesCount: this.config.limits.length
-      }
+      },
+      ...metricsStats,
+      metrics: metricsStats
     }
   }
 
@@ -155,7 +157,7 @@ export class RateLimiterService {
         return 0
       }
 
-      const strategy = this.strategies.get(rule.window)
+      const strategy = this.strategies.get(this.config.strategy)
       if (!strategy) {
         return 0
       }
@@ -236,7 +238,7 @@ export class RateLimiterService {
    * Check a specific rate limit rule
    */
   private async checkRule(rule: RateLimitRule, request: AIGatewayRequest): Promise<RateLimitResult> {
-    const strategy = this.strategies.get(rule.window)
+    const strategy = this.strategies.get(this.config.strategy)
     if (!strategy) {
       return {
         allowed: true,
@@ -256,7 +258,7 @@ export class RateLimiterService {
     let minRemaining = Infinity
 
     for (const rule of rules) {
-      const strategy = this.strategies.get(rule.window)
+      const strategy = this.strategies.get(this.config.strategy)
       if (strategy) {
         // This is a simplified calculation - in practice, you'd get the actual remaining count
         const remaining = Math.max(0, rule.limit - 1)
@@ -300,7 +302,7 @@ export class RateLimiterService {
   /**
    * Initialize rate limiting strategies
    */
-  private initializeStrategies(): Map<RateLimitStrategy, RateLimitStrategy> {
+  private initializeStrategies(): Map<RateLimitStrategy, RateLimitStrategyImpl> {
     const strategies = new Map()
 
     // Sliding window strategy
@@ -329,7 +331,7 @@ export class RateLimiterService {
 /**
  * Rate Limiting Strategy Interface
  */
-interface RateLimitStrategy {
+interface RateLimitStrategyImpl {
   checkLimit(rule: RateLimitRule, request: AIGatewayRequest): Promise<RateLimitResult>
   recordRequest(rule: RateLimitRule, request: AIGatewayRequest): Promise<void>
   getCurrentUsage(rule: RateLimitRule, scope: RateLimitScope, identifier: string): Promise<number>
@@ -338,7 +340,7 @@ interface RateLimitStrategy {
 /**
  * Sliding Window Rate Limiting Strategy
  */
-class SlidingWindowStrategy implements RateLimitStrategy {
+class SlidingWindowStrategy implements RateLimitStrategyImpl {
   private storage: RateLimitStorageAdapter
 
   constructor(storage: RateLimitStorageAdapter) {
@@ -399,11 +401,11 @@ class SlidingWindowStrategy implements RateLimitStrategy {
       case 'global':
         return 'global'
       case 'user':
-        return request.context?.userId || 'anonymous'
+        return request.context?.user_id || 'anonymous'
       case 'project':
-        return request.context?.projectId || 'unknown'
+        return request.context?.project_id || 'unknown'
       case 'session':
-        return request.context?.sessionId || 'unknown'
+        return request.context?.session_id || 'unknown'
       case 'ip':
         return request.metadata?.ipAddress || 'unknown'
       default:
@@ -415,7 +417,7 @@ class SlidingWindowStrategy implements RateLimitStrategy {
 /**
  * Fixed Window Rate Limiting Strategy
  */
-class FixedWindowStrategy implements RateLimitStrategy {
+class FixedWindowStrategy implements RateLimitStrategyImpl {
   private storage: RateLimitStorageAdapter
 
   constructor(storage: RateLimitStorageAdapter) {
@@ -473,11 +475,11 @@ class FixedWindowStrategy implements RateLimitStrategy {
       case 'global':
         return 'global'
       case 'user':
-        return request.context?.userId || 'anonymous'
+        return request.context?.user_id || 'anonymous'
       case 'project':
-        return request.context?.projectId || 'unknown'
+        return request.context?.project_id || 'unknown'
       case 'session':
-        return request.context?.sessionId || 'unknown'
+        return request.context?.session_id || 'unknown'
       case 'ip':
         return request.metadata?.ipAddress || 'unknown'
       default:
@@ -489,7 +491,7 @@ class FixedWindowStrategy implements RateLimitStrategy {
 /**
  * Token Bucket Rate Limiting Strategy
  */
-class TokenBucketStrategy implements RateLimitStrategy {
+class TokenBucketStrategy implements RateLimitStrategyImpl {
   private storage: RateLimitStorageAdapter
 
   constructor(storage: RateLimitStorageAdapter) {
@@ -568,11 +570,11 @@ class TokenBucketStrategy implements RateLimitStrategy {
       case 'global':
         return 'global'
       case 'user':
-        return request.context?.userId || 'anonymous'
+        return request.context?.user_id || 'anonymous'
       case 'project':
-        return request.context?.projectId || 'unknown'
+        return request.context?.project_id || 'unknown'
       case 'session':
-        return request.context?.sessionId || 'unknown'
+        return request.context?.session_id || 'unknown'
       case 'ip':
         return request.metadata?.ipAddress || 'unknown'
       default:
@@ -585,9 +587,9 @@ class TokenBucketStrategy implements RateLimitStrategy {
  * Adaptive Rate Limiting Strategy
  * Adjusts limits based on system load and user behavior
  */
-class AdaptiveStrategy implements RateLimitStrategy {
+class AdaptiveStrategy implements RateLimitStrategyImpl {
   private storage: RateLimitStorageAdapter
-  private baseStrategy: RateLimitStrategy
+  private baseStrategy: RateLimitStrategyImpl
 
   constructor(storage: RateLimitStorageAdapter) {
     this.storage = storage
@@ -860,6 +862,17 @@ class DatabaseRateLimitStorage implements RateLimitStorageAdapter {
  * Rate Limit Statistics Interface
  */
 export interface RateLimitStats {
+  config: {
+    enabled: boolean
+    strategy: string
+    rulesCount: number
+  }
+  allows: number
+  rejections: number
+  errors: number
+  rejectionRate: number
+  totalRequests: number
+  rejectionsByRule: Record<string, number>
   metrics: {
     allows: number
     rejections: number
@@ -867,11 +880,6 @@ export interface RateLimitStats {
     rejectionRate: number
     totalRequests: number
     rejectionsByRule: Record<string, number>
-  }
-  config: {
-    enabled: boolean
-    strategy: RateLimitStrategy
-    rulesCount: number
   }
 }
 

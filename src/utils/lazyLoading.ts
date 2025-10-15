@@ -47,7 +47,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
       React.createElement(
         ErrorBoundary,
         { Fallback: ErrorFallback },
-        React.createElement(LazyComponent, props)
+        React.createElement(LazyComponent, { ...props, ref: _ref })
       )
     )
   })

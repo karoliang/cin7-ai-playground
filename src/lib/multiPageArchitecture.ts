@@ -28,10 +28,48 @@ const SUPPORTED_FRAMEWORKS = {
     files: ['index.html', 'App.vue', 'components/', 'styles.css'],
     cdnPackages: ['https://unpkg.com/vue@3/dist/vue.global.js']
   },
+  angular: {
+    name: 'Angular',
+    files: ['index.html', 'app.js', 'components/', 'styles.css'],
+    cdnPackages: []
+  },
+  svelte: {
+    name: 'Svelte',
+    files: ['index.html', 'App.svelte', 'components/', 'styles.css'],
+    cdnPackages: []
+  },
+  preact: {
+    name: 'Preact',
+    files: ['index.html', 'App.jsx', 'components/', 'styles.css'],
+    cdnPackages: [
+      'https://unpkg.com/preact@10/dist/preact.umd.js',
+      'https://unpkg.com/preact@10/hooks/dist/hooks.umd.js'
+    ]
+  },
+  solid: {
+    name: 'Solid',
+    files: ['index.html', 'App.jsx', 'components/', 'styles.css'],
+    cdnPackages: ['https://unpkg.com/solid-js@1/dist/solid.js']
+  }
+} as const
+
+// CSS Framework configuration (separate from JS frameworks)
+const CSS_FRAMEWORKS = {
+  none: {
+    name: 'Custom CSS',
+    cdnPackages: []
+  },
   tailwind: {
     name: 'Tailwind CSS',
-    files: ['index.html', 'styles.css'],
     cdnPackages: ['https://cdn.tailwindcss.com']
+  },
+  bootstrap: {
+    name: 'Bootstrap',
+    cdnPackages: ['https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css']
+  },
+  bulma: {
+    name: 'Bulma',
+    cdnPackages: ['https://cdn.jsdelivr.net/npm/bulma@0.9/css/bulma.min.css']
   }
 } as const
 
@@ -61,6 +99,7 @@ const PROJECT_STRUCTURES = {
 
 export interface ArchitectureDetection {
   framework: SupportedFramework
+  cssFramework: 'none' | 'tailwind' | 'bootstrap' | 'bulma'
   structure: 'single-page' | 'multi-page' | 'dashboard' | 'e-commerce' | 'portfolio'
 }
 
@@ -81,7 +120,16 @@ export class MultiPageArchitecture {
     let framework: SupportedFramework = 'vanilla'
     if (promptLower.includes('react')) framework = 'react'
     else if (promptLower.includes('vue')) framework = 'vue'
-    else if (promptLower.includes('tailwind')) framework = 'tailwind'
+    else if (promptLower.includes('angular')) framework = 'angular'
+    else if (promptLower.includes('svelte')) framework = 'svelte'
+    else if (promptLower.includes('preact')) framework = 'preact'
+    else if (promptLower.includes('solid')) framework = 'solid'
+
+    // CSS Framework detection
+    let cssFramework: ArchitectureDetection['cssFramework'] = 'none'
+    if (promptLower.includes('tailwind')) cssFramework = 'tailwind'
+    else if (promptLower.includes('bootstrap')) cssFramework = 'bootstrap'
+    else if (promptLower.includes('bulma')) cssFramework = 'bulma'
 
     // Structure detection
     let structure: ArchitectureDetection['structure'] = 'single-page'
@@ -90,7 +138,7 @@ export class MultiPageArchitecture {
     else if (promptLower.includes('portfolio') || promptLower.includes('blog')) structure = 'portfolio'
     else if (promptLower.includes('multi') || promptLower.includes('pages') || promptLower.includes('navigation')) structure = 'multi-page'
 
-    return { framework, structure }
+    return { framework, cssFramework, structure }
   }
 
   /**
@@ -101,7 +149,7 @@ export class MultiPageArchitecture {
     existingFiles: ProjectFile[] = []
   ): EnhancedPrompt {
     const config = this.detectOptimalStructure(originalPrompt, existingFiles)
-    const { framework, structure } = config
+    const { framework, cssFramework, structure } = config
 
     let enhancedPrompt = originalPrompt
 
@@ -110,8 +158,23 @@ export class MultiPageArchitecture {
       enhancedPrompt += `\n\nArchitectural Note: Use React components with modern hooks (useState, useEffect). Include proper JSX syntax and component structure.`
     } else if (framework === 'vue') {
       enhancedPrompt += `\n\nArchitectural Note: Use Vue.js 3 composition API with proper template, script, and style sections.`
-    } else if (framework === 'tailwind') {
-      enhancedPrompt += `\n\nArchitectural Note: Use Tailwind CSS classes for styling. Include responsive design patterns.`
+    } else if (framework === 'angular') {
+      enhancedPrompt += `\n\nArchitectural Note: Use Angular components with TypeScript and proper module structure.`
+    } else if (framework === 'svelte') {
+      enhancedPrompt += `\n\nArchitectural Note: Use Svelte components with proper script, markup, and style sections.`
+    } else if (framework === 'preact') {
+      enhancedPrompt += `\n\nArchitectural Note: Use Preact components (lightweight React alternative) with modern hooks.`
+    } else if (framework === 'solid') {
+      enhancedPrompt += `\n\nArchitectural Note: Use Solid.js components with fine-grained reactivity and JSX.`
+    }
+
+    // Add CSS framework-specific guidance
+    if (cssFramework === 'tailwind') {
+      enhancedPrompt += `\n\nCSS Framework Note: Use Tailwind CSS utility classes for styling. Include responsive design patterns and modern CSS.`
+    } else if (cssFramework === 'bootstrap') {
+      enhancedPrompt += `\n\nCSS Framework Note: Use Bootstrap 5 classes and components. Include responsive grid system and pre-built components.`
+    } else if (cssFramework === 'bulma') {
+      enhancedPrompt += `\n\nCSS Framework Note: Use Bulma CSS framework classes. Use modern CSS flexbox for layouts.`
     }
 
     // Add structure-specific guidance
@@ -186,9 +249,10 @@ export class MultiPageArchitecture {
     if (structure !== 'single-page') {
       const additionalPages = this.getAdditionalPages(structure)
       additionalPages.forEach(page => {
+        const filename = `${page.path}.html`
         files.push({
-          id: page.filename,
-          name: page.filename,
+          id: filename,
+          name: filename,
           type: 'html',
           content: this.generatePageHTML(page, architecture, projectName),
           language: 'html'
@@ -201,7 +265,7 @@ export class MultiPageArchitecture {
       id: 'styles.css',
       name: 'styles.css',
       type: 'css',
-      content: this.generateModernCSS(framework, structure),
+      content: this.generateModernCSS(framework, cssFramework, structure),
       language: 'css'
     })
 
@@ -232,9 +296,10 @@ export class MultiPageArchitecture {
    * Generate modern HTML with CDN packages
    */
   private static generateIndexHTML(architecture: ArchitectureDetection, projectName: string): string {
-    const { framework, structure } = architecture
+    const { framework, cssFramework, structure } = architecture
     const frameworkConfig = SUPPORTED_FRAMEWORKS[framework]
-    const cdnPackages = frameworkConfig?.cdnPackages || []
+    const cssConfig = CSS_FRAMEWORKS[cssFramework]
+    const cdnPackages = [...(frameworkConfig?.cdnPackages || []), ...(cssConfig?.cdnPackages || [])]
 
     const packageTags = cdnPackages.map(pkg => {
       if (pkg.includes('tailwindcss')) return `<script src="${pkg}"></script>`
@@ -328,7 +393,7 @@ function App() {
             <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
             <main className="main-content">
                 {currentPage === 'home' && <HomePage />}
-                ${pages.map(page => `{currentPage === '${page.route}' && <${page.component} />}`).join('\n                ')}
+                ${pages.map(page => `{currentPage === '${page.path}' && <${page.name}Page />}`).join('\n                ')}
             </main>
             <Footer />
         </div>
@@ -345,9 +410,9 @@ function HomePage() {
 }
 
 ${pages.map(page => `
-function ${page.component}() {
+function ${page.name}Page() {
     return (
-        <div className="page ${page.route}-page">
+        <div className="page ${page.path}-page">
             <h1>${page.title}</h1>
             <p>${page.description}</p>
         </div>
@@ -390,7 +455,7 @@ function Footer() {
     return `function Navigation({ currentPage, onPageChange }) {
     const navItems = [
         { route: 'home', label: 'Home', icon: '🏠' },
-        ${pages.map(page => `{ route: '${page.route}', label: '${page.title}', icon: '${page.icon}' }`).join(',\n        ')}
+        ${pages.map(page => `{ route: '${page.path}', label: '${page.title}', icon: '📄' }`).join(',\n        ')}
     ];
 
     return (
@@ -415,8 +480,8 @@ function Footer() {
   /**
    * Generate modern CSS with CIN7 design system
    */
-  private static generateModernCSS(framework: SupportedFramework, structure: ArchitectureDetection['structure']): string {
-    const isTailwind = framework === 'tailwind'
+  private static generateModernCSS(framework: SupportedFramework, cssFramework: ArchitectureDetection['cssFramework'], structure: ArchitectureDetection['structure']): string {
+    const isTailwind = cssFramework === 'tailwind'
 
     if (isTailwind) {
       return `@tailwind base;
@@ -697,7 +762,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     ${this.getAdditionalPages(structure).map(page => `
-    router.register('${page.route}', () => {
+    router.register('${page.path}', () => {
         console.log('${page.title} page loaded');
         // Add ${page.title.toLowerCase()} page specific logic here
     });`).join('\n    ')}
@@ -715,23 +780,23 @@ document.addEventListener('DOMContentLoaded', () => {
   private static getAdditionalPages(structure: ArchitectureDetection['structure']): PageConfig[] {
     const pageConfigs = {
       'multi-page': [
-        { route: 'about', filename: 'about.html', title: 'About', component: 'AboutPage', icon: '📋', description: 'Learn more about us' },
-        { route: 'contact', filename: 'contact.html', title: 'Contact', component: 'ContactPage', icon: '📧', description: 'Get in touch' }
+        { id: 'about', name: 'About', path: 'about', title: 'About', description: 'Learn more about us' },
+        { id: 'contact', name: 'Contact', path: 'contact', title: 'Contact', description: 'Get in touch' }
       ],
       'dashboard': [
-        { route: 'dashboard', filename: 'dashboard.html', title: 'Dashboard', component: 'DashboardPage', icon: '📊', description: 'Overview and analytics' },
-        { route: 'users', filename: 'users.html', title: 'Users', component: 'UsersPage', icon: '👥', description: 'User management' },
-        { route: 'settings', filename: 'settings.html', title: 'Settings', component: 'SettingsPage', icon: '⚙️', description: 'Application settings' }
+        { id: 'dashboard', name: 'Dashboard', path: 'dashboard', title: 'Dashboard', description: 'Overview and analytics' },
+        { id: 'users', name: 'Users', path: 'users', title: 'Users', description: 'User management' },
+        { id: 'settings', name: 'Settings', path: 'settings', title: 'Settings', description: 'Application settings' }
       ],
       'e-commerce': [
-        { route: 'products', filename: 'products.html', title: 'Products', component: 'ProductsPage', icon: '🛍️', description: 'Browse our products' },
-        { route: 'cart', filename: 'cart.html', title: 'Cart', component: 'CartPage', icon: '🛒', description: 'Your shopping cart' },
-        { route: 'checkout', filename: 'checkout.html', title: 'Checkout', component: 'CheckoutPage', icon: '💳', description: 'Complete your purchase' }
+        { id: 'products', name: 'Products', path: 'products', title: 'Products', description: 'Browse our products' },
+        { id: 'cart', name: 'Cart', path: 'cart', title: 'Cart', description: 'Your shopping cart' },
+        { id: 'checkout', name: 'Checkout', path: 'checkout', title: 'Checkout', description: 'Complete your purchase' }
       ],
       'portfolio': [
-        { route: 'portfolio', filename: 'portfolio.html', title: 'Portfolio', component: 'PortfolioPage', icon: '🎨', description: 'View my work' },
-        { route: 'blog', filename: 'blog.html', title: 'Blog', component: 'BlogPage', icon: '📝', description: 'Latest articles' },
-        { route: 'contact', filename: 'contact.html', title: 'Contact', component: 'ContactPage', icon: '📧', description: 'Get in touch' }
+        { id: 'portfolio', name: 'Portfolio', path: 'portfolio', title: 'Portfolio', description: 'View my work' },
+        { id: 'blog', name: 'Blog', path: 'blog', title: 'Blog', description: 'Latest articles' },
+        { id: 'contact', name: 'Contact', path: 'contact', title: 'Contact', description: 'Get in touch' }
       ]
     }
 
@@ -746,8 +811,10 @@ document.addEventListener('DOMContentLoaded', () => {
     architecture: ArchitectureDetection,
     projectName: string
   ): string {
-    const { framework } = architecture
+    const { framework, cssFramework } = architecture
     const frameworkConfig = SUPPORTED_FRAMEWORKS[framework]
+    const cssConfig = CSS_FRAMEWORKS[cssFramework]
+    const cdnPackages = [...(frameworkConfig?.cdnPackages || []), ...(cssConfig?.cdnPackages || [])]
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -756,7 +823,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${page.title} | ${projectName}</title>
     <link rel="stylesheet" href="../styles.css">
-    ${frameworkConfig?.cdnPackages.map(pkg => {
+    ${cdnPackages.map(pkg => {
       if (pkg.includes('.css')) return `<link rel="stylesheet" href="${pkg}">`
       return `<script src="${pkg}"></script>`
     }).join('\n    ') || ''}
@@ -768,13 +835,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h1><a href="/">${projectName}</a></h1>
                 <nav>
                     <a href="/" data-route="home">Home</a>
-                    <a href="/${page.route}" data-route="${page.route}" class="active">${page.title}</a>
+                    <a href="/${page.path}" data-route="${page.path}" class="active">${page.title}</a>
                 </nav>
             </div>
         </header>
 
         <main class="main-content">
-            <div class="page ${page.route}-page">
+            <div class="page ${page.path}-page">
                 <h1>${page.title}</h1>
                 <p>${page.description}</p>
 

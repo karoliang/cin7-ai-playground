@@ -68,7 +68,10 @@ async function generateCodeWithGLM(request: GenerateRequest): Promise<GenerateRe
       prompt: enhancedPrompt.enhancedPrompt,
       context: {
         ...request.context,
-        architecture: detectedArchitecture,
+        architecture: {
+          ...detectedArchitecture,
+          type: detectedArchitecture.structure || 'multi-page'
+        },
         enhancedPrompt: enhancedPrompt
       }
     }
@@ -83,8 +86,7 @@ async function generateCodeWithGLM(request: GenerateRequest): Promise<GenerateRe
 
     return {
       ...response,
-      files,
-      architecture: detectedArchitecture
+      files
     }
 
   } catch (error) {
@@ -122,7 +124,10 @@ async function generateCodeWithSupabase(request: GenerateRequest): Promise<Gener
         chat_history: request.chat_history,
         context: {
           ...request.context,
-          architecture: detectedArchitecture,
+          architecture: {
+            ...detectedArchitecture,
+            type: detectedArchitecture.structure || 'multi-page'
+          },
           enhancedPrompt: enhancedPrompt
         },
         options: request.options
@@ -153,12 +158,8 @@ async function generateCodeWithSupabase(request: GenerateRequest): Promise<Gener
       files,
       operations: data.operations || [],
       reasoning: data.reasoning,
-      confidence: data.confidence,
-      build_config: data.build_config,
-      deployment_config: data.deployment_config,
       next_steps: data.next_steps,
-      warnings: data.warnings,
-      architecture: detectedArchitecture
+      warnings: data.warnings
     }
 
   } catch (error) {

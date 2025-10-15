@@ -313,7 +313,7 @@ export class ErrorFactory {
 }
 
 // Export missing types
-export type { User } from './index'
+export type { User, Project, ProjectFile } from './index'
 
 // Types are now imported at the top of the file
 

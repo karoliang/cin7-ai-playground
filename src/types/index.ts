@@ -109,6 +109,23 @@ export interface ProjectArchitecture {
   components?: ComponentConfig[]
 }
 
+// Alias for ProjectArchitecture used in routing generation
+export type DetectedArchitecture = ProjectArchitecture & {
+  framework?: string
+  layout?: {
+    type: 'sidebar' | 'header' | 'none'
+  }
+  pages?: Array<{
+    name: string
+    title?: string
+    description?: string
+    path?: string
+    children?: any[]
+    polaris?: boolean
+  }>
+  polaris?: boolean
+}
+
 export interface PageConfig {
   id: string
   name: string
@@ -271,6 +288,8 @@ export interface GenerateRequest {
 
 export interface RequestContext {
   project_id?: string
+  user_id?: string
+  session_id?: string
   framework?: SupportedFramework
   template?: ProjectTemplate
   architecture?: ProjectArchitecture

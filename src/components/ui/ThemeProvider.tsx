@@ -102,7 +102,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   return (
     <ThemeContext.Provider value={value}>
-      <AppProvider theme={polarisTheme} i18n={{}}>
+      <AppProvider theme={resolvedTheme === 'dark' ? 'dark-experimental' : 'light'} i18n={{}}>
         {children}
       </AppProvider>
     </ThemeContext.Provider>

@@ -255,7 +255,9 @@ export const ProjectWorkspace: React.FC = () => {
                                 <Badge tone="info">
                                   AI Assistant
                                 </Badge>
-                                <Spinner size="small" style={{ marginLeft: '0.5rem' }} />
+                                <div style={{ marginLeft: '0.5rem', display: 'inline-block' }}>
+                                  <Spinner size="small" />
+                                </div>
                               </div>
                               <div style={{
                                 backgroundColor: 'var(--p-color-bg-surface-subdued)',
@@ -281,7 +283,9 @@ export const ProjectWorkspace: React.FC = () => {
                                 <Badge tone="info">
                                   AI Assistant
                                 </Badge>
-                                <Spinner size="small" style={{ marginLeft: '0.5rem' }} />
+                                <div style={{ marginLeft: '0.5rem', display: 'inline-block' }}>
+                                  <Spinner size="small" />
+                                </div>
                               </div>
                               <div style={{
                                 backgroundColor: 'var(--p-color-bg-surface-subdued)',
@@ -303,17 +307,13 @@ export const ProjectWorkspace: React.FC = () => {
                   <div style={{ borderTop: '1px solid var(--p-color-border)', paddingTop: '1rem' }}>
                     <FormLayout>
                       <TextField
+                        label="Chat Message"
                         placeholder="Ask the AI assistant to help with your project..."
                         value={chatMessage}
                         onChange={setChatMessage}
                         multiline={2}
                         disabled={isTyping}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' && !event.shiftKey) {
-                            event.preventDefault()
-                            handleChatSend()
-                          }
-                        }}
+                        autoComplete="off"
                         connectedRight={
                           <Button
                             onClick={handleChatSend}
@@ -351,7 +351,9 @@ export const ProjectWorkspace: React.FC = () => {
 
                 {files.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                    <Icon source={CodeIcon} size="large" />
+                    <div style={{ fontSize: '2rem', display: 'flex', justifyContent: 'center' }}>
+                      <Icon source={CodeIcon} />
+                    </div>
                     <Text variant="bodyLg" as="p">
                       No files yet
                     </Text>
@@ -364,7 +366,7 @@ export const ProjectWorkspace: React.FC = () => {
                   </div>
                 ) : (
                   <Scrollable style={{ height: '350px' }}>
-                    <VerticalStack gap="2">
+                    <BlockStack gap="400">
                       {files.map((file) => (
                         <div
                           key={file.id}
@@ -385,7 +387,7 @@ export const ProjectWorkspace: React.FC = () => {
                           onClick={() => setActiveFile(file.id)}
                         >
                           <div style={{ flex: 1 }}>
-                            <Text variant="bodySm" fontWeight={activeFile?.id === file.id ? 'semibold' : 'regular'}>
+                            <Text as="span" variant="bodySm" fontWeight={activeFile?.id === file.id ? 'semibold' : 'regular'}>
                               {file.name}
                             </Text>
                             <Text variant="bodyXs" as="span">
@@ -396,32 +398,28 @@ export const ProjectWorkspace: React.FC = () => {
                             <Button
                               icon={EditIcon}
                               size="slim"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleEditFile(file.id)
-                              }}
+                              onClick={() => handleEditFile(file.id)}
                             />
                             <Button
                               icon={DeleteIcon}
                               size="slim"
                               tone="critical"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                deleteFile(file.id)
-                              }}
+                              onClick={() => deleteFile(file.id)}
                             />
                           </ButtonGroup>
                         </div>
                       ))}
-                    </VerticalStack>
+                    </BlockStack>
                   </Scrollable>
                 )}
 
                 {activeFile && (
                   <div style={{ marginTop: '1rem' }}>
-                    <Text variant="bodySm" fontWeight="semibold" style={{ marginBottom: '0.5rem', display: 'block' }}>
-                      Currently Editing
-                    </Text>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      <Text as="span" variant="bodySm" fontWeight="semibold">
+                        Currently Editing
+                      </Text>
+                    </div>
                     <FilePreviewSnippet
                       file={activeFile}
                       onEdit={handleEditFile}
@@ -435,7 +433,7 @@ export const ProjectWorkspace: React.FC = () => {
               <div style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <Text variant="headingMd" as="h2">Live Preview</Text>
-                  <ButtonGroup segmented>
+                  <ButtonGroup>
                     <Button
                       icon={DesktopIcon}
                       pressed={previewMode === 'desktop'}
@@ -467,7 +465,7 @@ export const ProjectWorkspace: React.FC = () => {
                   }}
                 >
                   {isGenerating ? (
-                    <BlockStack align="center" gap="2">
+                    <BlockStack align="center" gap="400">
                       <Spinner size="large" />
                       <Text variant="bodyLg" as="p">
                         Generating Preview...
@@ -477,7 +475,7 @@ export const ProjectWorkspace: React.FC = () => {
                       </Text>
                     </BlockStack>
                   ) : files.length === 0 ? (
-                    <BlockStack align="center" gap="2">
+                    <BlockStack align="center" gap="400">
                       <Icon source={ViewIcon} />
                       <Text variant="bodyLg" as="p">
                         No preview available
@@ -487,7 +485,7 @@ export const ProjectWorkspace: React.FC = () => {
                       </Text>
                     </BlockStack>
                   ) : (
-                    <BlockStack align="center" gap="2">
+                    <BlockStack align="center" gap="400">
                       <Icon source={RefreshIcon} />
                       <Text variant="bodyLg" as="p">
                         Preview Ready
@@ -511,7 +509,7 @@ export const ProjectWorkspace: React.FC = () => {
         <Card>
           <div style={{ padding: '1rem' }}>
             <Text variant="headingMd" as="h2">Project Information</Text>
-          <BlockStack gap="4">
+          <BlockStack gap="400">
             <div>
               <Text variant="headingSm" as="h3">Project Details</Text>
               <Text variant="bodySm" as="p">
@@ -529,7 +527,7 @@ export const ProjectWorkspace: React.FC = () => {
 
             <div>
               <Text variant="headingSm" as="h3">Project Actions</Text>
-              <BlockStack gap="2">
+              <BlockStack gap="400">
                 <Button icon={RefreshIcon} fullWidth>
                   Regenerate Project
                 </Button>
@@ -546,7 +544,7 @@ export const ProjectWorkspace: React.FC = () => {
 
             <div>
               <Text variant="headingSm" as="h3">Development Status</Text>
-              <BlockStack gap="2">
+              <BlockStack gap="400">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Badge tone={isGenerating ? 'attention' : 'success'}>
                     {isGenerating ? 'Generating' : 'Ready'}

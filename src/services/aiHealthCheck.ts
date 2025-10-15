@@ -299,12 +299,7 @@ export class AIHealthCheckService {
         endpoint: 'cache-service',
         status: 'pass',
         responseTime,
-        timestamp: Date.now(),
-        metadata: {
-          hits: stats.metrics.hits,
-          misses: stats.metrics.misses,
-          hitRate: stats.metrics.hitRate
-        }
+        timestamp: Date.now()
       }
 
     } catch (error) {
@@ -338,12 +333,7 @@ export class AIHealthCheckService {
         endpoint: 'rate-limiter-service',
         status: 'pass',
         responseTime,
-        timestamp: Date.now(),
-        metadata: {
-          allows: stats.metrics.allows,
-          rejections: stats.metrics.rejections,
-          rejectionRate: stats.metrics.rejectionRate
-        }
+        timestamp: Date.now()
       }
 
     } catch (error) {
@@ -377,12 +367,7 @@ export class AIHealthCheckService {
         endpoint: 'context-manager-service',
         status: 'pass',
         responseTime,
-        timestamp: Date.now(),
-        metadata: {
-          currentConversations: stats.currentConversations,
-          currentProjects: stats.currentProjects,
-          conversationsCreated: stats.conversationsCreated
-        }
+        timestamp: Date.now()
       }
 
     } catch (error) {
@@ -416,12 +401,7 @@ export class AIHealthCheckService {
         endpoint: 'metrics-service',
         status: 'pass',
         responseTime,
-        timestamp: Date.now(),
-        metadata: {
-          totalRequests: metrics.requests.total,
-          errorRate: metrics.requests.errorRate,
-          averageResponseTime: metrics.performance.averageResponseTime
-        }
+        timestamp: Date.now()
       }
 
     } catch (error) {

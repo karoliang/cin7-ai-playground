@@ -3,6 +3,7 @@
  * Demonstrates how to integrate the new AI Gateway service with the existing CIN7 AI Playground
  */
 
+import React from 'react'
 import { getAIGatewayService, initializeAIGateway } from '@/services/aiGatewayService'
 import { initializeAIGatewayConfig } from '@/config/aiGatewayConfig'
 import { GenerateRequest, GenerateResponse } from '@/types'
@@ -186,8 +187,8 @@ export class AIMigrationHelper {
     return {
       prompt: legacyRequest.prompt,
       context: {
-        projectId: legacyRequest.context?.projectId,
-        userId: legacyRequest.context?.userId,
+        project_id: legacyRequest.context?.project_id || legacyRequest.context?.projectId,
+        user_id: legacyRequest.context?.user_id || legacyRequest.context?.userId,
         framework: legacyRequest.context?.framework,
         template: legacyRequest.context?.template,
         architecture: legacyRequest.context?.architecture,
@@ -375,11 +376,3 @@ VITE_AI_GATEWAY_FEATURE_MONITORING=true
 VITE_AI_GATEWAY_FEATURE_HEALTH_CHECKS=true
 `
 
-// Export React hook (assuming React is available)
-declare global {
-  namespace React {
-    const useState: <T>(initial: T) => [T, (value: T) => void]
-    const useEffect: (effect: () => void | void, deps?: any[]) => void
-    const useCallback: <T extends (...args: any[]) => any>(callback: T, deps: any[]) => T
-  }
-}

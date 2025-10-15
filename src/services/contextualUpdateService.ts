@@ -1,5 +1,5 @@
 import { ContextItem, ProjectFile, ChatMessage } from '@/types'
-import { processContextualUpdate } from './aiService'
+import { processContextualUpdate as processContextualUpdateFromAI } from './aiService'
 
 export async function processContextualUpdate(
   context: ContextItem,
@@ -7,7 +7,7 @@ export async function processContextualUpdate(
   messages: ChatMessage[]
 ): Promise<any> {
   try {
-    const result = await processContextualUpdate(context, files, messages)
+    const result = await processContextualUpdateFromAI(context, files, messages)
     return result
   } catch (error) {
     console.error('Contextual update service error:', error)

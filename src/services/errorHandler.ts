@@ -460,7 +460,7 @@ interface ErrorRecord {
  */
 export interface ErrorStats {
   totalErrors: number
-  errorsByCode: Record<ErrorCode, number>
+  errorsByCode: Partial<Record<ErrorCode, number>>
   errorsByProvider: Record<string, number>
   recentErrors: ErrorRecord[]
   errorRate: number
