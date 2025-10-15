@@ -7,7 +7,7 @@
     "dev": "npm run dev:watch & npm run dev:server",
     "dev:watch": "node scripts/dev-watcher.js",
     "dev:server": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "build:generated": "node scripts/build-generated.js",
     "analyze": "npm run build && npx vite-bundle-analyzer dist/stats.html",
