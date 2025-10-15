@@ -16,6 +16,8 @@ import { ContextManagerService, ContextEnhancementService } from './contextManag
 import { AIMetricsService } from './aiMetrics'
 import { AIHealthCheckService } from './aiHealthCheck'
 import { aiGatewayConfig } from '@/config/aiGatewayConfig'
+import { InputValidator, SecurityMonitor } from '@/security/inputValidation'
+import { EnvironmentAPIKeyManager } from '@/security/apiKeyManager'
 
 /**
  * Main AI Gateway Service
@@ -134,8 +136,40 @@ export class AIGatewayService {
     // Ensure service is initialized
     await this.ensureInitialized()
 
+    // SECURITY: Validate and sanitize input
+    const validation = InputValidator.validateAIRequest(request)
+    if (!validation.isValid) {
+      console.error('[AI Gateway] Security validation failed:', validation.errors)
+
+      // Record security violation
+      if (request.context?.userId) {
+        SecurityMonitor.recordViolation(request.context.userId, 'INPUT_VALIDATION_FAILED')
+      }
+
+      return {
+        success: false,
+        files: [],
+        operations: [],
+        error: `Security validation failed: ${validation.errors.join(', ')}`
+      }
+    }
+
+    // SECURITY: Check if user is blocked due to violations
+    if (request.context?.userId && SecurityMonitor.isUserBlocked(request.context.userId)) {
+      console.error('[AI Gateway] User blocked due to security violations:', request.context.userId)
+      return {
+        success: false,
+        files: [],
+        operations: [],
+        error: 'Access denied due to security violations'
+      }
+    }
+
+    // Use sanitized data
+    const sanitizedRequest = validation.sanitizedData
+
     // Convert to AI Gateway request format
-    const gatewayRequest = await this.convertToGatewayRequest(request)
+    const gatewayRequest = await this.convertToGatewayRequest(sanitizedRequest)
 
     try {
       // Process the request through the gateway
@@ -145,12 +179,15 @@ export class AIGatewayService {
       return this.convertFromGatewayResponse(gatewayResponse)
 
     } catch (error) {
-      console.error('[AI Gateway] Request failed:', error)
+      // SECURITY: Sanitize error messages to prevent information disclosure
+      const sanitizedError = this.sanitizeErrorMessage(error)
+      console.error('[AI Gateway] Request failed:', sanitizedError)
+
       return {
         success: false,
         files: [],
         operations: [],
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: sanitizedError
       }
     }
   }
@@ -162,10 +199,34 @@ export class AIGatewayService {
     // Ensure service is initialized
     await this.ensureInitialized()
 
+    // SECURITY: Validate and sanitize input
+    const validation = InputValidator.validateAIRequest(request)
+    if (!validation.isValid) {
+      console.error('[AI Gateway] Security validation failed:', validation.errors)
+
+      // Record security violation
+      if (request.context?.userId) {
+        SecurityMonitor.recordViolation(request.context.userId, 'INPUT_VALIDATION_FAILED')
+      }
+
+      yield `Error: Security validation failed: ${validation.errors.join(', ')}`
+      return
+    }
+
+    // SECURITY: Check if user is blocked due to violations
+    if (request.context?.userId && SecurityMonitor.isUserBlocked(request.context.userId)) {
+      console.error('[AI Gateway] User blocked due to security violations:', request.context.userId)
+      yield 'Error: Access denied due to security violations'
+      return
+    }
+
+    // Use sanitized data
+    const sanitizedRequest = validation.sanitizedData
+
     // Convert to AI Gateway request format with streaming enabled
     const gatewayRequest = await this.convertToGatewayRequest({
-      ...request,
-      options: { ...request.options, stream: true }
+      ...sanitizedRequest,
+      options: { ...sanitizedRequest.options, stream: true }
     })
 
     try {
@@ -175,8 +236,10 @@ export class AIGatewayService {
       }
 
     } catch (error) {
-      console.error('[AI Gateway] Streaming request failed:', error)
-      yield `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      // SECURITY: Sanitize error messages to prevent information disclosure
+      const sanitizedError = this.sanitizeErrorMessage(error)
+      console.error('[AI Gateway] Streaming request failed:', sanitizedError)
+      yield `Error: ${sanitizedError}`
     }
   }
 
@@ -817,6 +880,55 @@ Focus on:
    */
   private generateSessionId(): string {
     return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  }
+
+  /**
+   * Sanitize error messages to prevent information disclosure
+   */
+  private sanitizeErrorMessage(error: any): string {
+    if (error instanceof AIGatewayError) {
+      // For known gateway errors, return a safe message
+      switch (error.code) {
+        case 'RATE_LIMIT_EXCEEDED':
+          return 'Rate limit exceeded. Please try again later.'
+        case 'AUTHENTICATION_ERROR':
+          return 'Authentication failed. Please check your credentials.'
+        case 'PERMISSION_DENIED':
+          return 'Access denied. You do not have permission to perform this action.'
+        case 'QUOTA_EXCEEDED':
+          return 'Quota exceeded. Please upgrade your plan or try again later.'
+        case 'CONTENT_FILTERED':
+          return 'Content was filtered due to policy violations.'
+        case 'MODEL_NOT_AVAILABLE':
+          return 'Requested model is currently unavailable.'
+        case 'TIMEOUT':
+          return 'Request timed out. Please try again.'
+        case 'PROVIDER_ERROR':
+          return 'External service error. Please try again later.'
+        default:
+          return 'An error occurred while processing your request.'
+      }
+    }
+
+    // For other errors, return a generic message
+    if (error instanceof Error) {
+      // Check for common error patterns and return safe messages
+      const message = error.message.toLowerCase()
+
+      if (message.includes('api key') || message.includes('unauthorized')) {
+        return 'Authentication failed. Please check your credentials.'
+      }
+
+      if (message.includes('network') || message.includes('fetch')) {
+        return 'Network error. Please check your connection and try again.'
+      }
+
+      if (message.includes('timeout')) {
+        return 'Request timed out. Please try again.'
+      }
+    }
+
+    return 'An unexpected error occurred. Please try again.'
   }
 
   /**

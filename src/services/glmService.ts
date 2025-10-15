@@ -21,6 +21,7 @@ import { GenerateRequest, GenerateResponse, ProjectFile, FileOperation } from '@
 
 // Import the zhipu-sdk-js
 import ZhipuAI from 'zhipu-sdk-js'
+import { EnvironmentAPIKeyManager } from '@/security/apiKeyManager'
 
 export class GLMService {
   private config: GLMConfig
@@ -28,17 +29,27 @@ export class GLMService {
   private client: ZhipuAI
   private requestMetrics: GLMRequestMetrics[] = []
   private healthStatus: GLMServiceHealth
+  private apiKeyManager: EnvironmentAPIKeyManager
 
   constructor(config: GLMConfig, options: GLMServiceOptions = {}) {
     this.config = { ...DEFAULT_GLM_CONFIG, ...config }
     this.options = { ...DEFAULT_GLM_SERVICE_OPTIONS, ...options }
 
-    if (!this.config.apiKey) {
-      throw new Error('GLM API key is required')
+    // SECURITY: Use secure API key management
+    try {
+      this.apiKeyManager = EnvironmentAPIKeyManager.getInstance()
+    } catch (error) {
+      throw new Error('Failed to initialize secure API key manager')
+    }
+
+    // Get API key securely
+    const secureApiKey = this.getSecureAPIKey()
+    if (!secureApiKey) {
+      throw new Error('GLM API key not found or invalid')
     }
 
     this.client = new ZhipuAI({
-      apiKey: this.config.apiKey
+      apiKey: secureApiKey
     })
 
     this.healthStatus = {
@@ -48,6 +59,35 @@ export class GLMService {
     }
 
     this.log('GLM Service initialized', { config: { ...this.config, apiKey: '***' } })
+  }
+
+  /**
+   * Get API key securely from the key manager
+   */
+  private getSecureAPIKey(): string | null {
+    try {
+      return this.apiKeyManager.getAPIKey('glm')
+    } catch (error) {
+      this.logError('Failed to get secure API key', error)
+      return null
+    }
+  }
+
+  /**
+   * Refresh API key if needed
+   */
+  private refreshAPIKey(): boolean {
+    try {
+      const newApiKey = this.getSecureAPIKey()
+      if (newApiKey) {
+        this.client = new ZhipuAI({ apiKey: newApiKey })
+        this.log('API key refreshed successfully')
+        return true
+      }
+    } catch (error) {
+      this.logError('Failed to refresh API key', error)
+    }
+    return false
   }
 
   /**
