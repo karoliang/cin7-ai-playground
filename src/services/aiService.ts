@@ -71,8 +71,7 @@ async function generateCodeWithGLM(request: GenerateRequest): Promise<GenerateRe
         architecture: {
           ...detectedArchitecture,
           type: detectedArchitecture.structure || 'multi-page'
-        },
-        enhancedPrompt: enhancedPrompt
+        }
       }
     }
 
@@ -127,8 +126,7 @@ async function generateCodeWithSupabase(request: GenerateRequest): Promise<Gener
           architecture: {
             ...detectedArchitecture,
             type: detectedArchitecture.structure || 'multi-page'
-          },
-          enhancedPrompt: enhancedPrompt
+          }
         },
         options: request.options
       })

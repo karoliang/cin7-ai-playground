@@ -600,3 +600,7 @@ export function createGLMConfigFromEnv(): GLMConfig {
     retryDelay: parseInt((import.meta.env as any).VITE_GLM_RETRY_DELAY || '1000')
   }
 }
+
+// Re-export types for test compatibility
+export type { GLMConfig } from '@/types/glm'
+export { DEFAULT_GLM_CONFIG, GLM_PROVIDER_CONFIG as GLMProviderConfig } from '@/types/glm'

@@ -5,7 +5,8 @@ import {
   TextField,
   Button,
   Select,
-  Stack,
+  BlockStack,
+  InlineStack,
   Badge,
   Layout,
   Page,
@@ -145,6 +146,14 @@ export const CodeGeneratorPage: React.FC = () => {
     }
   }, [])
 
+  const handleFrameworkChange = useCallback((selected: string) => {
+    setFramework(selected as SupportedFramework)
+  }, [])
+
+  const handleComplexityChange = useCallback((selected: string) => {
+    setComplexity(selected as ComplexityLevel)
+  }, [])
+
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) {
       setError('Please enter a description of what you want to generate')
@@ -224,7 +233,7 @@ export const CodeGeneratorPage: React.FC = () => {
       id: 'results',
       content: 'Results',
       panelID: 'results-panel',
-      badge: generationResult?.files?.length || 0
+      badge: generationResult?.files?.length?.toString() || '0'
     }
   ]
 
@@ -245,29 +254,29 @@ export const CodeGeneratorPage: React.FC = () => {
           marginBottom: '2rem'
         }}>
           {generationPresets.map((preset) => (
-            <Card
-              key={preset.id}
-              actions={[
-                {
-                  content: 'Use This Template',
-                  onAction: () => handlePresetSelect(preset.id)
-                }
-              ]}
-            >
-              <Stack vertical spacing="tight">
-                <Stack alignment="center" spacing="tight">
-                  <Icon source={preset.icon} />
+            <Card key={preset.id}>
+              <BlockStack gap="400">
+                <InlineStack gap="400" blockAlign="center">
+                  <Icon source={preset.icon as any} />
                   <Text variant="headingSm" as="h3">{preset.name}</Text>
-                </Stack>
+                </InlineStack>
                 <Text variant="bodySm" as="span">{preset.description}</Text>
-                <Stack spacing="tight">
+                <InlineStack gap="400">
                   <Badge tone="info">{preset.framework}</Badge>
                   <Badge tone={preset.complexity === 'simple' ? 'success' : preset.complexity === 'complex' ? 'attention' : 'info'}>
                     {preset.complexity}
                   </Badge>
                   <Badge>{preset.type}</Badge>
-                </Stack>
-              </Stack>
+                </InlineStack>
+                <div style={{ marginTop: '1rem' }}>
+                  <Button
+                    size="slim"
+                    onClick={() => handlePresetSelect(preset.id)}
+                  >
+                    Use This Template
+                  </Button>
+                </div>
+              </BlockStack>
             </Card>
           ))}
         </div>
@@ -281,19 +290,19 @@ export const CodeGeneratorPage: React.FC = () => {
         <Card>
           <Text variant="headingMd" as="h2">Configuration</Text>
           <div style={{ marginTop: '1rem' }}>
-            <Stack vertical spacing="loose">
+            <BlockStack gap="800">
               <Select
                 label="Framework"
                 options={frameworkOptions}
                 value={framework}
-                onChange={setFramework}
+                onChange={handleFrameworkChange}
               />
 
               <Select
                 label="Complexity"
                 options={complexityOptions}
                 value={complexity}
-                onChange={setComplexity}
+                onChange={handleComplexityChange}
               />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -316,7 +325,7 @@ export const CodeGeneratorPage: React.FC = () => {
                   Include documentation
                 </label>
               </div>
-            </Stack>
+            </BlockStack>
           </div>
         </Card>
       </Layout.Section>
@@ -332,14 +341,15 @@ export const CodeGeneratorPage: React.FC = () => {
               multiline={4}
               placeholder="Describe the code you want to generate. Be as specific as possible about functionality, styling, and any requirements..."
               error={error}
+              autoComplete="off"
             />
           </div>
 
           <div style={{ marginTop: '1rem' }}>
-            <Stack distribution="trailing">
+            <InlineStack align="end">
               <Button onClick={handleReset}>Reset</Button>
               <Button
-                primary
+                variant="primary"
                 onClick={handleGenerate}
                 loading={isGenerating}
                 disabled={!prompt.trim() || isGenerating}
@@ -347,7 +357,7 @@ export const CodeGeneratorPage: React.FC = () => {
               >
                 {isGenerating ? 'Generating...' : 'Generate Code'}
               </Button>
-            </Stack>
+            </InlineStack>
           </div>
         </Card>
       </Layout.Section>
@@ -376,7 +386,7 @@ export const CodeGeneratorPage: React.FC = () => {
           <Card>
             <Text variant="headingMd" as="h2">Generation Summary</Text>
             <div style={{ marginTop: '1rem' }}>
-              <Stack vertical spacing="tight">
+              <BlockStack gap="400">
                 <div>
                   <Text variant="bodySm" as="span">Status</Text>
                   <Badge tone={generationResult.success ? 'success' : 'critical'}>
@@ -386,27 +396,27 @@ export const CodeGeneratorPage: React.FC = () => {
 
                 <div>
                   <Text variant="bodySm" as="span">Files Generated</Text>
-                  <Text variant="bodyMd">{generationResult.files.length}</Text>
+                  <Text variant="bodyMd" as="p">{generationResult.files.length}</Text>
                 </div>
 
                 <div>
                   <Text variant="bodySm" as="span">Confidence</Text>
-                  <Text variant="bodyMd">{generationResult.confidence}%</Text>
+                  <Text variant="bodyMd" as="p">{generationResult.confidence}%</Text>
                 </div>
 
                 {generationResult.reasoning && (
                   <div>
                     <Text variant="bodySm" as="span">AI Reasoning</Text>
-                    <Text variant="bodySm">{generationResult.reasoning}</Text>
+                    <Text variant="bodySm" as="p">{generationResult.reasoning}</Text>
                   </div>
                 )}
 
                 {generationResult.warnings && generationResult.warnings.length > 0 && (
                   <Banner tone="warning">
-                    <Text variant="bodySm">{generationResult.warnings.join(', ')}</Text>
+                    <Text variant="bodySm" as="p">{generationResult.warnings.join(', ')}</Text>
                   </Banner>
                 )}
-              </Stack>
+              </BlockStack>
             </div>
           </Card>
         </Layout.Section>
@@ -415,15 +425,15 @@ export const CodeGeneratorPage: React.FC = () => {
           <Card>
             <Text variant="headingMd" as="h2">Generated Files</Text>
             <div style={{ marginTop: '1rem' }}>
-              <Stack vertical spacing="loose">
+              <BlockStack gap="800">
                 {generationResult.files.map((file, index) => (
                   <Card key={index}>
-                    <Stack vertical spacing="tight">
-                      <Stack alignment="center" spacing="tight">
+                    <BlockStack gap="400">
+                      <InlineStack gap="400" blockAlign="center">
                         <Icon source={CodeIcon} />
                         <Text variant="headingSm" as="h3">{file.name}</Text>
                         <Badge tone="info">{file.type}</Badge>
-                      </Stack>
+                      </InlineStack>
 
                       {file.path && (
                         <Text variant="bodySm" as="span">Path: {file.path}</Text>
@@ -446,7 +456,7 @@ export const CodeGeneratorPage: React.FC = () => {
                         </pre>
                       </div>
 
-                      <Stack distribution="trailing">
+                      <InlineStack align="end">
                         <Button
                           size="slim"
                           icon={ExportIcon}
@@ -457,11 +467,11 @@ export const CodeGeneratorPage: React.FC = () => {
                         >
                           Copy Code
                         </Button>
-                      </Stack>
-                    </Stack>
+                      </InlineStack>
+                    </BlockStack>
                   </Card>
                 ))}
-              </Stack>
+              </BlockStack>
             </div>
           </Card>
         </Layout.Section>

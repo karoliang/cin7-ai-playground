@@ -121,14 +121,16 @@ export function useProjectSearch(
     }
   }, [isAuthenticated, user?.id])
 
-  const debouncedSearch = useCallback((query: string, options?: SearchOptions) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current)
-    }
+  const debouncedSearch = useCallback((query: string, options?: SearchOptions): Promise<void> => {
+    return new Promise((resolve) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
 
-    debounceTimerRef.current = setTimeout(() => {
-      search(query, options)
-    }, debounceMs)
+      debounceTimerRef.current = setTimeout(() => {
+        search(query, options).finally(resolve)
+      }, debounceMs)
+    })
   }, [search, debounceMs])
 
   const clearSearch = useCallback(() => {

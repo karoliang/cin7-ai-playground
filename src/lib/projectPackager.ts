@@ -462,7 +462,7 @@ export default defineConfig({
     // Add build configurations
     const buildConfigs = this.generateBuildConfig(project, options)
     Object.entries(buildConfigs).forEach(([filename, content]) => {
-      zip.file(filename, content)
+      zip.file(filename, content as string)
     })
 
     // Add public directory with index.html if it doesn't exist

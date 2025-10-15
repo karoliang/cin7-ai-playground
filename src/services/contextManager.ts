@@ -154,18 +154,18 @@ export class ContextManagerService {
     }
 
     // Get conversation context if session ID is available
-    if (request.context?.sessionId) {
+    if (request.context?.session_id) {
       enhancedContext.conversation = await this.getOrCreateConversationContext(
-        request.context.sessionId,
-        request.context.userId
+        request.context.session_id,
+        request.context.user_id
       )
     }
 
     // Get project context if project ID is available
-    if (request.context?.projectId) {
+    if (request.context?.project_id) {
       enhancedContext.project = await this.getOrCreateProjectContext(
-        request.context.projectId,
-        request.context.userId
+        request.context.project_id,
+        request.context.user_id
       )
     }
 
@@ -284,8 +284,8 @@ export class ContextManagerService {
    */
   private async buildSessionContext(request: AIGatewayRequest): Promise<SessionContext> {
     return {
-      sessionId: request.context?.sessionId || this.generateSessionId(),
-      userId: request.context?.userId,
+      sessionId: request.context?.session_id || this.generateSessionId(),
+      userId: request.context?.user_id,
       startTime: Date.now(),
       userAgent: request.metadata?.userAgent,
       ipAddress: request.metadata?.ipAddress,

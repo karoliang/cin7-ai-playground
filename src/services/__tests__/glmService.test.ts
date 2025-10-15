@@ -9,7 +9,8 @@ import {
   DEFAULT_GLM_CONFIG,
   GLMProviderConfig
 } from '../glmService'
-import type { GLMConfig, GenerateRequest } from '@/types'
+import type { GenerateRequest } from '@/types'
+import type { GLMConfig } from '@/types/glm'
 
 // Mock the zhipu-sdk-js
 vi.mock('zhipu-sdk-js', () => ({
@@ -123,7 +124,15 @@ describe('GLM Service', () => {
       }
 
       const mockCreate = vi.fn().mockResolvedValue(mockResponse)
-      glmService['client'].chat.completions.create = mockCreate
+      // Access the client through the GLM SDK
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       const request: GenerateRequest = {
         prompt: 'Create a simple React component',
@@ -152,7 +161,14 @@ describe('GLM Service', () => {
 
     it('should handle API errors gracefully', async () => {
       const mockCreate = vi.fn().mockRejectedValue(new Error('API Error'))
-      glmService['client'].chat.completions.create = mockCreate
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       const request: GenerateRequest = {
         prompt: 'Create a simple React component'
@@ -180,7 +196,15 @@ describe('GLM Service', () => {
       }
 
       const mockCreate = vi.fn().mockResolvedValue(mockResponse)
-      glmService['client'].chat.completions.create = mockCreate
+      // Access the client through the GLM SDK
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       const request: GenerateRequest = {
         prompt: 'Create a simple React component'
@@ -212,7 +236,15 @@ describe('GLM Service', () => {
       }
 
       const mockCreate = vi.fn().mockResolvedValue(mockResponse)
-      glmService['client'].chat.completions.create = mockCreate
+      // Access the client through the GLM SDK
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       const request: GenerateRequest = {
         prompt: 'Test prompt'
@@ -261,13 +293,21 @@ describe('GLM Service', () => {
       }
 
       const mockCreate = vi.fn().mockResolvedValue(mockResponse)
-      glmService['client'].chat.completions.create = mockCreate
+      // Access the client through the GLM SDK
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       const context = { project_type: 'react' }
       const files = [{
         id: '1',
         name: 'test.tsx',
-        type: 'tsx',
+        type: 'tsx' as const,
         content: 'old content'
       }]
       const messages = [{
@@ -300,7 +340,15 @@ describe('GLM Service', () => {
       }
 
       const mockCreate = vi.fn().mockResolvedValue(mockResponse)
-      glmService['client'].chat.completions.create = mockCreate
+      // Access the client through the GLM SDK
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       const result = await glmService.testConnection()
 
@@ -311,7 +359,10 @@ describe('GLM Service', () => {
 
     it('should handle connection test failure', async () => {
       const mockCreate = vi.fn().mockRejectedValue(new Error('Connection failed'))
-      glmService['client'].chat.completions.create = mockCreate
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.createCompletions = mockCreate
+      glmService['client'] = mockSDK
 
       const result = await glmService.testConnection()
 
@@ -364,7 +415,15 @@ describe('GLM Service', () => {
       }
 
       const mockCreate = vi.fn().mockResolvedValue(mockResponse)
-      glmService['client'].chat.completions.create = mockCreate
+      // Access the client through the GLM SDK
+      const ZhipuSDK = require('zhipu-sdk-js').default
+      const mockSDK = new ZhipuSDK()
+      mockSDK.chat = {
+        completions: {
+          create: mockCreate
+        }
+      }
+      glmService['client'] = mockSDK
 
       // Simulate many requests
       for (let i = 0; i < 1005; i++) {

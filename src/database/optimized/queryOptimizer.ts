@@ -379,7 +379,7 @@ export class QueryOptimizer extends EventEmitter {
   /**
    * Get current metrics
    */
-  getMetrics(): QueryMetrics {
+  getMetrics(): QueryMetrics & { cacheHitRate: number } {
     return {
       ...this.metrics,
       concurrentQueries: this.activeQueries.size,

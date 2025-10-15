@@ -14,7 +14,7 @@ export interface LazyLoadOptions {
   retryDelay?: number
 }
 
-export interface LazyComponentProps extends React.HTMLAttributes<HTMLElement> {
+export interface LazyComponentProps {
   fallback?: React.ComponentType
   [key: string]: any
 }
@@ -26,31 +26,31 @@ export function createLazyComponent<T extends ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
   options: LazyLoadOptions = {}
 ): React.ComponentType<LazyComponentProps> {
-  const {
-    fallback: CustomFallback = PageSpinner,
-    errorFallback: ErrorFallback = DefaultErrorFallback,
-    timeout = 10000,
-    retryAttempts = 3,
-    retryDelay = 1000
-  } = options
+    const {
+      fallback: CustomFallback = PageSpinner,
+      errorFallback: ErrorFallback = DefaultErrorFallback,
+      timeout = 10000,
+      retryAttempts = 3,
+      retryDelay = 1000
+    } = options
 
-  const LazyComponent = lazy(() =>
-    loadWithRetry(importFunc, { maxAttempts: retryAttempts, delay: retryDelay, timeout })
-  )
-
-  const LazyWrapper = React.forwardRef<any, LazyComponentProps>((props, _ref) => {
-    const FallbackComponent = props.fallback || CustomFallback
-
-    return React.createElement(
-      Suspense,
-      { fallback: React.createElement(FallbackComponent) },
-      React.createElement(
-        ErrorBoundary,
-        { Fallback: ErrorFallback },
-        React.createElement(LazyComponent, { ...props, ref: _ref })
-      )
+    const LazyComponent = lazy(() =>
+      loadWithRetry(importFunc, { maxAttempts: retryAttempts, delay: retryDelay, timeout })
     )
-  })
+
+    const LazyWrapper = React.forwardRef<T, LazyComponentProps>((props, _ref) => {
+      const FallbackComponent = props.fallback || CustomFallback
+
+      return React.createElement(
+        Suspense,
+        { fallback: React.createElement(FallbackComponent) },
+        React.createElement(
+          ErrorBoundary,
+          { Fallback: ErrorFallback },
+          React.createElement(LazyComponent, { ...props, ref: _ref })
+        )
+      )
+    })
 
   // Preload functionality - note: preload is not available on lazy components
   // This would need to be handled at the route level

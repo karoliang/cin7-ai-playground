@@ -288,9 +288,9 @@ router.init()
     architecture.pages?.forEach((page) => {
       routes.push({
         path: `/${page.name}`,
-        component: `${page.charAt(0).toUpperCase() + page.slice(1)}Page`,
+        component: `${page.name.charAt(0).toUpperCase() + page.name.slice(1)}Page`,
         meta: {
-          title: page.title || page.charAt(0).toUpperCase() + page.slice(1),
+          title: page.title || page.name.charAt(0).toUpperCase() + page.name.slice(1),
           description: page.description
         }
       })
@@ -307,7 +307,7 @@ router.init()
 
         routes.push({
           path: `/${page.name}`,
-          component: `${page.charAt(0).toUpperCase() + page.slice(1)}Page`,
+          component: `${page.name.charAt(0).toUpperCase() + page.name.slice(1)}Page`,
           children: childRoutes
         })
       }

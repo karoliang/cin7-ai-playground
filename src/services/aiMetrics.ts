@@ -46,16 +46,16 @@ export class AIMetricsService {
       timestamp: Date.now(),
       provider: request.provider,
       model: request.model,
-      userId: request.context?.userId,
-      projectId: request.context?.projectId,
-      sessionId: request.context?.sessionId
+      userId: request.context?.user_id,
+      projectId: request.context?.project_id,
+      sessionId: request.context?.session_id
     }
 
     this.logger.info('Request started', {
       requestId: request.id,
       provider: request.provider,
       model: request.model,
-      userId: request.context?.userId
+      userId: request.context?.user_id
     })
 
     return metrics

@@ -227,7 +227,7 @@ export class AIGatewayService {
     const gatewayRequest = await this.convertToGatewayRequest({
       ...sanitizedRequest,
       options: { ...sanitizedRequest.options, stream: true }
-    })
+    }) as AIGatewayStreamRequest
 
     try {
       // Process the streaming request
@@ -543,9 +543,9 @@ export class AIGatewayService {
       project_id: request.context?.project_id,
       user_id: request.context?.user_id,
       session_id: this.generateSessionId(),
-      framework: request.context?.framework || 'react',
+      framework: request.context?.framework as string || 'react',
       template: request.context?.template,
-      architecture: request.context?.architecture,
+      architecture: request.context?.architecture?.type || 'single-page',
       constraints: request.context?.constraints,
       examples: request.context?.examples
     }
