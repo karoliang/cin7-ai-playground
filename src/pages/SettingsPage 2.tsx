@@ -13,21 +13,21 @@ import {
   Badge,
   Tabs,
   Banner,
-  Stack,
+  BlockStack,
+  InlineStack,
   Divider,
   ChoiceList,
   RangeSlider,
-  TextStyle,
   Modal,
   TextContainer
 } from '@shopify/polaris'
 import {
-  SettingsMajor,
-  ExportMinor,
-  ImportMinor,
-  DeleteMinor,
-  CirclePlusMajor,
-  RefreshMinor
+  SettingsIcon,
+  ExportIcon,
+  ImportIcon,
+  DeleteIcon,
+  PlusCircleIcon,
+  RefreshIcon
 } from '@shopify/polaris-icons'
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
@@ -62,7 +62,7 @@ export const SettingsPage: React.FC = () => {
   const [autoSaveInterval, setAutoSaveInterval] = useState(30)
 
   // Export settings
-  const [exportFormat, setExportFormat] = useState('json')
+  const [exportFormat, setExportFormat] = useState<'json' | 'csv' | 'zip' | 'github' | 'docker'>('json')
   const [includeDependencies, setIncludeDependencies] = useState(true)
   const [includeFullContent, setIncludeFullContent] = useState(false)
   const [exportProgress, setExportProgress] = useState(0)
@@ -96,8 +96,7 @@ export const SettingsPage: React.FC = () => {
     try {
       await updateProfile({
         name: profileName,
-        email: profileEmail,
-        company: profileCompany
+        email: profileEmail
       })
       console.log('Profile saved successfully')
     } catch (error) {
@@ -463,7 +462,6 @@ export const SettingsPage: React.FC = () => {
   return (
     <Page
       title="Settings"
-      breadcrumbs={[{ content: 'Dashboard', url: '/' }]}
       primaryAction={{
         content: 'Save Changes',
         onAction: handleSaveProfile,
@@ -472,121 +470,134 @@ export const SettingsPage: React.FC = () => {
       }}
     >
       <Layout>
-        <Layout.Section oneThird>
+        <Layout.Section variant="oneThird">
           <Card>
             <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab} fitted />
           </Card>
 
-          <Card sectioned>
-            <Text variant="headingMd" as="h3">Quick Actions</Text>
-            <Stack vertical spacing="tight">
-              <Button icon={ExportMinor} fullWidth onClick={() => setShowExportModal(true)}>
-                Export All Projects
-              </Button>
-              <Button icon={ImportMinor} fullWidth>
-                Import Projects
-              </Button>
-              <Button icon={RefreshMinor} fullWidth>
-                Clear Cache
-              </Button>
-              <Divider />
-              <Button icon={DeleteMinor} fullWidth destructive onClick={() => setShowDeleteModal(true)}>
-                Delete Account
-              </Button>
-            </Stack>
+          <Card>
+            <div style={{ padding: '1.5rem' }}>
+              <Text variant="headingMd" as="h3">Quick Actions</Text>
+              <BlockStack gap="200">
+                <Button icon={ExportIcon} fullWidth onClick={() => setShowExportModal(true)}>
+                  Export All Projects
+                </Button>
+                <Button icon={ImportIcon} fullWidth>
+                  Import Projects
+                </Button>
+                <Button icon={RefreshIcon} fullWidth>
+                  Clear Cache
+                </Button>
+                <Divider />
+                <Button icon={DeleteIcon} fullWidth tone="critical" onClick={() => setShowDeleteModal(true)}>
+                  Delete Account
+                </Button>
+              </BlockStack>
+            </div>
           </Card>
         </Layout.Section>
 
-        <Layout.Section twoThirds>
+        <Layout.Section variant="twoThirds">
           {selectedTab === 0 && (
-            <Card title="Profile Settings" sectioned>
-              <FormLayout>
-                <TextField
-                  label="Full Name"
-                  value={profileName}
-                  onChange={setProfileName}
-                  placeholder="Enter your full name"
-                  disabled={!isAuthenticated}
-                />
-                <TextField
-                  label="Email Address"
-                  value={profileEmail}
-                  onChange={setProfileEmail}
-                  placeholder="your.email@example.com"
-                  type="email"
-                  disabled={!isAuthenticated}
-                />
-                <TextField
-                  label="Company"
-                  value={profileCompany}
-                  onChange={setProfileCompany}
-                  placeholder="Your company name"
-                  disabled={!isAuthenticated}
-                />
-                <Select
-                  label="Theme Preference"
-                  options={themeOptions}
-                  value={resolvedTheme}
-                  onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
-                />
-                <Divider />
-                <Text variant="headingMd" as="h3">Account Status</Text>
-                <Stack>
-                  <Badge status="success">Active</Badge>
-                  <Text variant="bodySm" color="subdued">
-                    Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
-                  </Text>
-                </Stack>
-              </FormLayout>
+            <Card>
+              <div style={{ padding: '1.5rem' }}>
+                <Text variant="headingMd" as="h3">Profile Settings</Text>
+                <FormLayout>
+                  <TextField
+                    label="Full Name"
+                    value={profileName}
+                    onChange={setProfileName}
+                    placeholder="Enter your full name"
+                    disabled={!isAuthenticated}
+                    autoComplete="name"
+                  />
+                  <TextField
+                    label="Email Address"
+                    value={profileEmail}
+                    onChange={setProfileEmail}
+                    placeholder="your.email@example.com"
+                    type="email"
+                    disabled={!isAuthenticated}
+                    autoComplete="email"
+                  />
+                  <TextField
+                    label="Company"
+                    value={profileCompany}
+                    onChange={setProfileCompany}
+                    placeholder="Your company name"
+                    disabled={!isAuthenticated}
+                    autoComplete="organization"
+                  />
+                  <Select
+                    label="Theme Preference"
+                    options={themeOptions}
+                    value={resolvedTheme}
+                    onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
+                  />
+                  <Divider />
+                  <Text variant="headingMd" as="h3">Account Status</Text>
+                  <InlineStack gap="400">
+                    <Badge tone="success">Active</Badge>
+                    <Text variant="bodySm" tone="subdued">
+                      Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
+                    </Text>
+                  </InlineStack>
+                </FormLayout>
+              </div>
             </Card>
           )}
 
           {selectedTab === 1 && (
-            <Card title="Project Settings" sectioned>
-              <FormLayout>
-                <Select
-                  label="Default Template"
-                  options={templateOptions}
-                  value={defaultTemplate}
-                  onChange={setDefaultTemplate}
-                  disabled={!isAuthenticated}
-                />
-                <Checkbox
-                  label="Enable auto-save"
-                  checked={autoSave}
-                  onChange={setAutoSave}
-                  disabled={!isAuthenticated}
-                />
-                {autoSave && (
-                  <RangeSlider
-                    label="Auto-save interval (seconds)"
-                    value={autoSaveInterval}
-                    min={10}
-                    max={300}
-                    step={10}
-                    onChange={setAutoSaveInterval}
-                    output
+            <Card>
+              <div style={{ padding: '1.5rem' }}>
+                <Text variant="headingMd" as="h3">Project Settings</Text>
+                <FormLayout>
+                  <Select
+                    label="Default Template"
+                    options={templateOptions}
+                    value={defaultTemplate}
+                    onChange={setDefaultTemplate}
                     disabled={!isAuthenticated}
                   />
-                )}
-                <ChoiceList
-                  title="Default project permissions"
-                  choices={[
-                    { label: 'Private (only you can view)', value: 'private' },
-                    { label: 'Team (team members can view)', value: 'team' },
-                    { label: 'Public (anyone can view)', value: 'public' }
-                  ]}
-                  selected={['private']}
-                  onChange={() => {}}
-                  disabled={!isAuthenticated}
-                />
-              </FormLayout>
+                  <Checkbox
+                    label="Enable auto-save"
+                    checked={autoSave}
+                    onChange={setAutoSave}
+                    disabled={!isAuthenticated}
+                  />
+                  {autoSave && (
+                    <RangeSlider
+                      label="Auto-save interval (seconds)"
+                      value={autoSaveInterval}
+                      min={10}
+                      max={300}
+                      step={10}
+                      onChange={setAutoSaveInterval}
+                      output
+                      disabled={!isAuthenticated}
+                    />
+                  )}
+                  <ChoiceList
+                    title="Default project permissions"
+                    choices={[
+                      { label: 'Private (only you can view)', value: 'private' },
+                      { label: 'Team (team members can view)', value: 'team' },
+                      { label: 'Public (anyone can view)', value: 'public' }
+                    ]}
+                    selected={['private']}
+                    onChange={() => {}}
+                    disabled={!isAuthenticated}
+                  />
+                </FormLayout>
+              </div>
             </Card>
           )}
 
           {selectedTab === 2 && (
-            <Card title="Export Settings" sectioned>
-              <FormLayout>
+            <Card>
+              <div style={{ padding: '1.5rem' }}>
+                <Text variant="headingMd" as="h3">Export Settings</Text>
+                <FormLayout>
                 <Select
                   label="Default export format"
                   options={exportFormatOptions}
@@ -627,7 +638,7 @@ export const SettingsPage: React.FC = () => {
                   disabled={!isAuthenticated}
                 />
 
-                <Banner status="info">
+                <Banner tone="info">
                   <Text variant="bodySm">
                     <strong>Export Formats:</strong><br/>
                     • <strong>JSON:</strong> Complete project data with all files, messages, and settings<br/>
@@ -638,19 +649,22 @@ export const SettingsPage: React.FC = () => {
                   </Text>
                 </Banner>
 
-                <Banner status="warning">
+                <Banner tone="warning">
                   <Text variant="bodySm">
                     Export settings are saved per project. You can override these settings when exporting individual projects.
                   </Text>
                 </Banner>
               </FormLayout>
+              </div>
             </Card>
           )}
 
           {selectedTab === 3 && (
-            <Card title="Advanced Settings" sectioned>
-              <FormLayout>
-                <Banner status="warning" title="Advanced Features">
+            <Card>
+              <div style={{ padding: '1.5rem' }}>
+                <Text variant="headingMd" as="h3">Advanced Settings</Text>
+                <FormLayout>
+                  <Banner tone="warning" title="Advanced Features">
                   <Text variant="bodySm">
                     These settings are intended for advanced users. Changing these values may affect the performance of the application.
                   </Text>
@@ -691,14 +705,15 @@ export const SettingsPage: React.FC = () => {
                 <Divider />
 
                 <ButtonGroup>
-                  <Button icon={RefreshMinor} onClick={() => console.log('Reset settings')}>
+                  <Button icon={RefreshIcon} onClick={() => console.log('Reset settings')}>
                     Reset to Defaults
                   </Button>
-                  <Button icon={ExportMinor} onClick={() => console.log('Export settings')}>
+                  <Button icon={ExportIcon} onClick={() => console.log('Export settings')}>
                     Export Settings
                   </Button>
                 </ButtonGroup>
               </FormLayout>
+              </div>
             </Card>
           )}
         </Layout.Section>
@@ -765,7 +780,7 @@ export const SettingsPage: React.FC = () => {
                 <li>Project status and timestamps</li>
                 <li>Framework and architecture information</li>
               </ul>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 CSV export provides a quick overview of all projects suitable for analysis.
               </Text>
             </>
@@ -789,7 +804,7 @@ export const SettingsPage: React.FC = () => {
           )}
 
           {exportFormat === 'github' && (
-            <Text variant="bodySm" color="subdued">
+            <Text variant="bodySm" tone="subdued">
               GitHub export will create a repository with your project files and documentation.
             </Text>
           )}
@@ -820,14 +835,14 @@ export const SettingsPage: React.FC = () => {
                   }}
                 />
               </div>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 {exportProgress}% Complete
               </Text>
             </>
           )}
 
           <Divider />
-          <Text variant="bodySm" color="subdued">
+          <Text variant="bodySm" tone="subdued">
             The export may take a few moments depending on the size of your projects and selected format.
           </Text>
         </TextContainer>
@@ -864,7 +879,7 @@ export const SettingsPage: React.FC = () => {
         <TextContainer>
           {!showPasswordInput ? (
             <>
-              <Banner status="critical">
+              <Banner tone="critical">
                 <Text>
                   <strong>⚠️ WARNING: This action cannot be undone</strong>
                 </Text>
@@ -879,7 +894,7 @@ export const SettingsPage: React.FC = () => {
                 <li><strong>Shared resources</strong> - any templates or components you've created</li>
               </ul>
 
-              <Banner status="warning">
+              <Banner tone="warning">
                 <Text variant="bodySm">
                   <strong>Before you delete your account:</strong><br/>
                   • Export any projects you want to keep<br/>
@@ -892,7 +907,7 @@ export const SettingsPage: React.FC = () => {
               <Divider />
 
               <Text variant="headingMd" as="h3">Data Recovery</Text>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 Once your account is deleted, there is no way to recover your data.
                 We recommend exporting your projects before proceeding.
               </Text>
@@ -906,7 +921,7 @@ export const SettingsPage: React.FC = () => {
             </>
           ) : (
             <>
-              <Banner status="critical">
+              <Banner tone="critical">
                 <Text>
                   <strong>⚠️ FINAL CONFIRMATION REQUIRED</strong>
                 </Text>
@@ -960,25 +975,25 @@ export const SettingsPage: React.FC = () => {
                       }}
                     />
                   </div>
-                  <Text variant="bodySm" color="subdued">
+                  <Text variant="bodySm" tone="subdued">
                     {deleteProgress}% Complete
                   </Text>
                 </>
               )}
 
               {authError && (
-                <Banner status="critical">
+                <Banner tone="critical">
                   <Text variant="bodySm">{authError}</Text>
                 </Banner>
               )}
 
               {deleteStatus && deleteProgress === 0 && (
-                <Banner status={deleteStatus.includes('failed') ? 'critical' : 'info'}>
+                <Banner tone={deleteStatus.includes('failed') ? 'critical' : 'info'}>
                   <Text variant="bodySm">{deleteStatus}</Text>
                 </Banner>
               )}
 
-              <Banner status="warning">
+              <Banner tone="warning">
                 <Text variant="bodySm">
                   <strong>Important:</strong> Account deletion is permanent and cannot be reversed.
                   All your data will be immediately and permanently removed.

@@ -142,7 +142,7 @@ export const HomePage: React.FC = () => {
               </Text>
               {user && (
                 <div style={{ marginTop: '1rem' }}>
-                  <Badge tone="success">Signed in as {user.email}</Badge>
+                  <Badge tone="success">{`Signed in as ${user.email}`}</Badge>
                 </div>
               )}
             </div>
@@ -152,102 +152,106 @@ export const HomePage: React.FC = () => {
         <Layout.Section>
           {/* Create Project Form */}
           <Card>
-            <Card.Section>
+            <div style={{ padding: '1.5rem' }}>
               <Text variant="headingMd" as="h3">Create New Project</Text>
-            <form onSubmit={handleCreateProject}>
-              <FormLayout>
-                <TextField
-                  label="Describe your project"
-                  placeholder="e.g., Create a CIN7 sales dashboard with revenue charts and order analytics..."
-                  value={prompt}
-                  onChange={setPrompt}
-                  multiline={3}
-                  autoComplete="off"
-                  disabled={!isAuthenticated || isLoading}
-                />
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                  <Button
-                    variant="primary"
-                    size="large"
-                    submit
-                    disabled={!prompt.trim() || !isAuthenticated || isLoading}
-                    loading={isLoading}
-                  >
-                    Create Project
-                  </Button>
-                  {!isAuthenticated && (
-                    <Text as="span" tone="critical">
-                      Please sign in to create projects
-                    </Text>
-                  )}
-                </div>
-              </FormLayout>
-            </form>
-            </Card.Section>
+              <form onSubmit={handleCreateProject} style={{ marginTop: '1rem' }}>
+                <FormLayout>
+                  <TextField
+                    label="Describe your project"
+                    placeholder="e.g., Create a CIN7 sales dashboard with revenue charts and order analytics..."
+                    value={prompt}
+                    onChange={setPrompt}
+                    multiline={3}
+                    autoComplete="off"
+                    disabled={!isAuthenticated || isLoading}
+                  />
+                  <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <Button
+                      variant="primary"
+                      size="large"
+                      submit
+                      disabled={!prompt.trim() || !isAuthenticated || isLoading}
+                      loading={isLoading}
+                    >
+                      Create Project
+                    </Button>
+                    {!isAuthenticated && (
+                      <Text as="span" tone="critical">
+                        Please sign in to create projects
+                      </Text>
+                    )}
+                  </div>
+                </FormLayout>
+              </form>
+            </div>
           </Card>
         </Layout.Section>
 
         <Layout.Section>
           {/* Features Overview */}
           <Card>
-            <Card.Section>
+            <div style={{ padding: '1.5rem' }}>
               <Text variant="headingMd" as="h3">AI-Powered Development Features</Text>
-            <FeatureGrid
-              features={[
-                {
-                  icon: CodeMajor,
-                  title: 'Multi-Page Generation',
-                  description: 'Generate complete multi-page applications with routing and navigation'
-                },
-                {
-                  icon: AnalyticsMajor,
-                  title: 'Smart Architecture',
-                  description: 'AI detects optimal structure and generates production-ready code'
-                },
-                {
-                  icon: StoreMajor,
-                  title: 'CIN7 Integration',
-                  description: 'Built-in CIN7 design system and Polaris components'
-                },
-                {
-                  icon: ChatMajor,
-                  title: 'Contextual Updates',
-                  description: 'Chat with AI to modify and improve your projects iteratively'
-                },
-                {
-                  icon: DesktopMajor,
-                  title: 'Real-time Preview',
-                  description: 'See your changes instantly with live preview functionality'
-                },
-                {
-                  icon: MobileMajor,
-                  title: 'Mobile-First',
-                  description: 'Responsive designs that work perfectly on all devices'
-                }
-              ]}
-              columns={3}
-            />
-            </Card.Section>
+              <div style={{ marginTop: '1rem' }}>
+                <FeatureGrid
+                  features={[
+                    {
+                      icon: CodeMajor,
+                      title: 'Multi-Page Generation',
+                      description: 'Generate complete multi-page applications with routing and navigation'
+                    },
+                    {
+                      icon: AnalyticsMajor,
+                      title: 'Smart Architecture',
+                      description: 'AI detects optimal structure and generates production-ready code'
+                    },
+                    {
+                      icon: StoreMajor,
+                      title: 'CIN7 Integration',
+                      description: 'Built-in CIN7 design system and Polaris components'
+                    },
+                    {
+                      icon: ChatMajor,
+                      title: 'Contextual Updates',
+                      description: 'Chat with AI to modify and improve your projects iteratively'
+                    },
+                    {
+                      icon: DesktopMajor,
+                      title: 'Real-time Preview',
+                      description: 'See your changes instantly with live preview functionality'
+                    },
+                    {
+                      icon: MobileMajor,
+                      title: 'Mobile-First',
+                      description: 'Responsive designs that work perfectly on all devices'
+                    }
+                  ]}
+                  columns={3}
+                />
+              </div>
+            </div>
           </Card>
         </Layout.Section>
 
         <Layout.Section>
           {/* Template Gallery */}
           <Card>
-            <Card.Section>
+            <div style={{ padding: '1.5rem' }}>
               <Text variant="headingMd" as="h3">Start with a Template</Text>
-            <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4 }}>
-              {templates.map((template, index) => (
-                <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
-                  <TemplateCard
-                    template={template}
-                    onSelect={handleTemplateClick}
-                    disabled={!isAuthenticated || isLoading}
-                  />
-                </div>
-              ))}
-            </Grid>
-            </Card.Section>
+              <div style={{ marginTop: '1rem' }}>
+                <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4 }}>
+                  {templates.map((template, index) => (
+                    <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
+                      <TemplateCard
+                        template={template}
+                        onSelect={handleTemplateClick}
+                        disabled={!isAuthenticated || isLoading}
+                      />
+                    </div>
+                  ))}
+                </Grid>
+              </div>
+            </div>
           </Card>
         </Layout.Section>
 
@@ -255,38 +259,40 @@ export const HomePage: React.FC = () => {
           <Layout.Section>
             {/* Recent Projects */}
             <Card>
-              <Card.Section>
+              <div style={{ padding: '1.5rem' }}>
                 <Text variant="headingMd" as="h3">Recent Projects</Text>
-              <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
-                {recentProjects.map((project: any, index) => (
-                  <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
-                    <Card>
-                      <div style={{ padding: '1rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                          <Text variant="headingSm" as="h3">
-                            {project.name}
-                          </Text>
-                          <Button
-                            size="slim"
-                            onClick={() => navigate(`/project/${project.id}`)}
-                          >
-                            Open
-                          </Button>
-                        </div>
-                        <Text variant="bodySm" as="p">
-                          {project.description || 'No description'}
-                        </Text>
-                        <div style={{ marginTop: '0.5rem' }}>
-                          <Text variant="bodyXs" as="p">
-                            Updated {new Date(project.updated_at).toLocaleDateString()}
-                          </Text>
-                        </div>
+                <div style={{ marginTop: '1rem' }}>
+                  <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
+                    {recentProjects.map((project: any, index) => (
+                      <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
+                        <Card>
+                          <div style={{ padding: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                              <Text variant="headingSm" as="h3">
+                                {project.name}
+                              </Text>
+                              <Button
+                                size="slim"
+                                onClick={() => navigate(`/project/${project.id}`)}
+                              >
+                                Open
+                              </Button>
+                            </div>
+                            <Text variant="bodySm" as="p">
+                              {project.description || 'No description'}
+                            </Text>
+                            <div style={{ marginTop: '0.5rem' }}>
+                              <Text variant="bodyXs" as="p">
+                                Updated {new Date(project.updated_at).toLocaleDateString()}
+                              </Text>
+                            </div>
+                          </div>
+                        </Card>
                       </div>
-                    </Card>
-                  </div>
-                ))}
-              </Grid>
-              </Card.Section>
+                    ))}
+                  </Grid>
+                </div>
+              </div>
             </Card>
           </Layout.Section>
         )}

@@ -24,7 +24,7 @@ import {
   MobileIcon,
   DesktopIcon,
   HomeIcon,
-  AnalyticsIcon,
+  ChartLineIcon,
   SettingsIcon,
   PlusCircleIcon
 } from '@shopify/polaris-icons'
@@ -72,7 +72,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'full-app',
     framework: 'react',
     complexity: 'complex',
-    icon: AnalyticsIcon,
+    icon: ChartLineIcon,
     template: 'dashboard'
   },
   {

@@ -113,7 +113,7 @@ describe('AIGatewayService', () => {
     it('should generate response successfully', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' }
+        context: { project_id: 'test-project' }
       }
 
       const mockGLMResponse = {
@@ -142,7 +142,7 @@ describe('AIGatewayService', () => {
     it('should handle errors gracefully', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' }
+        context: { project_id: 'test-project' }
       }
 
       const mockGLMService = getGLMService()
@@ -157,7 +157,7 @@ describe('AIGatewayService', () => {
     it('should handle cached responses', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' }
+        context: { project_id: 'test-project' }
       }
 
       const mockGLMResponse = {
@@ -191,7 +191,7 @@ describe('AIGatewayService', () => {
     it('should handle streaming responses', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' },
+        context: { project_id: 'test-project' },
         options: { stream: true }
       }
 
@@ -216,7 +216,7 @@ describe('AIGatewayService', () => {
     it('should handle streaming errors', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' },
+        context: { project_id: 'test-project' },
         options: { stream: true }
       }
 
@@ -236,7 +236,7 @@ describe('AIGatewayService', () => {
   describe('processContextualUpdate', () => {
     it('should process contextual updates', async () => {
       const mockContext = {
-        projectId: 'test-project',
+        project_id: 'test-project',
         architecture: { type: 'multi-page' }
       }
       const mockFiles = [{
@@ -276,7 +276,7 @@ describe('AIGatewayService', () => {
     it('should open circuit breaker after failures', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' }
+        context: { project_id: 'test-project' }
       }
 
       const mockGLMService = getGLMService()
@@ -302,7 +302,7 @@ describe('AIGatewayService', () => {
     it('should deduplicate identical requests', async () => {
       const mockRequest = {
         prompt: 'Create a React component',
-        context: { projectId: 'test-project' }
+        context: { project_id: 'test-project' }
       }
 
       const mockGLMResponse = {
@@ -387,7 +387,7 @@ describe('AI Gateway Integration', () => {
     const request = {
       prompt: 'Create a simple counter component in React with TypeScript',
       context: {
-        projectId: 'test-project',
+        project_id: 'test-project',
         framework: 'react',
         architecture: { type: 'single-page' }
       },
@@ -448,7 +448,7 @@ export default function Counter({ initialValue = 0 }: CounterProps) {
   it('should handle streaming responses', async () => {
     const request = {
       prompt: 'Create a simple counter component',
-      context: { projectId: 'test-project' },
+      context: { project_id: 'test-project' },
       options: { stream: true }
     }
 
@@ -487,7 +487,7 @@ export default function Counter({ initialValue = 0 }: CounterProps) {
   it('should maintain performance under load', async () => {
     const requests = Array.from({ length: 10 }, (_, i) => ({
       prompt: `Create component ${i + 1}`,
-      context: { projectId: 'test-project' }
+      context: { project_id: 'test-project' }
     }))
 
     const mockGLMService = getGLMService()

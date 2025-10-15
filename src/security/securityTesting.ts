@@ -157,7 +157,7 @@ export class SecurityTester {
     for (const maliciousPrompt of this.MALICIOUS_PROMPTS) {
       const testRequest: GenerateRequest = {
         prompt: maliciousPrompt,
-        context: { userId: 'test-user', projectId: 'test-project' }
+        context: { user_id: 'test-user', project_id: 'test-project' }
       }
 
       const validation = InputValidator.validateAIRequest(testRequest)
@@ -172,7 +172,7 @@ export class SecurityTester {
     for (const edgeCase of this.EDGE_CASE_INPUTS) {
       const testRequest: GenerateRequest = {
         prompt: edgeCase as string,
-        context: { userId: 'test-user', projectId: 'test-project' }
+        context: { user_id: 'test-user', project_id: 'test-project' }
       }
 
       const validation = InputValidator.validateAIRequest(testRequest)
@@ -295,7 +295,7 @@ export class SecurityTester {
       for (let i = 0; i < 10; i++) {
         const testRequest: GenerateRequest = {
           prompt: `Test request ${i}`,
-          context: { userId: 'test-user', projectId: 'test-project' }
+          context: { user_id: 'test-user', project_id: 'test-project' }
         }
 
         const validation = InputValidator.validateAIRequest(testRequest)

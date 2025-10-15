@@ -19,12 +19,11 @@ export const ProjectPage: React.FC = () => {
       <SkeletonPage
         primaryAction
         title="Loading Project..."
-        breadcrumbs={[{ content: 'Dashboard', url: '/' }]}
       >
         <Layout>
           <Layout.Section>
             <Card>
-              <Text>Loading your project...</Text>
+              <Text as="p">Loading your project...</Text>
             </Card>
           </Layout.Section>
         </Layout>
@@ -36,7 +35,6 @@ export const ProjectPage: React.FC = () => {
     return (
       <Page
         title="Error"
-        breadcrumbs={[{ content: 'Dashboard', url: '/' }]}
       >
         <Layout>
           <Layout.Section>
@@ -44,7 +42,7 @@ export const ProjectPage: React.FC = () => {
               <Text variant="headingMd" as="h2" tone="critical">
                 Failed to load project
               </Text>
-              <Text>{error}</Text>
+              <Text as="p">{error}</Text>
             </Card>
           </Layout.Section>
         </Layout>
@@ -56,7 +54,6 @@ export const ProjectPage: React.FC = () => {
     return (
       <Page
         title="Project Not Found"
-        breadcrumbs={[{ content: 'Dashboard', url: '/' }]}
       >
         <Layout>
           <Layout.Section>
@@ -64,7 +61,7 @@ export const ProjectPage: React.FC = () => {
               <Text variant="headingMd" as="h2">
                 Project not found
               </Text>
-              <Text>The project you're looking for doesn't exist or you don't have access to it.</Text>
+              <Text as="p">The project you're looking for doesn't exist or you don't have access to it.</Text>
             </Card>
           </Layout.Section>
         </Layout>
@@ -75,7 +72,6 @@ export const ProjectPage: React.FC = () => {
   return (
     <Page
       title={currentProject.name}
-      breadcrumbs={[{ content: 'Dashboard', url: '/' }]}
       subtitle={currentProject.description}
     >
       <ProjectWorkspace />

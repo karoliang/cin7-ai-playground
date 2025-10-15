@@ -4,16 +4,16 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { Card, Layout, Page, Text, Button, Badge, Stack, Grid, Divider } from '@shopify/polaris'
+import { Card, Layout, Page, Text, Button, Badge, BlockStack, InlineStack, Grid, Divider } from '@shopify/polaris'
 import {
-  PerformanceMajor,
-  AnalyticsMajor,
-  CircleMajor,
-  AlertMajor,
-  ClockMajor,
-  DatabaseMajor,
-  CashDollarMajor,
-  MobileMajor
+  ChartBarIcon,
+  ChartLineIcon,
+  CircleIcon,
+  AlertIcon,
+  ClockIcon,
+  DatabaseIcon,
+  CurrencyDollarIcon,
+  DevicePhoneIcon
 } from '@shopify/polaris-icons'
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
@@ -146,8 +146,8 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <Stack spacing="tight">
-              <Stack.Item>
+            <BlockStack gap="tight">
+              <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
                     width: '12px',
@@ -158,14 +158,14 @@ export const PerformanceDashboard: React.FC = () => {
                   }} />
                   <Text variant="headingMd" as="h3">CPU Usage</Text>
                 </div>
-              </Stack.Item>
+              </div>
               <Text variant="heading2xl" as="p">
                 {latestMetric.cpu?.toFixed(1) || 0}%
               </Text>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 {latestMetric.cpu > 80 ? 'Critical' : latestMetric.cpu > 60 ? 'Warning' : 'Normal'}
               </Text>
-            </Stack>
+            </BlockStack>
           </div>
         </Card>
       </Grid.Cell>
@@ -173,8 +173,8 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <Stack spacing="tight">
-              <Stack.Item>
+            <BlockStack gap="tight">
+              <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
                     width: '12px',
@@ -185,14 +185,14 @@ export const PerformanceDashboard: React.FC = () => {
                   }} />
                   <Text variant="headingMd" as="h3">Memory</Text>
                 </div>
-              </Stack.Item>
+              </div>
               <Text variant="heading2xl" as="p">
                 {latestMetric.memory?.toFixed(1) || 0}%
               </Text>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 {latestMetric.memory > 85 ? 'Critical' : latestMetric.memory > 70 ? 'Warning' : 'Normal'}
               </Text>
-            </Stack>
+            </BlockStack>
           </div>
         </Card>
       </Grid.Cell>
@@ -200,8 +200,8 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <Stack spacing="tight">
-              <Stack.Item>
+            <BlockStack gap="tight">
+              <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
                     width: '12px',
@@ -212,14 +212,14 @@ export const PerformanceDashboard: React.FC = () => {
                   }} />
                   <Text variant="headingMd" as="h3">Latency</Text>
                 </div>
-              </Stack.Item>
+              </div>
               <Text variant="heading2xl" as="p">
                 {latestMetric.avgLatency?.toFixed(0) || 0}ms
               </Text>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 {latestMetric.avgLatency > 1000 ? 'Poor' : latestMetric.avgLatency > 500 ? 'Fair' : 'Good'}
               </Text>
-            </Stack>
+            </BlockStack>
           </div>
         </Card>
       </Grid.Cell>
@@ -227,8 +227,8 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <Stack spacing="tight">
-              <Stack.Item>
+            <BlockStack gap="tight">
+              <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
                     width: '12px',
@@ -239,20 +239,22 @@ export const PerformanceDashboard: React.FC = () => {
                   }} />
                   <Text variant="headingMd" as="h3">Cache Hit Rate</Text>
                 </div>
-              </Stack.Item>
+              </div>
               <Text variant="heading2xl" as="p">
                 {latestMetric.cacheHitRate?.toFixed(1) || 0}%
               </Text>
-              <Text variant="bodySm" color="subdued">
+              <Text variant="bodySm" tone="subdued">
                 {latestMetric.cacheHitRate < 60 ? 'Poor' : latestMetric.cacheHitRate < 80 ? 'Fair' : 'Good'}
               </Text>
-            </Stack>
+            </BlockStack>
           </div>
         </Card>
       </Grid.Cell>
 
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-        <Card title="Performance Trends">
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Performance Trends</Text>
           <div style={{ height: '300px', padding: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={metrics}>
@@ -293,11 +295,14 @@ export const PerformanceDashboard: React.FC = () => {
               </LineChart>
             </ResponsiveContainer>
           </div>
+          </div>
         </Card>
       </Grid.Cell>
 
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-        <Card title="Response Time Analysis">
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Response Time Analysis</Text>
           <div style={{ height: '300px', padding: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={metrics}>
@@ -322,18 +327,21 @@ export const PerformanceDashboard: React.FC = () => {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          </div>
         </Card>
       </Grid.Cell>
 
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-        <Card title="Recent Alerts">
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Recent Alerts</Text>
           <div style={{ padding: '16px', maxHeight: '400px', overflowY: 'auto' }}>
             {alerts.length === 0 ? (
-              <Text variant="bodyMd" color="subdued" alignment="center">
+              <Text variant="bodyMd" tone="subdued" alignment="center">
                 No performance alerts
               </Text>
             ) : (
-              <Stack spacing="tight">
+              <BlockStack gap="tight">
                 {alerts.map((alert) => (
                   <div key={alert.id} style={{
                     padding: '12px',
@@ -341,8 +349,8 @@ export const PerformanceDashboard: React.FC = () => {
                     borderRadius: '8px',
                     backgroundColor: alert.type === 'critical' ? '#ffe3e3' : alert.type === 'warning' ? '#fff3cd' : '#f8f9fa'
                   }}>
-                    <Stack spacing="tight">
-                      <Stack.Item>
+                    <BlockStack gap="tight">
+                      <div>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
                           <Badge status={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
                             {alert.type.toUpperCase()}
@@ -351,23 +359,26 @@ export const PerformanceDashboard: React.FC = () => {
                             {alert.title}
                           </Text>
                         </div>
-                      </Stack.Item>
+                      </div>
                       <Text variant="bodySm">{alert.description}</Text>
-                      <Text variant="bodySm" color="subdued">{alert.recommendation}</Text>
-                      <Text variant="bodyXs" color="subdued">
+                      <Text variant="bodySm" tone="subdued">{alert.recommendation}</Text>
+                      <Text variant="bodyXs" tone="subdued">
                         {new Date(alert.timestamp).toLocaleString()}
                       </Text>
-                    </Stack>
+                    </BlockStack>
                   </div>
                 ))}
-              </Stack>
+              </BlockStack>
             )}
+          </div>
           </div>
         </Card>
       </Grid.Cell>
 
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-        <Card title="System Health Score">
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">System Health Score</Text>
           <div style={{ padding: '16px' }}>
             <div style={{ textAlign: 'center', marginBottom: '24px' }}>
               <div style={{
@@ -380,7 +391,7 @@ export const PerformanceDashboard: React.FC = () => {
                 justifyContent: 'center',
                 margin: '0 auto'
               }}>
-                <Text variant="heading3xl" as="p" color="white">
+                <Text variant="heading3xl" as="p" tone="white">
                   {calculateHealthScore(latestMetric)}
                 </Text>
               </div>
@@ -389,7 +400,7 @@ export const PerformanceDashboard: React.FC = () => {
               </Text>
             </div>
 
-            <Stack spacing="loose">
+            <BlockStack gap="loose">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text variant="bodySm">Request Success Rate</Text>
                 <Badge status="success">95.2%</Badge>
@@ -406,7 +417,8 @@ export const PerformanceDashboard: React.FC = () => {
                 <Text variant="bodySm">Resource Utilization</Text>
                 <Badge status="success">Optimal</Badge>
               </div>
-            </Stack>
+            </BlockStack>
+          </div>
           </div>
         </Card>
       </Grid.Cell>
@@ -416,7 +428,9 @@ export const PerformanceDashboard: React.FC = () => {
   const renderAIPerformanceTab = () => (
     <Grid>
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-        <Card title="AI Response Times">
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">AI Response Times</Text>
           <div style={{ height: '300px', padding: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={metrics.slice(-10)}>
@@ -433,11 +447,14 @@ export const PerformanceDashboard: React.FC = () => {
               </BarChart>
             </ResponsiveContainer>
           </div>
+          </div>
         </Card>
       </Grid.Cell>
 
       <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-        <Card title="Token Processing Rate">
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Token Processing Rate</Text>
           <div style={{ height: '300px', padding: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={metrics}>
@@ -461,34 +478,38 @@ export const PerformanceDashboard: React.FC = () => {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+          </div>
         </Card>
       </Grid.Cell>
 
-      <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
-        <Card title="AI Performance Metrics">
+      <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+        <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">AI Performance Metrics</Text>
           <div style={{ padding: '16px' }}>
             <Grid>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Average Response Time</Text>
                 <Text variant="headingLg" as="p">{latestMetric.avgLatency?.toFixed(0) || 0}ms</Text>
-                <Text variant="bodySm" color="subdued">Last 24 hours</Text>
+                <Text variant="bodySm" tone="subdued">Last 24 hours</Text>
               </Grid.Cell>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Tokens Processed</Text>
                 <Text variant="headingLg" as="p">{latestMetric.tokensPerSecond?.toFixed(0) || 0}/sec</Text>
-                <Text variant="bodySm" color="subdued">Current rate</Text>
+                <Text variant="bodySm" tone="subdued">Current rate</Text>
               </Grid.Cell>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Cache Hit Rate</Text>
                 <Text variant="headingLg" as="p">{latestMetric.cacheHitRate?.toFixed(1) || 0}%</Text>
-                <Text variant="bodySm" color="subdued">AI responses</Text>
+                <Text variant="bodySm" tone="subdued">AI responses</Text>
               </Grid.Cell>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Cost Efficiency</Text>
                 <Text variant="headingLg" as="p">${(latestMetric.cost || 0).toFixed(3)}</Text>
-                <Text variant="bodySm" color="subdued">Per request</Text>
+                <Text variant="bodySm" tone="subdued">Per request</Text>
               </Grid.Cell>
             </Grid>
+          </div>
           </div>
         </Card>
       </Grid.Cell>
@@ -504,7 +525,9 @@ export const PerformanceDashboard: React.FC = () => {
     return (
       <Grid>
         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-          <Card title="Cache Hit Rate Distribution">
+          <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Cache Hit Rate Distribution</Text>
             <div style={{ height: '300px', padding: '16px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -526,11 +549,14 @@ export const PerformanceDashboard: React.FC = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
+        </Card>
         </Grid.Cell>
 
         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-          <Card title="Cache Performance Trends">
+          <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Cache Performance Trends</Text>
             <div style={{ height: '300px', padding: '16px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={metrics}>
@@ -555,16 +581,19 @@ export const PerformanceDashboard: React.FC = () => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
+        </Card>
         </Grid.Cell>
 
-        <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
-          <Card title="Cache Optimization Recommendations">
+        <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+          <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Cache Optimization Recommendations</Text>
             <div style={{ padding: '16px' }}>
-              <Stack spacing="loose">
+              <BlockStack gap="loose">
                 <div>
                   <Text variant="headingMd" as="h3">Enable Semantic Caching</Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text variant="bodySm" tone="subdued">
                     Implement semantic similarity matching to improve cache hit rates for similar but not identical queries.
                   </Text>
                   <Button marginTop="tight">Implement</Button>
@@ -574,7 +603,7 @@ export const PerformanceDashboard: React.FC = () => {
 
                 <div>
                   <Text variant="headingMd" as="h3">Optimize TTL Settings</Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text variant="bodySm" tone="subdued">
                     Adjust time-to-live values based on content volatility and usage patterns.
                   </Text>
                   <Button marginTop="tight">Configure</Button>
@@ -584,14 +613,15 @@ export const PerformanceDashboard: React.FC = () => {
 
                 <div>
                   <Text variant="headingMd" as="h3">Implement Predictive Preloading</Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text variant="bodySm" tone="subdued">
                     Preload cache entries based on user behavior patterns and request sequences.
                   </Text>
                   <Button marginTop="tight">Enable</Button>
                 </div>
-              </Stack>
+              </BlockStack>
             </div>
-          </Card>
+          </div>
+        </Card>
         </Grid.Cell>
       </Grid>
     )
@@ -607,7 +637,9 @@ export const PerformanceDashboard: React.FC = () => {
     return (
       <Grid>
         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-          <Card title="Cost Trends">
+          <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Cost Trends</Text>
             <div style={{ height: '300px', padding: '16px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={costData}>
@@ -627,11 +659,14 @@ export const PerformanceDashboard: React.FC = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
+        </Card>
         </Grid.Cell>
 
         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
-          <Card title="Request Volume vs Cost">
+          <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Request Volume vs Cost</Text>
             <div style={{ height: '300px', padding: '16px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={costData}>
@@ -662,54 +697,60 @@ export const PerformanceDashboard: React.FC = () => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-          </Card>
+          </div>
+        </Card>
         </Grid.Cell>
 
-        <Grid.Cell columnSpan={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 12 }}>
-          <Card title="Cost Optimization Summary">
+        <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 6, xl: 6 }}>
+          <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Cost Optimization Summary</Text>
             <div style={{ padding: '16px' }}>
               <Grid>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Total Cost Today</Text>
                   <Text variant="headingLg" as="p">$12.45</Text>
-                  <Text variant="bodySm" color="subdued">↓ 15% from yesterday</Text>
+                  <Text variant="bodySm" tone="subdued">↓ 15% from yesterday</Text>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Cost per Request</Text>
                   <Text variant="headingLg" as="p">$0.042</Text>
-                  <Text variant="bodySm" color="subdued">↓ 8% from average</Text>
+                  <Text variant="bodySm" tone="subdued">↓ 8% from average</Text>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Saved by Caching</Text>
                   <Text variant="headingLg" as="p">$3.21</Text>
-                  <Text variant="bodySm" color="subdued">25.8% of total</Text>
+                  <Text variant="bodySm" tone="subdued">25.8% of total</Text>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Projected Monthly</Text>
                   <Text variant="headingLg" as="p">$374</Text>
-                  <Text variant="bodySm" color="subdued">On current trend</Text>
+                  <Text variant="bodySm" tone="subdued">On current trend</Text>
                 </Grid.Cell>
               </Grid>
             </div>
-          </Card>
+          </div>
+        </Card>
         </Grid.Cell>
       </Grid>
     )
   }
 
   const renderAlertsTab = () => (
-    <Card title="Performance Alerts & Recommendations">
+    <Card>
+          <div style={{ padding: '1.5rem' }}>
+            <Text variant="headingMd" as="h3">Performance Alerts & Recommendations</Text>
       <div style={{ padding: '16px' }}>
         {alerts.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
             <Text variant="headingMd" as="h3">All Systems Optimal</Text>
-            <Text variant="bodyMd" color="subdued">
+            <Text variant="bodyMd" tone="subdued">
               No performance alerts detected. All systems are running within optimal parameters.
             </Text>
           </div>
         ) : (
-          <Stack spacing="loose">
+          <BlockStack gap="loose">
             {alerts.map((alert) => (
               <div key={alert.id} style={{
                 padding: '16px',
@@ -717,8 +758,8 @@ export const PerformanceDashboard: React.FC = () => {
                 borderRadius: '8px',
                 backgroundColor: alert.type === 'critical' ? '#ffe3e3' : alert.type === 'warning' ? '#fff3cd' : '#f8f9fa'
               }}>
-                <Stack spacing="tight">
-                  <Stack.Item>
+                <BlockStack gap="tight">
+                  <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <Badge status={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
@@ -728,31 +769,32 @@ export const PerformanceDashboard: React.FC = () => {
                           {alert.title}
                         </Text>
                       </div>
-                      <Text variant="bodyXs" color="subdued">
+                      <Text variant="bodyXs" tone="subdued">
                         {new Date(alert.timestamp).toLocaleString()}
                       </Text>
                     </div>
-                  </Stack.Item>
+                  </div>
                   <Text variant="bodySm">{alert.description}</Text>
                   <Divider />
                   <div>
                     <Text variant="bodySm" fontWeight="semibold">Impact:</Text>
-                    <Text variant="bodySm" color="subdued">{alert.impact}</Text>
+                    <Text variant="bodySm" tone="subdued">{alert.impact}</Text>
                   </div>
                   <div>
                     <Text variant="bodySm" fontWeight="semibold">Recommendation:</Text>
-                    <Text variant="bodySm" color="subdued">{alert.recommendation}</Text>
+                    <Text variant="bodySm" tone="subdued">{alert.recommendation}</Text>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                    <Button size="small" primary>Apply Fix</Button>
-                    <Button size="small">Dismiss</Button>
-                    <Button size="small" monochrome>Learn More</Button>
+                    <Button size="slim" variant="primary">Apply Fix</Button>
+                    <Button size="slim">Dismiss</Button>
+                    <Button size="slim" tone="critical">Learn More</Button>
                   </div>
-                </Stack>
+                </BlockStack>
               </div>
             ))}
-          </Stack>
+          </BlockStack>
         )}
+      </div>
       </div>
     </Card>
   )
@@ -795,18 +837,18 @@ export const PerformanceDashboard: React.FC = () => {
       primaryAction={{
         content: isRealTime ? 'Pause' : 'Resume',
         onAction: () => setIsRealTime(!isRealTime),
-        icon: isRealTime ? CircleMajor : AnalyticsMajor
+        icon: isRealTime ? CircleIcon : ChartLineIcon
       }}
       secondaryActions={[
         {
           content: 'Export Report',
           onAction: () => console.log('Export performance report'),
-          icon: AnalyticsMajor
+          icon: ChartBarIcon
         },
         {
           content: 'Settings',
           onAction: () => console.log('Open performance settings'),
-          icon: CircleMajor
+          icon: CircleIcon
         }
       ]}
     >
@@ -818,8 +860,8 @@ export const PerformanceDashboard: React.FC = () => {
                 {['1h', '6h', '24h', '7d'].map((range) => (
                   <Button
                     key={range}
-                    size="small"
-                    primary={selectedTimeRange === range}
+                    size="slim"
+                    variant={selectedTimeRange === range ? 'primary' : 'secondary'}
                     onClick={() => setSelectedTimeRange(range as any)}
                   >
                     {range}
@@ -834,7 +876,7 @@ export const PerformanceDashboard: React.FC = () => {
                   backgroundColor: isRealTime ? '#51cf66' : '#868e96',
                   animation: isRealTime ? 'pulse 2s infinite' : 'none'
                 }} />
-                <Text variant="bodySm" color="subdued">
+                <Text variant="bodySm" tone="subdued">
                   {isRealTime ? 'Live' : 'Paused'}
                 </Text>
               </div>
