@@ -1,0 +1,44 @@
+name: Update Documentation
+
+on:
+  push:
+    paths:
+      - 'docs/**'
+      - 'README.md'
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate documentation
+        run: |
+          npm run docs:generate
+          npm run docs:build
+
+      - name: Commit documentation changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs/
+          if git diff --staged --quiet; then
+            echo "No documentation changes to commit"
+          else
+            git commit -m "docs: Auto-update documentation [skip ci]"
+            git push
+          fi
