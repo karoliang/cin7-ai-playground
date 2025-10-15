@@ -142,11 +142,8 @@ export default defineConfig({
           return `assets/[name]-[hash][extname]`
         }
       },
-      // External dependencies for CDN loading
-      external: process.env.NODE_ENV === 'production' ? [
-        'react',
-        'react-dom'
-      ] : []
+      // Bundle all dependencies for static deployment
+      external: []
     },
     // Optimize chunk size warnings
     chunkSizeWarningLimit: 1000,
