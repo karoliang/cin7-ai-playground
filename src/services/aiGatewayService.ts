@@ -641,7 +641,16 @@ export class AIGatewayService {
 
     return {
       prompt: prompt.trim(),
-      context: request.context,
+      context: {
+        project_id: request.context?.project_id,
+        user_id: request.context?.user_id,
+        session_id: request.context?.session_id,
+        framework: request.context?.framework as any,
+        template: request.context?.template as any,
+        architecture: request.context?.architecture as any,
+        constraints: request.context?.constraints,
+        examples: request.context?.examples
+      },
       options: {
         temperature: request.options?.temperature,
         max_tokens: request.options?.maxTokens,

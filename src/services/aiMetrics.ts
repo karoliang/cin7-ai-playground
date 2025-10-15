@@ -983,10 +983,13 @@ class AlertManager {
           case 'slack':
           case 'webhook':
           case 'sms':
-          case 'console':
+            // Actual notification implementation would go here
             console.warn(`[ALERT] ${alert.code}: ${alert.message}`, alert.data)
             break
           // Other notification types would be implemented here
+          default:
+            console.warn(`[ALERT] ${alert.code}: ${alert.message}`, alert.data)
+            break
         }
       } catch (error) {
         console.error('Failed to send alert notification:', error)

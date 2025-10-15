@@ -6,14 +6,14 @@
 import React, { useState, useEffect } from 'react'
 import { Card, Layout, Page, Text, Button, Badge, BlockStack, InlineStack, Grid, Divider } from '@shopify/polaris'
 import {
-  ChartBarIcon,
+  ChartVerticalIcon,
   ChartLineIcon,
-  CircleIcon,
-  AlertIcon,
+  CircleRightIcon,
+  AlertCircleIcon,
   ClockIcon,
   DatabaseIcon,
-  CurrencyDollarIcon,
-  DevicePhoneIcon
+  CashDollarIcon,
+  PhoneIcon
 } from '@shopify/polaris-icons'
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
@@ -146,7 +146,7 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <BlockStack gap="tight">
+            <BlockStack gap="200">
               <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
@@ -173,7 +173,7 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <BlockStack gap="tight">
+            <BlockStack gap="200">
               <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
@@ -200,7 +200,7 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <BlockStack gap="tight">
+            <BlockStack gap="200">
               <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
@@ -227,7 +227,7 @@ export const PerformanceDashboard: React.FC = () => {
       <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
         <Card>
           <div style={{ padding: '16px' }}>
-            <BlockStack gap="tight">
+            <BlockStack gap="200">
               <div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{
@@ -341,7 +341,7 @@ export const PerformanceDashboard: React.FC = () => {
                 No performance alerts
               </Text>
             ) : (
-              <BlockStack gap="tight">
+              <BlockStack gap="200">
                 {alerts.map((alert) => (
                   <div key={alert.id} style={{
                     padding: '12px',
@@ -349,10 +349,10 @@ export const PerformanceDashboard: React.FC = () => {
                     borderRadius: '8px',
                     backgroundColor: alert.type === 'critical' ? '#ffe3e3' : alert.type === 'warning' ? '#fff3cd' : '#f8f9fa'
                   }}>
-                    <BlockStack gap="tight">
+                    <BlockStack gap="200">
                       <div>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                          <Badge status={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
+                          <Badge tone={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
                             {alert.type.toUpperCase()}
                           </Badge>
                           <Text variant="headingSm" as="h3" fontWeight="semibold">
@@ -400,22 +400,22 @@ export const PerformanceDashboard: React.FC = () => {
               </Text>
             </div>
 
-            <BlockStack gap="loose">
+            <BlockStack gap="400">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text variant="bodySm">Request Success Rate</Text>
-                <Badge status="success">95.2%</Badge>
+                <Badge tone="success">95.2%</Badge>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text variant="bodySm">Error Rate</Text>
-                <Badge status="success">0.8%</Badge>
+                <Badge tone="success">0.8%</Badge>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text variant="bodySm">Cache Efficiency</Text>
-                <Badge status="attention">72%</Badge>
+                <Badge tone="attention">72%</Badge>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text variant="bodySm">Resource Utilization</Text>
-                <Badge status="success">Optimal</Badge>
+                <Badge tone="success">Optimal</Badge>
               </div>
             </BlockStack>
           </div>
@@ -590,7 +590,7 @@ export const PerformanceDashboard: React.FC = () => {
           <div style={{ padding: '1.5rem' }}>
             <Text variant="headingMd" as="h3">Cache Optimization Recommendations</Text>
             <div style={{ padding: '16px' }}>
-              <BlockStack gap="loose">
+              <BlockStack gap="400">
                 <div>
                   <Text variant="headingMd" as="h3">Enable Semantic Caching</Text>
                   <Text variant="bodySm" tone="subdued">
@@ -750,7 +750,7 @@ export const PerformanceDashboard: React.FC = () => {
             </Text>
           </div>
         ) : (
-          <BlockStack gap="loose">
+          <BlockStack gap="400">
             {alerts.map((alert) => (
               <div key={alert.id} style={{
                 padding: '16px',
@@ -758,11 +758,11 @@ export const PerformanceDashboard: React.FC = () => {
                 borderRadius: '8px',
                 backgroundColor: alert.type === 'critical' ? '#ffe3e3' : alert.type === 'warning' ? '#fff3cd' : '#f8f9fa'
               }}>
-                <BlockStack gap="tight">
+                <BlockStack gap="200">
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <Badge status={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
+                        <Badge tone={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
                           {alert.type.toUpperCase()}
                         </Badge>
                         <Text variant="headingSm" as="h3" fontWeight="semibold" marginLeft="tight">
@@ -837,18 +837,18 @@ export const PerformanceDashboard: React.FC = () => {
       primaryAction={{
         content: isRealTime ? 'Pause' : 'Resume',
         onAction: () => setIsRealTime(!isRealTime),
-        icon: isRealTime ? CircleIcon : ChartLineIcon
+        icon: isRealTime ? CircleRightIcon : ChartLineIcon
       }}
       secondaryActions={[
         {
           content: 'Export Report',
           onAction: () => console.log('Export performance report'),
-          icon: ChartBarIcon
+          icon: ChartVerticalIcon
         },
         {
           content: 'Settings',
           onAction: () => console.log('Open performance settings'),
-          icon: CircleIcon
+          icon: AlertCircleIcon
         }
       ]}
     >

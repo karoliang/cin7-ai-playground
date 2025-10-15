@@ -441,7 +441,7 @@ export const SettingsPage: React.FC = () => {
   const themeOptions = [
     { label: 'Light', value: 'light' },
     { label: 'Dark', value: 'dark' },
-    { label: 'System', value: 'system' }
+    { label: 'Auto', value: 'auto' }
   ]
 
   const templateOptions = [
@@ -497,7 +497,7 @@ export const SettingsPage: React.FC = () => {
           </Card>
         </Layout.Section>
 
-        <Layout.Section variant="twoThirds">
+        <Layout.Section variant="oneHalf">
           {selectedTab === 0 && (
             <Card>
               <div style={{ padding: '1.5rem' }}>
@@ -532,13 +532,13 @@ export const SettingsPage: React.FC = () => {
                     label="Theme Preference"
                     options={themeOptions}
                     value={resolvedTheme}
-                    onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
+                    onChange={(value) => setTheme(value as 'light' | 'dark' | 'auto')}
                   />
                   <Divider />
                   <Text variant="headingMd" as="h3">Account Status</Text>
                   <InlineStack gap="400">
                     <Badge tone="success">Active</Badge>
-                    <Text variant="bodySm" tone="subdued">
+                    <Text variant="bodySm" tone="subdued" as="p">
                       Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
                     </Text>
                   </InlineStack>
@@ -572,7 +572,7 @@ export const SettingsPage: React.FC = () => {
                       min={10}
                       max={300}
                       step={10}
-                      onChange={setAutoSaveInterval}
+                      onChange={(value) => setAutoSaveInterval(Array.isArray(value) ? value[0] : value)}
                       output
                       disabled={!isAuthenticated}
                     />
@@ -602,7 +602,7 @@ export const SettingsPage: React.FC = () => {
                   label="Default export format"
                   options={exportFormatOptions}
                   value={exportFormat}
-                  onChange={setExportFormat}
+                  onChange={(value) => setExportFormat(value as 'json' | 'csv' | 'zip' | 'github' | 'docker')}
                   disabled={!isAuthenticated}
                 />
 
@@ -639,7 +639,7 @@ export const SettingsPage: React.FC = () => {
                 />
 
                 <Banner tone="info">
-                  <Text variant="bodySm">
+                  <Text variant="bodySm" as="p">
                     <strong>Export Formats:</strong><br/>
                     • <strong>JSON:</strong> Complete project data with all files, messages, and settings<br/>
                     • <strong>CSV:</strong> Project summary with statistics for analysis<br/>
@@ -650,7 +650,7 @@ export const SettingsPage: React.FC = () => {
                 </Banner>
 
                 <Banner tone="warning">
-                  <Text variant="bodySm">
+                  <Text variant="bodySm" as="p">
                     Export settings are saved per project. You can override these settings when exporting individual projects.
                   </Text>
                 </Banner>
@@ -686,6 +686,7 @@ export const SettingsPage: React.FC = () => {
                   label="Custom API URL"
                   placeholder="https://your-api-endpoint.com"
                   disabled={!isAuthenticated}
+                  autoComplete="url"
                 />
 
                 <Checkbox
@@ -750,7 +751,7 @@ export const SettingsPage: React.FC = () => {
         ]}
       >
         <TextContainer>
-          <Text>
+          <Text as="p">
             This will export all your projects in the selected format. The export will include:
           </Text>
 
@@ -780,7 +781,7 @@ export const SettingsPage: React.FC = () => {
                 <li>Project status and timestamps</li>
                 <li>Framework and architecture information</li>
               </ul>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" tone="subdued" as="p">
                 CSV export provides a quick overview of all projects suitable for analysis.
               </Text>
             </>
@@ -804,7 +805,7 @@ export const SettingsPage: React.FC = () => {
           )}
 
           {exportFormat === 'github' && (
-            <Text variant="bodySm" tone="subdued">
+            <Text variant="bodySm" tone="subdued" as="p">
               GitHub export will create a repository with your project files and documentation.
             </Text>
           )}
@@ -814,7 +815,7 @@ export const SettingsPage: React.FC = () => {
               <Divider />
               <Text variant="headingMd" as="h3">Export Progress</Text>
               <div style={{ marginBottom: '8px' }}>
-                <Text>{exportStatus}</Text>
+                <Text as="p">{exportStatus}</Text>
               </div>
               <div
                 style={{
@@ -835,14 +836,14 @@ export const SettingsPage: React.FC = () => {
                   }}
                 />
               </div>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" tone="subdued" as="p">
                 {exportProgress}% Complete
               </Text>
             </>
           )}
 
           <Divider />
-          <Text variant="bodySm" tone="subdued">
+          <Text variant="bodySm" tone="subdued" as="p">
             The export may take a few moments depending on the size of your projects and selected format.
           </Text>
         </TextContainer>
@@ -866,13 +867,12 @@ export const SettingsPage: React.FC = () => {
           onAction: handleDeleteAccount,
           loading: isLoading || authIsLoading,
           disabled: isLoading || authIsLoading || deleteProgress > 0 || countdown > 0,
-          destructive: true
+          tone: 'critical'
         }}
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleCloseDeleteModal,
-            disabled: isLoading || authIsLoading || deleteProgress > 0
+            onAction: handleCloseDeleteModal
           }
         ]}
       >
@@ -880,7 +880,7 @@ export const SettingsPage: React.FC = () => {
           {!showPasswordInput ? (
             <>
               <Banner tone="critical">
-                <Text>
+                <Text as="p">
                   <strong>⚠️ WARNING: This action cannot be undone</strong>
                 </Text>
               </Banner>
@@ -895,7 +895,7 @@ export const SettingsPage: React.FC = () => {
               </ul>
 
               <Banner tone="warning">
-                <Text variant="bodySm">
+                <Text variant="bodySm" as="p">
                   <strong>Before you delete your account:</strong><br/>
                   • Export any projects you want to keep<br/>
                   • Save important configurations or settings<br/>
@@ -907,7 +907,7 @@ export const SettingsPage: React.FC = () => {
               <Divider />
 
               <Text variant="headingMd" as="h3">Data Recovery</Text>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" tone="subdued" as="p">
                 Once your account is deleted, there is no way to recover your data.
                 We recommend exporting your projects before proceeding.
               </Text>
@@ -922,7 +922,7 @@ export const SettingsPage: React.FC = () => {
           ) : (
             <>
               <Banner tone="critical">
-                <Text>
+                <Text as="p">
                   <strong>⚠️ FINAL CONFIRMATION REQUIRED</strong>
                 </Text>
               </Banner>
@@ -935,6 +935,7 @@ export const SettingsPage: React.FC = () => {
                 onChange={setDeletePassword}
                 placeholder="Enter your current password"
                 disabled={isLoading || authIsLoading}
+                autoComplete="current-password"
                 helpText="This verifies your identity before account deletion"
               />
 
@@ -946,6 +947,7 @@ export const SettingsPage: React.FC = () => {
                 onChange={setDeleteConfirmation}
                 placeholder="DELETE"
                 disabled={isLoading || authIsLoading}
+                autoComplete="off"
                 helpText="This confirms you understand this action cannot be undone"
               />
 
@@ -954,7 +956,7 @@ export const SettingsPage: React.FC = () => {
                   <Divider />
                   <Text variant="headingMd" as="h3">Deletion Progress</Text>
                   <div style={{ marginBottom: '8px' }}>
-                    <Text>{deleteStatus}</Text>
+                    <Text as="p">{deleteStatus}</Text>
                   </div>
                   <div
                     style={{
@@ -975,7 +977,7 @@ export const SettingsPage: React.FC = () => {
                       }}
                     />
                   </div>
-                  <Text variant="bodySm" tone="subdued">
+                  <Text variant="bodySm" tone="subdued" as="p">
                     {deleteProgress}% Complete
                   </Text>
                 </>
@@ -983,18 +985,18 @@ export const SettingsPage: React.FC = () => {
 
               {authError && (
                 <Banner tone="critical">
-                  <Text variant="bodySm">{authError}</Text>
+                  <Text variant="bodySm" as="p">{authError}</Text>
                 </Banner>
               )}
 
               {deleteStatus && deleteProgress === 0 && (
                 <Banner tone={deleteStatus.includes('failed') ? 'critical' : 'info'}>
-                  <Text variant="bodySm">{deleteStatus}</Text>
+                  <Text variant="bodySm" as="p">{deleteStatus}</Text>
                 </Banner>
               )}
 
               <Banner tone="warning">
-                <Text variant="bodySm">
+                <Text variant="bodySm" as="p">
                   <strong>Important:</strong> Account deletion is permanent and cannot be reversed.
                   All your data will be immediately and permanently removed.
                 </Text>

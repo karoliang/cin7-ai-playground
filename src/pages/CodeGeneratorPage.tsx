@@ -485,7 +485,7 @@ export const CodeGeneratorPage: React.FC = () => {
       subtitle="Generate code, components, and full applications with AI"
       breadcrumbs={[{ content: 'Home', url: '/' }]}
     >
-      {NotificationComponent}
+      <>{NotificationComponent}</>
 
       <Card>
         <Tabs

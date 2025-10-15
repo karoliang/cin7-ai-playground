@@ -206,7 +206,7 @@ export class MultiPageArchitecture {
    * Generate professional file structure
    */
   static generateFileStructure(architecture: ArchitectureDetection, projectName: string): ProjectFile[] {
-    const { framework, structure } = architecture
+    const { framework, cssFramework, structure } = architecture
     const files: ProjectFile[] = []
 
     // Generate index.html with proper framework setup
