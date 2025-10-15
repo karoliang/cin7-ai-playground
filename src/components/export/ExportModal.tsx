@@ -16,7 +16,7 @@ import {
   ChoiceList,
   Banner
 } from '@shopify/polaris'
-import { ExportIcon, DownloadIcon } from '@shopify/polaris-icons'
+import { ExportIcon, ArrowDownIcon } from '@shopify/polaris-icons'
 import { Project } from '@/types'
 import { exportService, ExportProgress } from '@/services/exportService'
 import { ExportOptions } from '@/lib/projectPackager'
@@ -159,7 +159,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
 
                 <InlineStack gap="200">
                   <Button
-                    icon={DownloadIcon}
+                    icon={ArrowDownIcon}
                     onClick={() => {
                       if (exportResult.blob) {
                         exportService.downloadFile(
@@ -185,7 +185,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
                         {exportProgress.stage.charAt(0).toUpperCase() + exportProgress.stage.slice(1)}
                       </Text>
                       <Badge tone={exportProgress.stage === 'error' ? 'critical' : 'info'}>
-                        {exportProgress.progress}%
+                        {`${exportProgress.progress}%`}
                       </Badge>
                     </InlineStack>
                     <ProgressBar

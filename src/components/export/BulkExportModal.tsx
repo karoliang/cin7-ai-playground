@@ -18,7 +18,7 @@ import {
   TextField,
   DatePicker
 } from '@shopify/polaris'
-import { ExportIcon, DownloadIcon, FilterIcon } from '@shopify/polaris-icons'
+import { ExportIcon, ArrowDownIcon, FilterIcon } from '@shopify/polaris-icons'
 import { useAuthStore } from '@/stores/authStore'
 import { exportService, BulkExportOptions, BulkExportProgress, BulkExportResult } from '@/services/exportService'
 import { ActionModal } from '@/components/ui/PolarisComponents'
@@ -318,7 +318,7 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
 
                 <InlineStack gap="200">
                   <Button
-                    icon={DownloadIcon}
+                    icon={ArrowDownIcon}
                     onClick={() => {
                       if (exportResult.blob) {
                         exportService.downloadFile(
@@ -344,7 +344,7 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
                         {exportProgress.stage.charAt(0).toUpperCase() + exportProgress.stage.slice(1)}
                       </Text>
                       <Badge tone={exportProgress.stage === 'error' ? 'critical' : 'info'}>
-                        {exportProgress.progress}%
+                        {`${exportProgress.progress}%`}
                       </Badge>
                     </InlineStack>
                     <ProgressBar
@@ -370,7 +370,7 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
                   <Text variant="headingMd" as="h3">Export Summary</Text>
                   <InlineStack align="space-between">
                     <Text as="span" variant="bodySm">Projects to export:</Text>
-                    <Badge>{previewProjects}</Badge>
+                    <Badge>{previewProjects.toString()}</Badge>
                   </InlineStack>
                   <InlineStack align="space-between">
                     <Text as="span" variant="bodySm">Estimated size:</Text>

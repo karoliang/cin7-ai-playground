@@ -342,7 +342,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
                       {importProgress.stage.charAt(0).toUpperCase() + importProgress.stage.slice(1)}
                     </Text>
                     <Badge tone={importProgress.stage === 'error' ? 'critical' : 'info'}>
-                      {importProgress.progress}%
+                      {`${importProgress.progress}%`}
                     </Badge>
                   </InlineStack>
                   <ProgressBar
