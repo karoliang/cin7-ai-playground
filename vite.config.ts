@@ -71,7 +71,14 @@ export default defineConfig({
             if (id.includes('zustand') || id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor'
             }
-            if (id.includes('codemirror') || id.includes('@uiw')) {
+            // Break up CodeMirror dependencies to avoid circular issues
+            if (id.includes('@codemirror/state') || id.includes('@codemirror/view')) {
+              return 'codemirror-core'
+            }
+            if (id.includes('@codemirror/lang-') || id.includes('@codemirror/theme-')) {
+              return 'codemirror-extensions'
+            }
+            if (id.includes('@uiw') || id.includes('codemirror')) {
               return 'editor-vendor'
             }
             if (id.includes('framer-motion')) {
@@ -211,7 +218,12 @@ export default defineConfig({
       'clsx',
       '@shopify/polaris',
       'framer-motion',
-      'jszip'
+      'jszip',
+      // CodeMirror dependencies to pre-bundle
+      '@codemirror/state',
+      '@codemirror/view',
+      '@codemirror/language',
+      '@uiw/react-codemirror'
     ]
   }
 })
