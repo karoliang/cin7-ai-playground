@@ -67,9 +67,7 @@ export function useNotifications() {
             key: notification.id,
             content: notification.message,
             onDismiss: () => hideNotification(notification.id),
-            error: notification.type === 'error',
-            warning: notification.type === 'warning',
-            success: notification.type === 'success'
+            error: notification.type === 'error'
           }
         )
       )

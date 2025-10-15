@@ -31,7 +31,7 @@ export interface AuthContext {
 export async function authMiddleware(
   request: AuthenticatedRequest,
   response: Response,
-  supabaseClient: SupabaseClient = supabase
+  _supabaseClient: SupabaseClient = supabase
 ): Promise<{ context: AuthContext } | null> {
   try {
     // Get authorization header
@@ -168,7 +168,7 @@ export function withPermission(
  */
 export async function optionalAuthMiddleware(
   request: AuthenticatedRequest,
-  supabaseClient: SupabaseClient = supabase
+  _supabaseClient: SupabaseClient = supabase
 ): Promise<{ context?: AuthContext }> {
   try {
     const authHeader = request.headers.authorization

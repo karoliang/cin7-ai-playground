@@ -92,7 +92,7 @@ export interface ValidationSchema {
   }
 }
 
-export interface RateLimitConfig {
+export interface APIRateLimitConfig {
   windowMs: number
   max: number
   message?: string

@@ -1,7 +1,6 @@
 // Logging middleware for API requests and responses
 
 import { NextRequest, NextResponse } from 'next/server'
-import { AuthContext } from './auth'
 
 export interface LogContext {
   requestId: string

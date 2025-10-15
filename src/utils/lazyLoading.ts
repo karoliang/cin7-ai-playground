@@ -9,15 +9,13 @@ import { PageSpinner, PageSkeleton } from '@/components/ui/LoadingStates'
 export interface LazyLoadOptions {
   fallback?: React.ComponentType
   errorFallback?: React.ComponentType<{ error: Error; retry: () => void }>
-  preload?: boolean
   timeout?: number
   retryAttempts?: number
   retryDelay?: number
 }
 
-export interface LazyComponentProps {
+export interface LazyComponentProps extends React.HTMLAttributes<HTMLElement> {
   fallback?: React.ComponentType
-  className?: string
   [key: string]: any
 }
 
@@ -40,7 +38,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
     loadWithRetry(importFunc, { maxAttempts: retryAttempts, delay: retryDelay, timeout })
   )
 
-  const LazyWrapper = (props: LazyComponentProps) => {
+  const LazyWrapper = React.forwardRef<any, LazyComponentProps>((props, ref) => {
     const FallbackComponent = props.fallback || CustomFallback
 
     return React.createElement(
@@ -49,15 +47,13 @@ export function createLazyComponent<T extends ComponentType<any>>(
       React.createElement(
         ErrorBoundary,
         { Fallback: ErrorFallback },
-        React.createElement(LazyComponent, props)
+        React.createElement(LazyComponent, { ...props, ref })
       )
     )
-  }
+  })
 
-  // Preload functionality
-  if (options.preload) {
-    LazyComponent.preload()
-  }
+  // Preload functionality - note: preload is not available on lazy components
+  // This would need to be handled at the route level
 
   return LazyWrapper
 }
@@ -181,7 +177,7 @@ export function createLazyRoute<T extends ComponentType<any>>(
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            LazyComponent.preload?.()
+            // Note: Preload would be handled at route level
             observer.disconnect()
           }
         })
@@ -216,35 +212,33 @@ export function preloadComponents(components: Array<{ key: string; importFunc: (
 }
 
 // Pre-defined lazy loaded components for common use cases
-export const LazyHomePage = createLazyComponent(() => import('@/pages/HomePage'), {
-  prefetch: true,
+export const LazyHomePage = createLazyComponent(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage || m })), {
   fallback: PageSkeleton
 })
 
-export const LazyProjectPage = createLazyComponent(() => import('@/pages/ProjectPage'), {
-  prefetch: true,
+export const LazyProjectPage = createLazyComponent(() => import('@/pages/ProjectPage').then(m => ({ default: m.ProjectPage || m })), {
   fallback: PageSkeleton
 })
 
-export const LazyCodeGeneratorPage = createLazyComponent(() => import('@/pages/CodeGeneratorPage'), {
+export const LazyCodeGeneratorPage = createLazyComponent(() => import('@/pages/CodeGeneratorPage').then(m => ({ default: m.CodeGeneratorPage || m })), {
   fallback: PageSpinner
 })
 
-export const LazySettingsPage = createLazyComponent(() => import('@/pages/SettingsPage'), {
+export const LazySettingsPage = createLazyComponent(() => import('@/pages/SettingsPage').then(m => ({ default: m.SettingsPage || m })), {
   fallback: PageSpinner
 })
 
-export const LazyProjectWorkspace = createLazyComponent(() => import('@/components/project/ProjectWorkspace'), {
+export const LazyProjectWorkspace = createLazyComponent(() => import('@/components/project/ProjectWorkspace').then(m => ({ default: m.ProjectWorkspace || m })), {
   fallback: PageSpinner
 })
 
-export const LazyFileEditor = createLazyComponent(() => import('@/components/editor/FileEditor'), {
+export const LazyFileEditor = createLazyComponent(() => import('@/components/editor/FileEditor').then(m => ({ default: m.FileEditor || m })), {
   fallback: PageSpinner
 })
 
-export const LazyBulkExportModal = createLazyComponent(() => import('@/components/export/BulkExportModal'))
+export const LazyBulkExportModal = createLazyComponent(() => import('@/components/export/BulkExportModal').then(m => ({ default: m.BulkExportModal || m })))
 
-export const LazyImportModal = createLazyComponent(() => import('@/components/import/ImportModal'))
+export const LazyImportModal = createLazyComponent(() => import('@/components/import/ImportModal').then(m => ({ default: m.ImportModal || m })))
 
 // Performance monitoring for lazy loading
 export function trackLazyLoadingPerformance() {

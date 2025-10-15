@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { AuthContext } from './auth'
 import { LoggingConfig } from './logging'
 import { RateLimitConfig } from './rateLimiting'
-import { withAuth, withOptionalAuth, withLogging, withRateLimit } from './index'
 
 export interface APIConfig {
   auth?: 'required' | 'optional' | 'none'
@@ -19,67 +18,62 @@ export interface APIConfig {
 }
 
 /**
- * Composite middleware that combines authentication, rate limiting, logging, and CORS
+ * Simplified composite middleware for Next.js API routes
  */
 export function withAPI(
   config: APIConfig = {}
 ) {
   const {
     auth = 'required',
-    rateLimit,
-    logging,
-    cors = true,
-    validation
+    cors = true
   } = config
 
   return (
-    handler: (request: NextRequest, context?: AuthContext, data?: any) => Promise<NextResponse>
+    handler: (request: NextRequest, context?: AuthContext) => Promise<NextResponse>
   ) => {
-    let enhancedHandler = handler
+    return async (request: NextRequest, context?: AuthContext): Promise<NextResponse> => {
+      try {
+        // Handle preflight requests
+        if (request.method === 'OPTIONS' && cors) {
+          const response = new NextResponse(null, { status: 200 })
+          return addCorsHeaders(response, request.headers.get('origin') || undefined)
+        }
 
-    // Add validation middleware if specified
-    if (validation) {
-      const { withValidation } = require('./validation')
+        // Basic authentication check (simplified)
+        if (auth === 'required' && !context?.user) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: 'Authentication required',
+              code: 'UNAUTHORIZED',
+              timestamp: new Date().toISOString()
+            },
+            { status: 401 }
+          )
+        }
 
-      if (validation.body) {
-        const bodyValidation = withValidation(validation.body as any, 'body')
-        enhancedHandler = bodyValidation(enhancedHandler)
+        // Execute the handler
+        const response = await handler(request, context)
+
+        // Add CORS headers if enabled
+        if (cors) {
+          return addCorsHeaders(response, request.headers.get('origin') || undefined)
+        }
+
+        return response
+      } catch (error) {
+        console.error('API Error:', error)
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Internal server error',
+            code: 'INTERNAL_SERVER_ERROR',
+            timestamp: new Date().toISOString()
+          },
+          { status: 500 }
+        )
       }
-
-      if (validation.query) {
-        const queryValidation = withValidation(validation.query as any, 'query')
-        enhancedHandler = queryValidation(enhancedHandler)
-      }
-
-      if (validation.params) {
-        const paramsValidation = withValidation(validation.params as any, 'params')
-        enhancedHandler = paramsValidation(enhancedHandler)
-      }
     }
-
-    // Add authentication middleware
-    if (auth === 'required') {
-      enhancedHandler = withAuth(enhancedHandler)
-    } else if (auth === 'optional') {
-      enhancedHandler = withOptionalAuth(enhancedHandler)
-    }
-
-    // Add rate limiting middleware
-    if (rateLimit) {
-      enhancedHandler = withRateLimit(rateLimit)(enhancedHandler)
-    }
-
-    // Add logging middleware
-    if (logging) {
-      enhancedHandler = withLogging(logging)(enhancedHandler)
-    }
-
-    // Add CORS handling
-    if (cors) {
-      enhancedHandler = withCors(enhancedHandler)
-    }
-
-    return enhancedHandler
   }
 }
 

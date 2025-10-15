@@ -1,5 +1,5 @@
 import { TemplateService } from '@/services/templateService'
-import { Project, ProjectTemplate } from '@/types'
+import { ProjectTemplate } from '@/types'
 import { useProjectStore } from '@/stores/projectStore'
 import { useAuthStore } from '@/stores/authStore'
 

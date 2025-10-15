@@ -10,7 +10,9 @@ export default defineConfig({
       // Optimize JSX runtime
       jsxRuntime: 'automatic',
       // Enable React imports optimization
-      imports: ['react', 'react-dom', 'react/jsx-runtime']
+      babel: {
+        plugins: []
+      }
     }),
     // Bundle analyzer plugin for development
     process.env.ANALYZE === 'true' && visualizer({
