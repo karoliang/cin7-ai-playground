@@ -17,15 +17,15 @@ import {
   Tabs
 } from '@shopify/polaris'
 import {
-  CodeMajor,
-  ExportMinor,
-  ImportMinor,
-  MobileMajor,
-  DesktopMajor,
-  HomeMajor,
-  AnalyticsMajor,
-  SettingsMinor,
-  CirclePlusMajor
+  CodeIcon,
+  ExportIcon,
+  ImportIcon,
+  MobileIcon,
+  DesktopIcon,
+  HomeIcon,
+  AnalyticsIcon,
+  SettingsIcon,
+  PlusCircleIcon
 } from '@shopify/polaris-icons'
 import { generateCodeWithAI } from '@/services/aiService'
 import { useNotifications } from '@/utils/notifications'
@@ -53,7 +53,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'component',
     framework: 'react',
     complexity: 'simple',
-    icon: CodeMajor
+    icon: CodeIcon
   },
   {
     id: 'react-page',
@@ -62,7 +62,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'page',
     framework: 'react',
     complexity: 'intermediate',
-    icon: HomeMajor
+    icon: HomeIcon
   },
   {
     id: 'dashboard',
@@ -71,7 +71,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'full-app',
     framework: 'react',
     complexity: 'complex',
-    icon: AnalyticsMajor,
+    icon: AnalyticsIcon,
     template: 'dashboard'
   },
   {
@@ -81,7 +81,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'full-app',
     framework: 'react',
     complexity: 'complex',
-    icon: MobileMajor,
+    icon: MobileIcon,
     template: 'mobile-commerce'
   },
   {
@@ -91,7 +91,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'component',
     framework: 'vanilla',
     complexity: 'simple',
-    icon: CodeMajor
+    icon: CodeIcon
   },
   {
     id: 'api-endpoint',
@@ -100,7 +100,7 @@ const generationPresets: GenerationPreset[] = [
     type: 'api',
     framework: 'vanilla',
     complexity: 'intermediate',
-    icon: SettingsMinor
+    icon: SettingsIcon
   }
 ]
 
@@ -230,9 +230,9 @@ export const CodeGeneratorPage: React.FC = () => {
 
   const renderPresetPanel = () => (
     <Layout>
-      <Layout.Section oneThird>
+      <Layout.Section>
         <Text variant="headingMd" as="h2">Choose a Template</Text>
-        <Text variant="bodyMd" color="subdued" as="p">
+        <Text variant="bodyMd" as="p">
           Select a preset to quickly get started with common code generation patterns.
         </Text>
       </Layout.Section>
@@ -247,7 +247,6 @@ export const CodeGeneratorPage: React.FC = () => {
           {generationPresets.map((preset) => (
             <Card
               key={preset.id}
-              sectioned
               actions={[
                 {
                   content: 'Use This Template',
@@ -260,10 +259,10 @@ export const CodeGeneratorPage: React.FC = () => {
                   <Icon source={preset.icon} />
                   <Text variant="headingSm" as="h3">{preset.name}</Text>
                 </Stack>
-                <Text variant="bodySm" color="subdued">{preset.description}</Text>
+                <Text variant="bodySm" as="span">{preset.description}</Text>
                 <Stack spacing="tight">
-                  <Badge status="info">{preset.framework}</Badge>
-                  <Badge status={preset.complexity === 'simple' ? 'success' : preset.complexity === 'complex' ? 'attention' : 'info'}>
+                  <Badge tone="info">{preset.framework}</Badge>
+                  <Badge tone={preset.complexity === 'simple' ? 'success' : preset.complexity === 'complex' ? 'attention' : 'info'}>
                     {preset.complexity}
                   </Badge>
                   <Badge>{preset.type}</Badge>
@@ -278,7 +277,7 @@ export const CodeGeneratorPage: React.FC = () => {
 
   const renderCustomPanel = () => (
     <Layout>
-      <Layout.Section oneThird>
+      <Layout.Section>
         <Card>
           <Text variant="headingMd" as="h2">Configuration</Text>
           <div style={{ marginTop: '1rem' }}>
@@ -323,7 +322,7 @@ export const CodeGeneratorPage: React.FC = () => {
       </Layout.Section>
 
       <Layout.Section>
-        <Card sectioned>
+        <Card>
           <Text variant="headingMd" as="h2">Describe What You Want to Generate</Text>
           <div style={{ marginTop: '1rem' }}>
             <TextField
@@ -344,7 +343,7 @@ export const CodeGeneratorPage: React.FC = () => {
                 onClick={handleGenerate}
                 loading={isGenerating}
                 disabled={!prompt.trim() || isGenerating}
-                icon={isGenerating ? undefined : CodeMajor}
+                icon={isGenerating ? undefined : CodeIcon}
               >
                 {isGenerating ? 'Generating...' : 'Generate Code'}
               </Button>
@@ -360,9 +359,9 @@ export const CodeGeneratorPage: React.FC = () => {
       return (
         <Layout>
           <Layout.Section>
-            <Card sectioned>
+            <Card>
               <Text variant="headingMd" as="h2">No Results Yet</Text>
-              <Text variant="bodyMd" color="subdued" as="p">
+              <Text variant="bodyMd" as="p">
                 Generate some code first to see the results here.
               </Text>
             </Card>
@@ -373,37 +372,37 @@ export const CodeGeneratorPage: React.FC = () => {
 
     return (
       <Layout>
-        <Layout.Section oneThird>
-          <Card sectioned>
+        <Layout.Section>
+          <Card>
             <Text variant="headingMd" as="h2">Generation Summary</Text>
             <div style={{ marginTop: '1rem' }}>
               <Stack vertical spacing="tight">
                 <div>
-                  <Text variant="bodySm" color="subdued">Status</Text>
-                  <Badge status={generationResult.success ? 'success' : 'critical'}>
+                  <Text variant="bodySm" as="span">Status</Text>
+                  <Badge tone={generationResult.success ? 'success' : 'critical'}>
                     {generationResult.success ? 'Success' : 'Failed'}
                   </Badge>
                 </div>
 
                 <div>
-                  <Text variant="bodySm" color="subdued">Files Generated</Text>
+                  <Text variant="bodySm" as="span">Files Generated</Text>
                   <Text variant="bodyMd">{generationResult.files.length}</Text>
                 </div>
 
                 <div>
-                  <Text variant="bodySm" color="subdued">Confidence</Text>
+                  <Text variant="bodySm" as="span">Confidence</Text>
                   <Text variant="bodyMd">{generationResult.confidence}%</Text>
                 </div>
 
                 {generationResult.reasoning && (
                   <div>
-                    <Text variant="bodySm" color="subdued">AI Reasoning</Text>
+                    <Text variant="bodySm" as="span">AI Reasoning</Text>
                     <Text variant="bodySm">{generationResult.reasoning}</Text>
                   </div>
                 )}
 
                 {generationResult.warnings && generationResult.warnings.length > 0 && (
-                  <Banner status="warning">
+                  <Banner tone="warning">
                     <Text variant="bodySm">{generationResult.warnings.join(', ')}</Text>
                   </Banner>
                 )}
@@ -413,21 +412,21 @@ export const CodeGeneratorPage: React.FC = () => {
         </Layout.Section>
 
         <Layout.Section>
-          <Card sectioned>
+          <Card>
             <Text variant="headingMd" as="h2">Generated Files</Text>
             <div style={{ marginTop: '1rem' }}>
               <Stack vertical spacing="loose">
                 {generationResult.files.map((file, index) => (
-                  <Card key={index} sectioned>
+                  <Card key={index}>
                     <Stack vertical spacing="tight">
                       <Stack alignment="center" spacing="tight">
-                        <Icon source={CodeMajor} />
+                        <Icon source={CodeIcon} />
                         <Text variant="headingSm" as="h3">{file.name}</Text>
-                        <Badge status="info">{file.type}</Badge>
+                        <Badge tone="info">{file.type}</Badge>
                       </Stack>
 
                       {file.path && (
-                        <Text variant="bodySm" color="subdued">Path: {file.path}</Text>
+                        <Text variant="bodySm" as="span">Path: {file.path}</Text>
                       )}
 
                       <div style={{
@@ -450,7 +449,7 @@ export const CodeGeneratorPage: React.FC = () => {
                       <Stack distribution="trailing">
                         <Button
                           size="slim"
-                          icon={ExportMinor}
+                          icon={ExportIcon}
                           onClick={() => {
                             navigator.clipboard.writeText(file.content)
                             showNotification('Code copied to clipboard', 'success')
@@ -478,7 +477,7 @@ export const CodeGeneratorPage: React.FC = () => {
     >
       {NotificationComponent}
 
-      <Card sectioned>
+      <Card>
         <Tabs
           tabs={tabs}
           selected={selectedTab}

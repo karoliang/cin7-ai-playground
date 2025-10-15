@@ -20,18 +20,18 @@ import {
   Divider
 } from '@shopify/polaris'
 import {
-  ChatMajor,
-  CodeMajor,
-  ViewMajor,
-  SettingsMajor,
-  CirclePlusMinor,
-  EditMinor,
-  DeleteMinor,
-  ExportMinor,
-  ImportMinor,
-  RefreshMinor,
-  MobileMajor,
-  DesktopMajor
+  ChatBubbleIcon,
+  CodeIcon,
+  ViewIcon,
+  SettingsIcon,
+  PlusCircleIcon,
+  EditIcon,
+  DeleteIcon,
+  ExportIcon,
+  ImportIcon,
+  RefreshIcon,
+  MobileIcon,
+  DesktopIcon
 } from '@shopify/polaris-icons'
 import { useProjectStore } from '@/stores/projectStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
@@ -116,7 +116,7 @@ export const ProjectWorkspace: React.FC = () => {
       id: 'chat',
       content: (
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Icon source={ChatMajor} />
+          <Icon source={ChatBubbleIcon} />
           AI Assistant
         </span>
       ),
@@ -126,7 +126,7 @@ export const ProjectWorkspace: React.FC = () => {
       id: 'files',
       content: (
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Icon source={CodeMajor} />
+          <Icon source={CodeIcon} />
           Files ({files.length})
         </span>
       ),
@@ -136,7 +136,7 @@ export const ProjectWorkspace: React.FC = () => {
       id: 'preview',
       content: (
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Icon source={ViewMajor} />
+          <Icon source={ViewIcon} />
           Preview
         </span>
       ),
@@ -147,17 +147,17 @@ export const ProjectWorkspace: React.FC = () => {
   const fileActionItems = [
     {
       content: 'Create new file',
-      icon: CirclePlusMinor,
+      icon: PlusCircleIcon,
       onAction: () => setShowNewFileDialog(true)
     },
     {
       content: 'Import file',
-      icon: ImportMinor,
+      icon: ImportIcon,
       onAction: () => console.log('Import file')
     },
     {
       content: 'Export project',
-      icon: ExportMinor,
+      icon: ExportIcon,
       onAction: () => setShowExportModal(true)
     }
   ]
@@ -165,24 +165,21 @@ export const ProjectWorkspace: React.FC = () => {
   return (
     <>
       <Layout>
-      <Layout.Section oneHalf>
+      <Layout.Section>
         <Card>
           <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab}>
             {selectedTab === 0 && (
-              <Card.Section
-                title={
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>AI Assistant</span>
-                    <Button
-                      size="slim"
-                      onClick={clearChat}
-                      disabled={messages.length === 0 || isTyping}
-                    >
-                      Clear Chat
-                    </Button>
-                  </div>
-                }
-              >
+              <Card.Section>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <Text variant="headingMd">AI Assistant</Text>
+                  <Button
+                    size="slim"
+                    onClick={clearChat}
+                    disabled={messages.length === 0 || isTyping}
+                  >
+                    Clear Chat
+                  </Button>
+                </div>
                 <div style={{ height: '400px', display: 'flex', flexDirection: 'column' }}>
                   {/* Error Display */}
                   {error && (
@@ -196,7 +193,7 @@ export const ProjectWorkspace: React.FC = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center'
                     }}>
-                      <Text variant="bodySm" color="critical">{error}</Text>
+                      <Text variant="bodySm" as="span" tone="critical">{error}</Text>
                       <Button
                         size="slim"
                         onClick={clearError}
@@ -211,15 +208,15 @@ export const ProjectWorkspace: React.FC = () => {
                     <div style={{ padding: '1rem', minHeight: '300px' }}>
                       {messages.length === 0 ? (
                         <div style={{ textAlign: 'center', color: '#6b7280', padding: '2rem 1rem' }}>
-                          <Icon source={ChatMajor} size="large" color="base" />
+                          <Icon source={ChatBubbleIcon} size="large" />
                           <Text variant="bodyLg" as="p" fontWeight="semibold">
                             Welcome to your AI Assistant
                           </Text>
-                          <Text variant="bodySm" as="p" color="subdued">
+                          <Text variant="bodySm" as="p">
                             I can help you with your CIN7 project by:
                           </Text>
                           <div style={{ marginTop: '1rem', textAlign: 'left', maxWidth: '300px', margin: '1rem auto' }}>
-                            <Text variant="bodySm" as="p" color="subdued">
+                            <Text variant="bodySm" as="p">
                               • Creating new components and pages<br/>
                               • Writing and updating code<br/>
                               • Debugging issues<br/>
@@ -229,7 +226,7 @@ export const ProjectWorkspace: React.FC = () => {
                               • Building sales interfaces
                             </Text>
                           </div>
-                          <Text variant="bodySm" as="p" color="subdued">
+                          <Text variant="bodySm" as="p">
                             Just ask me anything about your project!
                           </Text>
                         </div>
@@ -242,7 +239,7 @@ export const ProjectWorkspace: React.FC = () => {
                                 justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
                                 marginBottom: '0.5rem'
                               }}>
-                                <Badge status={message.role === 'user' ? 'success' : 'info'}>
+                                <Badge tone={message.role === 'user' ? 'success' : 'info'}>
                                   {message.role === 'user' ? 'You' : 'AI Assistant'}
                                 </Badge>
                               </div>
@@ -269,7 +266,7 @@ export const ProjectWorkspace: React.FC = () => {
                                 justifyContent: 'flex-start',
                                 marginBottom: '0.5rem'
                               }}>
-                                <Badge status="info">
+                                <Badge tone="info">
                                   AI Assistant
                                 </Badge>
                                 <Spinner size="small" style={{ marginLeft: '0.5rem' }} />
@@ -295,7 +292,7 @@ export const ProjectWorkspace: React.FC = () => {
                                 justifyContent: 'flex-start',
                                 marginBottom: '0.5rem'
                               }}>
-                                <Badge status="info">
+                                <Badge tone="info">
                                   AI Assistant
                                 </Badge>
                                 <Spinner size="small" style={{ marginLeft: '0.5rem' }} />
@@ -308,7 +305,7 @@ export const ProjectWorkspace: React.FC = () => {
                                 marginLeft: '0',
                                 fontStyle: 'italic'
                               }}>
-                                <Text variant="bodySm" color="subdued">Thinking...</Text>
+                                <Text variant="bodySm" as="span">Thinking...</Text>
                               </div>
                             </div>
                           )}
@@ -356,7 +353,7 @@ export const ProjectWorkspace: React.FC = () => {
                     active={fileActionActive}
                     activator={
                       <Button
-                        icon={SettingsMajor}
+                        icon={SettingsIcon}
                         onClick={() => setFileActionActive(!fileActionActive)}
                       />
                     }
@@ -368,11 +365,11 @@ export const ProjectWorkspace: React.FC = () => {
 
                 {files.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                    <Icon source={CodeMajor} size="large" color="base" />
+                    <Icon source={CodeIcon} size="large" />
                     <Text variant="bodyLg" as="p">
                       No files yet
                     </Text>
-                    <Text variant="bodySm" as="p" color="subdued">
+                    <Text variant="bodySm" as="p">
                       Start by creating your first file or using the AI assistant
                     </Text>
                     <Button onClick={() => setShowNewFileDialog(true)} primary>
@@ -405,13 +402,13 @@ export const ProjectWorkspace: React.FC = () => {
                             <Text variant="bodySm" fontWeight={activeFile?.id === file.id ? 'semibold' : 'regular'}>
                               {file.name}
                             </Text>
-                            <Text variant="bodyXs" color="subdued">
+                            <Text variant="bodyXs" as="span">
                               {file.language || file.type} • {file.content.length} characters
                             </Text>
                           </div>
                           <ButtonGroup>
                             <Button
-                              icon={EditMinor}
+                              icon={EditIcon}
                               size="slim"
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -419,7 +416,7 @@ export const ProjectWorkspace: React.FC = () => {
                               }}
                             />
                             <Button
-                              icon={DeleteMinor}
+                              icon={DeleteIcon}
                               size="slim"
                               destructive
                               onClick={(e) => {
@@ -454,14 +451,14 @@ export const ProjectWorkspace: React.FC = () => {
                   <Text variant="headingMd">Live Preview</Text>
                   <ButtonGroup segmented>
                     <Button
-                      icon={DesktopMajor}
+                      icon={DesktopIcon}
                       pressed={previewMode === 'desktop'}
                       onClick={() => setPreviewMode('desktop')}
                     >
                       Desktop
                     </Button>
                     <Button
-                      icon={MobileMajor}
+                      icon={MobileIcon}
                       pressed={previewMode === 'mobile'}
                       onClick={() => setPreviewMode('mobile')}
                     >
@@ -489,27 +486,27 @@ export const ProjectWorkspace: React.FC = () => {
                       <Text variant="bodyLg" as="p">
                         Generating Preview...
                       </Text>
-                      <Text variant="bodySm" as="p" color="subdued">
+                      <Text variant="bodySm" as="p">
                         AI is building your application
                       </Text>
                     </Stack>
                   ) : files.length === 0 ? (
                     <Stack vertical alignment="center" spacing="tight">
-                      <Icon source={ViewMajor} size="large" color="base" />
+                      <Icon source={ViewIcon} size="large" />
                       <Text variant="bodyLg" as="p">
                         No preview available
                       </Text>
-                      <Text variant="bodySm" as="p" color="subdued">
+                      <Text variant="bodySm" as="p">
                         Create files to see a live preview
                       </Text>
                     </Stack>
                   ) : (
                     <Stack vertical alignment="center" spacing="tight">
-                      <Icon source={RefreshMinor} size="large" color="base" />
+                      <Icon source={RefreshIcon} size="large" />
                       <Text variant="bodyLg" as="p">
                         Preview Ready
                       </Text>
-                      <Text variant="bodySm" as="p" color="subdued">
+                      <Text variant="bodySm" as="p">
                         Live preview of your application
                       </Text>
                       <Button onClick={() => console.log('Open in new tab')}>
@@ -524,18 +521,20 @@ export const ProjectWorkspace: React.FC = () => {
         </Card>
       </Layout.Section>
 
-      <Layout.Section oneHalf>
-        <Card title="Project Information" sectioned>
+      <Layout.Section>
+        <Card>
+          <Card.Section>
+            <Text variant="headingMd">Project Information</Text>
           <Stack vertical spacing="loose">
             <div>
               <Text variant="headingSm" as="h3">Project Details</Text>
-              <Text variant="bodySm" as="p" color="subdued">
+              <Text variant="bodySm" as="p">
                 Name: {currentProject?.name || 'Untitled Project'}
               </Text>
-              <Text variant="bodySm" as="p" color="subdued">
+              <Text variant="bodySm" as="p">
                 Description: {currentProject?.description || 'No description provided'}
               </Text>
-              <Text variant="bodySm" as="p" color="subdued">
+              <Text variant="bodySm" as="p">
                 Files: {files.length} • Messages: {messages.length}
               </Text>
             </div>
@@ -545,13 +544,13 @@ export const ProjectWorkspace: React.FC = () => {
             <div>
               <Text variant="headingSm" as="h3">Project Actions</Text>
               <Stack vertical spacing="tight">
-                <Button icon={RefreshMinor} fullWidth>
+                <Button icon={RefreshIcon} fullWidth>
                   Regenerate Project
                 </Button>
-                <Button icon={ExportMinor} fullWidth onClick={() => setShowExportModal(true)}>
+                <Button icon={ExportIcon} fullWidth onClick={() => setShowExportModal(true)}>
                   Export as ZIP
                 </Button>
-                <Button icon={SettingsMajor} fullWidth>
+                <Button icon={SettingsIcon} fullWidth>
                   Project Settings
                 </Button>
               </Stack>
@@ -563,21 +562,24 @@ export const ProjectWorkspace: React.FC = () => {
               <Text variant="headingSm" as="h3">Development Status</Text>
               <Stack vertical spacing="tight">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Badge status={isGenerating ? 'attention' : 'success'}>
+                  <Badge tone={isGenerating ? 'attention' : 'success'}>
                     {isGenerating ? 'Generating' : 'Ready'}
                   </Badge>
                   {isGenerating && <Spinner size="small" />}
                 </div>
-                <Text variant="bodyXs" as="p" color="subdued">
+                <Text variant="bodyXs" as="p">
                   Last updated: {new Date(currentProject?.updated_at || Date.now()).toLocaleString()}
                 </Text>
               </Stack>
             </div>
           </Stack>
+          </Card.Section>
         </Card>
 
         {showNewFileDialog && (
-          <Card title="Create New File" sectioned>
+          <Card>
+            <Card.Section>
+              <Text variant="headingMd">Create New File</Text>
             <FormLayout>
               <TextField
                 label="File name"
@@ -607,6 +609,7 @@ export const ProjectWorkspace: React.FC = () => {
                 </Button>
               </ButtonGroup>
             </FormLayout>
+            </Card.Section>
           </Card>
         )}
       </Layout.Section>

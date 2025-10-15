@@ -19,13 +19,13 @@ import {
   Divider
 } from '@shopify/polaris'
 import {
-  CodeMajor,
-  MobileMajor,
-  DesktopMajor,
-  AnalyticsMajor,
-  CirclePlusMajor,
-  ExportMinor,
-  ImportMinor
+  CodeIcon,
+  MobileIcon,
+  DesktopIcon,
+  AnalyticsIcon,
+  PlusCircleIcon,
+  ExportIcon,
+  ImportIcon
 } from '@shopify/polaris-icons'
 
 // Reusable Components for consistent Polaris usage throughout the app
@@ -70,10 +70,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   }
 
   return (
-    <Card
-      sectioned
-      actions={actions.length > 0 ? actions : undefined}
-    >
+    <Card actions={actions.length > 0 ? actions : undefined}>
       <div style={{ height: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -81,19 +78,19 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               {project.name}
             </Text>
             {project.featured && (
-              <Badge status="attention">Featured</Badge>
+              <Badge tone="attention">Featured</Badge>
             )}
           </div>
 
-          <Text variant="bodySm" as="p" color="subdued">
+          <Text variant="bodySm" as="p">
             {project.description || 'No description'}
           </Text>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
-            <Text variant="bodyXs" as="p" color="subdued">
+            <Text variant="bodyXs" as="p">
               {project.files_count || 0} files
             </Text>
-            <Text variant="bodyXs" as="p" color="subdued">
+            <Text variant="bodyXs" as="p">
               Updated {new Date(project.updated_at).toLocaleDateString()}
             </Text>
           </div>
@@ -134,7 +131,6 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
 }) => {
   return (
     <Card
-      sectioned
       actions={[
         {
           content: 'Use Template',
@@ -148,7 +144,6 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
           <Icon
             source={template.icon}
             size="large"
-            color="base"
           />
         </div>
 
@@ -159,13 +154,13 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
         <div style={{ margin: '0.5rem 0' }}>
           <Badge>{template.category}</Badge>
           {template.featured && (
-            <Badge status="attention" style={{ marginLeft: '0.5rem' }}>
+            <Badge tone="attention" style={{ marginLeft: '0.5rem' }}>
               Featured
             </Badge>
           )}
         </div>
 
-        <Text variant="bodySm" as="p" color="subdued" alignment="center">
+        <Text variant="bodySm" as="p" alignment="center">
           {template.description}
         </Text>
       </div>
@@ -188,7 +183,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     <Page title={title}>
       <Layout>
         <Layout.Section>
-          <Card sectioned>
+          <Card>
             <TextContainer>
               <SkeletonDisplayText size="small" />
               {showSkeleton && <SkeletonBodyText lines={3} />}
@@ -250,15 +245,15 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
   return (
     <Grid columns={{ xs: 1, sm: 2, md: 3, lg: columns, xl: columns }}>
       {features.map((feature, index) => (
-        <Card key={index} sectioned>
+        <Card key={index}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ marginBottom: '1rem' }}>
-              <Icon source={feature.icon} size="large" color="base" />
+              <Icon source={feature.icon} size="large" />
             </div>
             <Text variant="headingMd" as="h3" alignment="center">
               {feature.title}
             </Text>
-            <Text variant="bodySm" as="p" color="subdued" alignment="center">
+            <Text variant="bodySm" as="p" alignment="center">
               {feature.description}
             </Text>
           </div>
@@ -284,9 +279,9 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ stats }) => {
   return (
     <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
       {stats.map((stat, index) => (
-        <Card key={index} sectioned>
+        <Card key={index}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <Text variant="bodySm" color="subdued">
+            <Text variant="bodySm" as="span">
               {stat.label}
             </Text>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -296,7 +291,7 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ stats }) => {
               {stat.badge && <Badge>{stat.badge}</Badge>}
             </div>
             {stat.trend && (
-              <Text variant="bodySm" color={stat.trend.direction === 'up' ? 'success' : stat.trend.direction === 'down' ? 'critical' : 'subdued'}>
+              <Text variant="bodySm" as="span">
                 {stat.trend.value}
               </Text>
             )}

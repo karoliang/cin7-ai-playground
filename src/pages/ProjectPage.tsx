@@ -23,7 +23,7 @@ export const ProjectPage: React.FC = () => {
       >
         <Layout>
           <Layout.Section>
-            <Card sectioned>
+            <Card>
               <Text>Loading your project...</Text>
             </Card>
           </Layout.Section>
@@ -40,8 +40,8 @@ export const ProjectPage: React.FC = () => {
       >
         <Layout>
           <Layout.Section>
-            <Card sectioned>
-              <Text variant="headingMd" as="h2" color="critical">
+            <Card>
+              <Text variant="headingMd" as="h2" tone="critical">
                 Failed to load project
               </Text>
               <Text>{error}</Text>
@@ -60,7 +60,7 @@ export const ProjectPage: React.FC = () => {
       >
         <Layout>
           <Layout.Section>
-            <Card sectioned>
+            <Card>
               <Text variant="headingMd" as="h2">
                 Project not found
               </Text>

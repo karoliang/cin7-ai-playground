@@ -136,13 +136,13 @@ export const HomePage: React.FC = () => {
               <Text variant="headingLg" as="h2">
                 Welcome to CIN7 AI Playground
               </Text>
-              <Text variant="bodyLg" as="p" color="subdued">
+              <Text variant="bodyLg" as="p">
                 Build professional multi-page applications with AI-powered code generation,
                 CIN7 design system, and modern development practices.
               </Text>
               {user && (
                 <div style={{ marginTop: '1rem' }}>
-                  <Badge status="success">Signed in as {user.email}</Badge>
+                  <Badge tone="success">Signed in as {user.email}</Badge>
                 </div>
               )}
             </div>
@@ -151,7 +151,9 @@ export const HomePage: React.FC = () => {
 
         <Layout.Section>
           {/* Create Project Form */}
-          <Card title="Create New Project" sectioned>
+          <Card>
+            <Card.Section>
+              <Text variant="headingMd" as="h3">Create New Project</Text>
             <form onSubmit={handleCreateProject}>
               <FormLayout>
                 <TextField
@@ -174,19 +176,22 @@ export const HomePage: React.FC = () => {
                     Create Project
                   </Button>
                   {!isAuthenticated && (
-                    <Text color="critical">
+                    <Text as="span" tone="critical">
                       Please sign in to create projects
                     </Text>
                   )}
                 </div>
               </FormLayout>
             </form>
+            </Card.Section>
           </Card>
         </Layout.Section>
 
         <Layout.Section>
           {/* Features Overview */}
-          <Card title="AI-Powered Development Features" sectioned>
+          <Card>
+            <Card.Section>
+              <Text variant="headingMd" as="h3">AI-Powered Development Features</Text>
             <FeatureGrid
               features={[
                 {
@@ -222,12 +227,15 @@ export const HomePage: React.FC = () => {
               ]}
               columns={3}
             />
+            </Card.Section>
           </Card>
         </Layout.Section>
 
         <Layout.Section>
           {/* Template Gallery */}
-          <Card title="Start with a Template" sectioned>
+          <Card>
+            <Card.Section>
+              <Text variant="headingMd" as="h3">Start with a Template</Text>
             <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4 }}>
               {templates.map((template, index) => (
                 <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
@@ -239,18 +247,20 @@ export const HomePage: React.FC = () => {
                 </div>
               ))}
             </Grid>
+            </Card.Section>
           </Card>
         </Layout.Section>
 
         {recentProjects.length > 0 && (
           <Layout.Section>
             {/* Recent Projects */}
-            <Card title="Recent Projects" sectioned>
+            <Card>
+              <Card.Section>
+                <Text variant="headingMd" as="h3">Recent Projects</Text>
               <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
                 {recentProjects.map((project: any, index) => (
                   <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
                     <Card
-                      sectioned
                       actions={[
                         {
                           content: 'Open',
@@ -261,11 +271,11 @@ export const HomePage: React.FC = () => {
                       <Text variant="headingSm" as="h3">
                         {project.name}
                       </Text>
-                      <Text variant="bodySm" as="p" color="subdued">
+                      <Text variant="bodySm" as="p">
                         {project.description || 'No description'}
                       </Text>
                       <div style={{ marginTop: '0.5rem' }}>
-                        <Text variant="bodyXs" as="p" color="subdued">
+                        <Text variant="bodyXs" as="p">
                           Updated {new Date(project.updated_at).toLocaleDateString()}
                         </Text>
                       </div>
@@ -273,6 +283,7 @@ export const HomePage: React.FC = () => {
                   </div>
                 ))}
               </Grid>
+              </Card.Section>
             </Card>
           </Layout.Section>
         )}
