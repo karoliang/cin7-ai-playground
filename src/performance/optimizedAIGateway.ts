@@ -507,7 +507,7 @@ export class OptimizedAIGateway extends EventEmitter {
     }
   }
 
-  private async executeStreaming(request: OptimizedRequest, provider: AIProvider): AsyncGenerator<string> {
+  private async *executeStreaming(request: OptimizedRequest, provider: AIProvider): AsyncGenerator<string> {
     // Simulate streaming response
     const chunks = [
       "This is a streamed",
@@ -855,7 +855,7 @@ class MemoryManager {
     this.usageMB = Math.max(0, this.usageMB * 0.8)
   }
 
-  cleanup(): void {
+  reset(): void {
     this.usageMB = 0
   }
 }

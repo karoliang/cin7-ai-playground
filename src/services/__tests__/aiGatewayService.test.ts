@@ -81,14 +81,38 @@ describe('AIGatewayService', () => {
     vi.mocked(aiGatewayConfig.getConfig).mockReturnValue(mockConfig)
     vi.mocked(aiGatewayConfig.initialize).mockResolvedValue(mockConfig)
 
-    // Mock GLM service
+    // Mock GLM service with all required properties
     const mockGLMService = {
+      config: { apiKey: 'test-key', baseURL: 'test-url', timeout: 30000, retryAttempts: 3, retryDelay: 1000 },
+      options: { enableLogging: false },
+      client: {} as any,
+      requestMetrics: [],
+      healthStatus: { status: 'healthy' as const, last_check: Date.now(), error_rate: 0 },
+      apiKeyManager: {} as any,
       generateCode: vi.fn(),
       generateCodeStream: vi.fn(),
       processContextualUpdate: vi.fn(),
-      testConnection: vi.fn()
+      testConnection: vi.fn(),
+      getHealthStatus: vi.fn(),
+      getRequestMetrics: vi.fn(),
+      clearMetrics: vi.fn(),
+      getSecureAPIKey: vi.fn().mockReturnValue('test-key'),
+      refreshAPIKey: vi.fn().mockReturnValue(true),
+      convertToGLMRequest: vi.fn().mockReturnValue({ model: 'glm-4', messages: [] }),
+      buildSystemPrompt: vi.fn().mockReturnValue('System prompt'),
+      buildUserPrompt: vi.fn().mockReturnValue('User prompt'),
+      buildContextualUpdatePrompt: vi.fn().mockReturnValue('Contextual update prompt'),
+      convertGLMResponseToGenerateResponse: vi.fn(),
+      parseContextualUpdateResponse: vi.fn(),
+      formatError: vi.fn().mockReturnValue('Mock error'),
+      generateRequestId: vi.fn().mockReturnValue('test-request-id'),
+      generateId: vi.fn().mockReturnValue('test-id'),
+      recordMetrics: vi.fn(),
+      updateHealthStatus: vi.fn(),
+      log: vi.fn(),
+      logError: vi.fn()
     }
-    vi.mocked(getGLMService).mockReturnValue(mockGLMService)
+    vi.mocked(getGLMService).mockReturnValue(mockGLMService as any)
 
     service = await AIGatewayService.initialize()
   })
@@ -388,8 +412,8 @@ describe('AI Gateway Integration', () => {
       prompt: 'Create a simple counter component in React with TypeScript',
       context: {
         project_id: 'test-project',
-        framework: 'react',
-        architecture: { type: 'single-page' }
+        framework: 'react' as const,
+        architecture: { type: 'single-page' as const }
       },
       options: {
         temperature: 0.7,

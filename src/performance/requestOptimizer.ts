@@ -280,12 +280,12 @@ export class RequestOptimizer extends EventEmitter {
    * Force process all pending batches
    */
   async flushBatches(): Promise<void> {
-    const batchPromises: Promise<void>[] = []
+    const batchPromises: Promise<any[]>[] = []
 
     for (const [batchKey, queue] of this.batchQueues) {
       if (queue.length > 0) {
         const batch = this.createBatch(batchKey, queue)
-        batchQueues.set(batchKey, [])
+        this.batchQueues.set(batchKey, [])
         batchPromises.push(this.processBatch(batch))
       }
     }

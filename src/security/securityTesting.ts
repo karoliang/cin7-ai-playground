@@ -155,14 +155,15 @@ export class SecurityTester {
     const results: { input: string; blocked: boolean; riskLevel: string }[] = []
 
     for (const maliciousPrompt of this.MALICIOUS_PROMPTS) {
+      const promptString = typeof maliciousPrompt === 'string' ? maliciousPrompt : JSON.stringify(maliciousPrompt)
       const testRequest: GenerateRequest = {
-        prompt: maliciousPrompt,
+        prompt: promptString,
         context: { user_id: 'test-user', project_id: 'test-project' }
       }
 
       const validation = InputValidator.validateAIRequest(testRequest)
       results.push({
-        input: maliciousPrompt.substring(0, 100) + (maliciousPrompt.length > 100 ? '...' : ''),
+        input: promptString.substring(0, 100) + (promptString.length > 100 ? '...' : ''),
         blocked: !validation.isValid,
         riskLevel: validation.riskLevel
       })
@@ -471,7 +472,7 @@ export class SecurityTester {
     })
 
     const passedCount = results.filter(r => r.passed).length
-    const status = passedCount === results.length ? 'pass' : 'critical'
+    const status = passedCount === results.length ? 'pass' : 'fail'
     const riskLevel = passedCount === results.length ? 'low' : 'critical'
 
     return {

@@ -38,8 +38,11 @@ export function createLazyComponent<T extends ComponentType<any>>(
       loadWithRetry(importFunc, { maxAttempts: retryAttempts, delay: retryDelay, timeout })
     )
 
-    const LazyWrapper = React.forwardRef<T, LazyComponentProps>((props, _ref) => {
+    const LazyWrapper = React.forwardRef<any, LazyComponentProps>((props, ref) => {
       const FallbackComponent = props.fallback || CustomFallback
+
+      // Remove ref from props to avoid passing it to LazyComponent
+      const { fallback, ...componentProps } = props
 
       return React.createElement(
         Suspense,
@@ -47,10 +50,10 @@ export function createLazyComponent<T extends ComponentType<any>>(
         React.createElement(
           ErrorBoundary,
           { Fallback: ErrorFallback },
-          React.createElement(LazyComponent, { ...props, ref: _ref })
+          React.createElement(LazyComponent, componentProps as any)
         )
       )
-    })
+    }) as React.ComponentType<LazyComponentProps>
 
   // Preload functionality - note: preload is not available on lazy components
   // This would need to be handled at the route level

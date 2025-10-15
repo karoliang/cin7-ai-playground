@@ -193,7 +193,7 @@ export class QueryOptimizer extends EventEmitter {
 
       // Track slow queries
       if (executionTime > this.config.monitoring.slowQueryThreshold) {
-        this.trackSlowQuery(optimizationInfo || { query, planId: queryId, estimatedCost: 0, executionTime, indexes: [], optimization: { addedIndexes: [], rewrittenQuery: query, optimizations: [] } })
+        this.trackSlowQuery(optimizationInfo || { query, parameters, planId: queryId, estimatedCost: 0, executionTime, indexes: [], optimization: { addedIndexes: [], rewrittenQuery: query, optimizations: [] } })
       }
 
       this.emit('query:executed', {

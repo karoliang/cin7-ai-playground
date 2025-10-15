@@ -72,7 +72,8 @@ export class StreamingService extends EventEmitter {
 
       // Process chunks from the underlying provider
       for await (const chunk of this.getProviderChunks(stream)) {
-        if (stream.status === 'cancelled') {
+        // Check if stream was cancelled during iteration
+        if ((stream.status as StreamStatusType) === 'cancelled') {
           break
         }
 
