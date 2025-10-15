@@ -2,11 +2,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { Schemas, SchemaName } from '../schemas'
-import { ValidationError } from '../utils/errors'
+import { ValidationError, ValidationErrorDetail } from '../utils/errors'
 
 export interface ValidationResult {
   isValid: boolean
-  errors: ValidationError[]
+  errors: ValidationErrorDetail[]
 }
 
 /**
@@ -15,7 +15,7 @@ export interface ValidationResult {
 export function validateSchema<T = any>(
   data: any,
   schemaName: SchemaName
-): { data: T; errors?: ValidationError[] } {
+): { data: T; errors?: ValidationErrorDetail[] } {
   const schema = Schemas[schemaName]
   const errors = validateAgainstSchema(data, schema)
 
@@ -29,8 +29,8 @@ export function validateSchema<T = any>(
 /**
  * JSON Schema validator implementation
  */
-function validateAgainstSchema(data: any, schema: any): ValidationError[] {
-  const errors: ValidationError[] = []
+function validateAgainstSchema(data: any, schema: any): ValidationErrorDetail[] {
+  const errors: ValidationErrorDetail[] = []
 
   function validate(value: any, schema: any, path: string = ''): void {
     // Handle schema references
@@ -47,22 +47,22 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
     if (schema.type) {
       const actualType = Array.isArray(value) ? 'array' : typeof value
       if (actualType !== schema.type) {
-        errors.push(new ValidationError(
-          `Expected type ${schema.type}, got ${actualType}`,
-          path,
-          'TYPE_MISMATCH'
-        ))
+        errors.push({
+          field: path,
+          message: `Expected type ${schema.type}, got ${actualType}`,
+          code: 'TYPE_MISMATCH'
+        })
         return
       }
     }
 
     // Enum validation
     if (schema.enum && !schema.enum.includes(value)) {
-      errors.push(new ValidationError(
-        `Value must be one of: ${schema.enum.join(', ')}`,
-        path,
-        'INVALID_ENUM_VALUE'
-      ))
+      errors.push({
+        field: path,
+        message: `Value must be one of: ${schema.enum.join(', ')}`,
+        code: 'INVALID_ENUM_VALUE'
+      })
       return
     }
 
@@ -70,11 +70,11 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
     if (schema.required && typeof value === 'object' && value !== null) {
       for (const requiredProp of schema.required) {
         if (!(requiredProp in value)) {
-          errors.push(new ValidationError(
-            `Required property '${requiredProp}' is missing`,
-            path ? `${path}.${requiredProp}` : requiredProp,
-            'REQUIRED_PROPERTY_MISSING'
-          ))
+          errors.push({
+            field: path ? `${path}.${requiredProp}` : requiredProp,
+            message: `Required property '${requiredProp}' is missing`,
+            code: 'REQUIRED_PROPERTY_MISSING'
+          })
         }
       }
     }
@@ -82,39 +82,39 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
     // String validations
     if (schema.type === 'string' && typeof value === 'string') {
       if (schema.minLength !== undefined && value.length < schema.minLength) {
-        errors.push(new ValidationError(
-          `String must be at least ${schema.minLength} characters long`,
-          path,
-          'STRING_TOO_SHORT'
-        ))
+        errors.push({
+          field: path,
+          message: `String must be at least ${schema.minLength} characters long`,
+          code: 'STRING_TOO_SHORT'
+        })
       }
 
       if (schema.maxLength !== undefined && value.length > schema.maxLength) {
-        errors.push(new ValidationError(
-          `String must be at most ${schema.maxLength} characters long`,
-          path,
-          'STRING_TOO_LONG'
-        ))
+        errors.push({
+          field: path,
+          message: `String must be at most ${schema.maxLength} characters long`,
+          code: 'STRING_TOO_LONG'
+        })
       }
 
       if (schema.pattern) {
         const regex = new RegExp(schema.pattern)
         if (!regex.test(value)) {
-          errors.push(new ValidationError(
-            `String does not match required pattern`,
-            path,
-            'PATTERN_MISMATCH'
-          ))
+          errors.push({
+            field: path,
+            message: `String does not match required pattern`,
+            code: 'PATTERN_MISMATCH'
+          })
         }
       }
 
       if (schema.format) {
         if (!validateFormat(value, schema.format)) {
-          errors.push(new ValidationError(
-            `String does not match required format: ${schema.format}`,
-            path,
-            'FORMAT_MISMATCH'
-          ))
+          errors.push({
+            field: path,
+            message: `String does not match required format: ${schema.format}`,
+            code: 'FORMAT_MISMATCH'
+          })
         }
       }
     }
@@ -122,46 +122,46 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
     // Number validations
     if ((schema.type === 'number' || schema.type === 'integer') && typeof value === 'number') {
       if (schema.minimum !== undefined && value < schema.minimum) {
-        errors.push(new ValidationError(
-          `Number must be at least ${schema.minimum}`,
-          path,
-          'NUMBER_TOO_SMALL'
-        ))
+        errors.push({
+          field: path,
+          message: `Number must be at least ${schema.minimum}`,
+          code: 'NUMBER_TOO_SMALL'
+        })
       }
 
       if (schema.maximum !== undefined && value > schema.maximum) {
-        errors.push(new ValidationError(
-          `Number must be at most ${schema.maximum}`,
-          path,
-          'NUMBER_TOO_LARGE'
-        ))
+        errors.push({
+          field: path,
+          message: `Number must be at most ${schema.maximum}`,
+          code: 'NUMBER_TOO_LARGE'
+        })
       }
 
       if (schema.type === 'integer' && !Number.isInteger(value)) {
-        errors.push(new ValidationError(
-          'Number must be an integer',
-          path,
-          'INTEGER_REQUIRED'
-        ))
+        errors.push({
+          field: path,
+          message: 'Number must be an integer',
+          code: 'INTEGER_REQUIRED'
+        })
       }
     }
 
     // Array validations
     if (schema.type === 'array' && Array.isArray(value)) {
       if (schema.minItems !== undefined && value.length < schema.minItems) {
-        errors.push(new ValidationError(
-          `Array must have at least ${schema.minItems} items`,
-          path,
-          'ARRAY_TOO_SHORT'
-        ))
+        errors.push({
+          field: path,
+          message: `Array must have at least ${schema.minItems} items`,
+          code: 'ARRAY_TOO_SHORT'
+        })
       }
 
       if (schema.maxItems !== undefined && value.length > schema.maxItems) {
-        errors.push(new ValidationError(
-          `Array must have at most ${schema.maxItems} items`,
-          path,
-          'ARRAY_TOO_LONG'
-        ))
+        errors.push({
+          field: path,
+          message: `Array must have at most ${schema.maxItems} items`,
+          code: 'ARRAY_TOO_LONG'
+        })
       }
 
       // Validate array items
@@ -190,11 +190,11 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
 
         for (const prop of actualProps) {
           if (!allowedProps.has(prop)) {
-            errors.push(new ValidationError(
-              `Additional property not allowed: ${prop}`,
-              path ? `${path}.${prop}` : prop,
-              'ADDITIONAL_PROPERTY_NOT_ALLOWED'
-            ))
+            errors.push({
+              field: path ? `${path}.${prop}` : prop,
+              message: `Additional property not allowed: ${prop}`,
+              code: 'ADDITIONAL_PROPERTY_NOT_ALLOWED'
+            })
           }
         }
       }
@@ -214,11 +214,10 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
 
     // Conditional validations
     if (schema.anyOf) {
-      const anyOfErrors: ValidationError[][] = []
+      const anyOfErrors: ValidationErrorDetail[][] = []
       let isValid = false
 
       for (const subSchema of schema.anyOf) {
-        const subErrors: ValidationError[] = []
         const tempErrors = errors.splice(0, errors.length) // Temporarily clear errors
 
         validate(value, subSchema, path)
@@ -239,11 +238,11 @@ function validateAgainstSchema(data: any, schema: any): ValidationError[] {
         for (const errorSet of anyOfErrors) {
           errors.push(...errorSet)
         }
-        errors.push(new ValidationError(
-          'Value must match at least one of the provided schemas',
-          path,
-          'ANY_OF_VALIDATION_FAILED'
-        ))
+        errors.push({
+          field: path,
+          message: 'Value must match at least one of the provided schemas',
+          code: 'ANY_OF_VALIDATION_FAILED'
+        })
       }
     }
   }
@@ -395,8 +394,8 @@ function convertQueryTypes(query: Record<string, string>, schemaName: SchemaName
   const converted: any = {}
 
   for (const [key, value] of Object.entries(query)) {
-    if (schema.properties && schema.properties[key]) {
-      const propSchema = schema.properties[key]
+    if (schema && typeof schema === 'object' && 'properties' in schema && schema.properties && (schema.properties as Record<string, any>)[key]) {
+      const propSchema = (schema.properties as Record<string, any>)[key]
       converted[key] = convertType(value, propSchema)
     } else {
       converted[key] = value
@@ -435,7 +434,7 @@ function convertType(value: string, schema: any): any {
  * Extract path parameters from URL
  * This is a simplified implementation - in practice, you'd use your routing framework
  */
-function extractPathParams(pathname: string, method: string, schemaName: SchemaName): any {
+function extractPathParams(pathname: string, _method: string, _schemaName: SchemaName): any {
   const params: any = {}
 
   // Example: Extract project ID from /api/v1/projects/123

@@ -1,6 +1,6 @@
 // Main API exports and configuration
 
-export type * from './types/api'
+export * from './types/api'
 export * from './middleware'
 export * from './utils/errors'
 

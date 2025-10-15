@@ -1,6 +1,8 @@
 // AI Gateway Service Type Definitions
 // Enterprise-grade AI service management for CIN7 AI Playground
 
+import { MessageMetadata, MediaMetadata } from './index'
+
 export interface AIGatewayConfig {
   // Core Configuration
   providers: AIProviderConfig[]

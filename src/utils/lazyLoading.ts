@@ -38,7 +38,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
     loadWithRetry(importFunc, { maxAttempts: retryAttempts, delay: retryDelay, timeout })
   )
 
-  const LazyWrapper = React.forwardRef<any, LazyComponentProps>((props, ref) => {
+  const LazyWrapper = React.forwardRef<HTMLElement, LazyComponentProps>((props, _ref) => {
     const FallbackComponent = props.fallback || CustomFallback
 
     return React.createElement(
@@ -47,7 +47,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
       React.createElement(
         ErrorBoundary,
         { Fallback: ErrorFallback },
-        React.createElement(LazyComponent, { ...props, ref })
+        React.createElement(LazyComponent, props)
       )
     )
   })

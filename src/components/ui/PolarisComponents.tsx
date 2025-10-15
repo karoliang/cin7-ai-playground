@@ -8,7 +8,6 @@ import {
   Text,
   Badge,
   Icon,
-  Stack,
   SkeletonDisplayText,
   SkeletonBodyText,
   Scrollable,
@@ -77,7 +76,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       actions={actions.length > 0 ? actions : undefined}
     >
       <div style={{ height: '100%' }}>
-        <Stack vertical spacing="tight">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Text variant="headingSm" as="h3">
               {project.name}
@@ -110,7 +109,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               Open Project
             </Button>
           </div>
-        </Stack>
+        </div>
       </div>
     </Card>
   )
@@ -288,22 +287,22 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ stats }) => {
     <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
       {stats.map((stat, index) => (
         <Card key={index} sectioned>
-          <Stack vertical spacing="tight">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <Text variant="bodySm" color="subdued">
               {stat.label}
             </Text>
-            <Stack alignment="baseline" spacing="tight">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Text variant="headingLg" as="h2">
                 {stat.value}
               </Text>
               {stat.badge && <Badge>{stat.badge}</Badge>}
-            </Stack>
+            </div>
             {stat.trend && (
               <Text variant="bodySm" color={stat.trend.direction === 'up' ? 'success' : stat.trend.direction === 'down' ? 'critical' : 'subdued'}>
                 {stat.trend.value}
               </Text>
             )}
-          </Stack>
+          </div>
         </Card>
       ))}
     </Grid>

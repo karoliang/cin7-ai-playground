@@ -13,15 +13,14 @@ import {
   Icon,
   Banner
 } from '@shopify/polaris'
-import {
-  MobileMajor,
-  DesktopMajor,
-  StoreMajor,
-  AnalyticsMajor,
-  ChatMajor,
-  CodeMajor,
-  CircleCheckMajor
-} from '@shopify/polaris-icons'
+// Simple fallback icons - using emoji or text
+const MobileMajor = "📱"
+const DesktopMajor = "🖥️"
+const StoreMajor = "🏪"
+const AnalyticsMajor = "📊"
+const ChatMajor = "💬"
+const CodeMajor = "💻"
+const CircleCheckMajor = "✅"
 import { useNavigate } from 'react-router-dom'
 import { useProjectStore } from '@/stores/projectStore'
 import { useAuthStore } from '@/stores/authStore'

@@ -3,7 +3,7 @@
  * API endpoints for AI-related operations
  */
 
-import { Request, Response } from 'express'
+import { NextRequest, NextResponse } from 'next/server'
 import { AIService, ChatCompletionRequest } from '../services/ai'
 import { RequestContext, APIResponse } from '../types/api'
 
@@ -15,79 +15,59 @@ const aiService = new AIService({
   temperature: 0.7
 })
 
-export const generateCode = async (req: Request, res: Response) => {
+export async function POST(req: NextRequest) {
   try {
     const context: RequestContext = {
-      user: req.user,
-      requestId: req.id,
+      user: undefined, // Will be set by auth middleware
+      requestId: crypto.randomUUID(),
       timestamp: Date.now(),
-      ip: req.ip,
-      userAgent: req.get('User-Agent')
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+      userAgent: req.headers.get('user-agent') || 'unknown'
     }
 
-    const request: ChatCompletionRequest = req.body
-    const result = await aiService.generateCode(request, context)
+    const body = await req.json()
+    const request: ChatCompletionRequest = body
 
-    const response: APIResponse = {
-      success: true,
-      data: result,
-      meta: {
-        requestId: context.requestId,
-        timestamp: context.timestamp
+    // Check if this is a generate or validate request
+    if (body.code && body.language) {
+      // Validate code request
+      const result = await aiService.validateCode(body.code, body.language, context)
+
+      const response: APIResponse = {
+        success: true,
+        data: result,
+        meta: {
+          requestId: context.requestId,
+          timestamp: context.timestamp
+        }
       }
+
+      return NextResponse.json(response)
+    } else {
+      // Generate code request
+      const result = await aiService.generateCode(request, context)
+
+      const response: APIResponse = {
+        success: true,
+        data: result,
+        meta: {
+          requestId: context.requestId,
+          timestamp: context.timestamp
+        }
+      }
+
+      return NextResponse.json(response)
     }
 
-    res.json(response)
   } catch (error) {
-    console.error('Error generating code:', error)
+    console.error('Error in AI endpoint:', error)
     const response: APIResponse = {
       success: false,
       error: {
-        code: 'GENERATION_ERROR',
+        code: 'AI_ERROR',
         message: error instanceof Error ? error.message : 'Unknown error occurred'
       }
     }
-    res.status(500).json(response)
+    return NextResponse.json(response, { status: 500 })
   }
-}
-
-export const validateCode = async (req: Request, res: Response) => {
-  try {
-    const context: RequestContext = {
-      user: req.user,
-      requestId: req.id,
-      timestamp: Date.now(),
-      ip: req.ip,
-      userAgent: req.get('User-Agent')
-    }
-
-    const { code, language } = req.body
-    const result = await aiService.validateCode(code, language, context)
-
-    const response: APIResponse = {
-      success: true,
-      data: result,
-      meta: {
-        requestId: context.requestId,
-        timestamp: context.timestamp
-      }
-    }
-
-    res.json(response)
-  } catch (error) {
-    console.error('Error validating code:', error)
-    const response: APIResponse = {
-      success: false,
-      error: {
-        code: 'VALIDATION_ERROR',
-        message: error instanceof Error ? error.message : 'Unknown error occurred'
-      }
-    }
-    res.status(500).json(response)
-  }
-}
-
-export default {
-  generateCode,
-  validateCode
 }

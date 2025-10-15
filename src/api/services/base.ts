@@ -21,7 +21,7 @@ export abstract class BaseService {
   /**
    * Create a successful API response
    */
-  protected createSuccessResponse<T>(data: T, message?: string): NextResponse {
+  public createSuccessResponse<T>(data: T, message?: string): NextResponse {
     const response: APIResponse<T> = {
       success: true,
       data,
@@ -49,7 +49,7 @@ export abstract class BaseService {
   /**
    * Create a paginated response
    */
-  protected createPaginatedResponse<T>(
+  public createPaginatedResponse<T>(
     items: T[],
     pagination: PaginationParams,
     total: number

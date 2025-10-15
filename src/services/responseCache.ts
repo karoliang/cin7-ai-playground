@@ -65,8 +65,7 @@ export class ResponseCacheService {
         cached: true,
         metadata: {
           ...entry.response.metadata,
-          cached: true,
-          cacheHitCount: entry.hitCount
+          cached: true
         }
       }
 
@@ -148,7 +147,7 @@ export class ResponseCacheService {
    */
   getStats(): CacheStats {
     return {
-      ...this.metrics.getStats(),
+      metrics: this.metrics.getStats(),
       config: {
         enabled: this.config.enabled,
         strategy: this.config.strategy,
@@ -608,6 +607,11 @@ export interface CacheStats {
     maxSize: number
     ttl: number
     storageType: string
+  }
+  metrics_summary?: {
+    hitRate: number
+    totalRequests: number
+    efficiency: number
   }
 }
 

@@ -45,9 +45,3 @@ export const POST = withProductionAPI({
 
 // Project-specific routes would typically be in separate files or with route parameters
 // For Next.js App Router, you'd create dynamic route files like [id]/route.ts
-
-// Default export for Express router compatibility
-export default {
-  GET,
-  POST
-}

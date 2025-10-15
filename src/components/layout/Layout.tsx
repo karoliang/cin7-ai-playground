@@ -1,22 +1,22 @@
 import React from 'react'
-import { TopBar, Frame, Navigation, Card, Text, Badge, Button, Icon, Stack } from '@shopify/polaris'
-import {
-  HomeMinor,
-  OrdersMinor,
-  ProductsMinor,
-  AnalyticsMinor,
-  SettingsMinor,
-  QuestionMarkMajor,
-  CirclePlusMajor,
-  CircleDisabledMajor,
-  ExportMinor,
-  ImportMinor,
-  CodeMajor,
-  MobileMajor,
-  DesktopMajor,
-  NotesMajor,
-  FileMajor
-} from '@shopify/polaris-icons'
+import { TopBar, Frame, Navigation, Card, Text, Badge, Button, Icon } from '@shopify/polaris'
+
+// Simple fallback icons - using emoji
+const HomeMinor = "🏠"
+const OrdersMinor = "📦"
+const ProductsMinor = "📦"
+const AnalyticsMinor = "📊"
+const SettingsMinor = "⚙️"
+const QuestionMarkMajor = "❓"
+const CirclePlusMajor = "➕"
+const CircleDisabledMajor = "❌"
+const ExportMinor = "📤"
+const ImportMinor = "📥"
+const CodeMajor = "💻"
+const MobileMajor = "📱"
+const DesktopMajor = "🖥️"
+const NotesMajor = "📝"
+const FileMajor = "📄"
 import { useAuthStore } from '@/stores/authStore'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -124,7 +124,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       searchFieldVisible={isFocused || inputValue.length > 0}
       searchResultsVisible={isFocused && results.length > 0}
       searchValue={inputValue}
-      searchResults={formattedSearchResults}
       onSearchResultsDismiss={clearSearch}
       onNavigationToggle={() => setMobileNavigationActive(!mobileNavigationActive)}
       onSearchChange={handleSearch}

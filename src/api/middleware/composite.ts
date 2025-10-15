@@ -77,26 +77,6 @@ export function withAPI(
   }
 }
 
-/**
- * CORS middleware
- */
-function withCors(
-  handler: (request: NextRequest, context?: any) => Promise<NextResponse>
-) {
-  return async (request: NextRequest, context?: any): Promise<NextResponse> => {
-    // Handle preflight requests
-    if (request.method === 'OPTIONS') {
-      const response = new NextResponse(null, { status: 200 })
-      return addCorsHeaders(response, request.headers.get('origin') || undefined)
-    }
-
-    // Execute the handler
-    const response = await handler(request, context)
-
-    // Add CORS headers to the response
-    return addCorsHeaders(response, request.headers.get('origin') || undefined)
-  }
-}
 
 /**
  * Add CORS headers to response

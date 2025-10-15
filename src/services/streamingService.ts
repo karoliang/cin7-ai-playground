@@ -445,7 +445,7 @@ export class StreamingResponseBuilder {
   /**
    * Mark response as complete
    */
-  complete(): void {
+  markComplete(): void {
     this.complete = true
   }
 
@@ -471,8 +471,7 @@ export class StreamingResponseBuilder {
         providerResponseId: '',
         model: this.extractModel(),
         processingTime: Date.now() - this.startTime,
-        cached: false,
-        chunkCount: this.chunks.length
+        cached: false
       }
     }
   }

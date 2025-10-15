@@ -1,5 +1,29 @@
 // API request/response types for CIN7 AI Playground
 
+// Import types from main index file
+import type {
+  Project,
+  ProjectFile,
+  FileType,
+  ChatMessage,
+  MessageMetadata,
+  FileOperation,
+  ProjectMetadata,
+  ProjectArchitecture,
+  SupportedFramework,
+  ProjectTemplate,
+  ProjectBuildConfig,
+  DeploymentConfig,
+  ProjectSettings,
+  ThemeSettings,
+  CollaborationSettings,
+  ProjectStatus,
+  BuildFile,
+  BuildStats,
+  TemplateCategory,
+  User
+} from './index'
+
 // Base Types
 export interface APIResponse<T = any> {
   success: boolean
@@ -250,39 +274,48 @@ export interface RateLimitError extends APIError {
   }
 }
 
-// Re-export types from main index file
-export type {
-  User,
-  Project,
-  ProjectFile,
-  FileType,
-  ChatMessage,
-  MessageRole,
-  MessageMetadata,
-  FileOperation,
-  ProjectMetadata,
-  ProjectArchitecture,
-  PageConfig,
-  RoutingConfig,
-  RouteConfig,
-  ComponentConfig,
-  SupportedFramework,
-  ProjectTemplate,
-  ProjectBuildConfig,
-  BuildOptimization,
-  DeploymentConfig,
-  ProjectSettings,
-  ThemeSettings,
-  EditorSettings,
-  PreviewSettings,
-  DeviceType,
-  OrientationType,
-  PreviewSize,
-  AISettings,
-  CollaborationSettings,
-  PermissionConfig,
-  ProjectStatus
-} from './index'
+// Error Factory class for creating standardized error responses
+export class ErrorFactory {
+  static create(message: string, code?: string, details?: Record<string, any>): APIError {
+    return {
+      success: false,
+      error: message,
+      code: code || 'UNKNOWN_ERROR',
+      details,
+      timestamp: new Date().toISOString()
+    }
+  }
+
+  static validation(message: string, field: string): ValidationError {
+    return {
+      success: false,
+      error: message,
+      code: 'VALIDATION_ERROR',
+      details: [{
+        field,
+        message
+      }],
+      timestamp: new Date().toISOString()
+    }
+  }
+
+  static rateLimit(message: string, retryAfter: number): RateLimitError {
+    return {
+      success: false,
+      error: message,
+      code: 'RATE_LIMIT_EXCEEDED',
+      details: {
+        retry_after: retryAfter
+      },
+      timestamp: new Date().toISOString()
+    }
+  }
+}
+
+// Export missing types
+export type { User } from './index'
+
+// Types are now imported at the top of the file
 
 // API Endpoint Configuration
 export interface APIConfig {

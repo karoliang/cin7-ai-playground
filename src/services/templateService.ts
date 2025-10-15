@@ -1,4 +1,4 @@
-import { Project, ProjectFile, Template, ProjectTemplate, SupportedFramework } from '@/types'
+import { Project, ProjectFile, Template, ProjectTemplate } from '@/types'
 
 export class TemplateService {
   private static instance: TemplateService
@@ -3294,7 +3294,7 @@ export default App`,
       },
       {
         name: 'src/types/index.ts',
-        type: 'ts' as const,
+        type: 'typescript' as const,
         content: `export interface SalesData {
   revenue: RevenueData[]
   customers: CustomerData[]
@@ -3365,7 +3365,7 @@ export interface ChartData {
       },
       {
         name: 'src/data/salesData.ts',
-        type: 'ts' as const,
+        type: 'typescript' as const,
         content: `import {
   SalesData,
   RevenueData,

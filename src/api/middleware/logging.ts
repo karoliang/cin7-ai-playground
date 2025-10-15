@@ -98,7 +98,7 @@ function truncateString(str: string, maxSize: number): string {
 /**
  * Extract request body for logging
  */
-async function extractRequestBody(request: NextRequest, maxSize: number): Promise<any> {
+async function extractRequestBody(request: Request, maxSize: number): Promise<any> {
   try {
     const contentType = request.headers.get('content-type') || ''
 
@@ -128,7 +128,7 @@ async function extractRequestBody(request: NextRequest, maxSize: number): Promis
 /**
  * Extract response data for logging
  */
-function extractResponseData(response: NextResponse, maxSize: number): any {
+function extractResponseData(response: Response, maxSize: number): any {
   try {
     const responseText = response.body?.toString() || ''
 
@@ -318,7 +318,7 @@ export function withPerformanceLogging(config: {
   slowRequestThreshold?: number
   logQueries?: boolean
 } = {}) {
-  const { slowRequestThreshold = 1000, logQueries = false } = config
+  const { slowRequestThreshold = 1000 } = config
 
   return (
     handler: (request: NextRequest, context?: any) => Promise<NextResponse>

@@ -64,6 +64,21 @@ export interface MessageMetadata {
   operations?: FileOperation[]
   reasoning?: string
   confidence?: number
+  media?: MediaMetadata[]
+}
+
+export interface MediaMetadata {
+  type: 'image' | 'video' | 'audio' | 'document'
+  url: string
+  name: string
+  size: number
+  mimeType: string
+  thumbnail?: string
+  duration?: number
+  dimensions?: {
+    width: number
+    height: number
+  }
 }
 
 export interface FileOperation {
@@ -286,6 +301,7 @@ export interface GenerateResponse {
   deployment_config?: DeploymentConfig
   next_steps?: string[]
   warnings?: string[]
+  error?: string
 }
 
 // Contextual Update System Types

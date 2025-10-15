@@ -4,11 +4,11 @@ import {
   Project,
   ProjectFile,
   ChatMessage,
-  ProjectSettings,
   UIState,
   GenerateRequest,
   GenerateResponse,
-  ContextItem
+  ContextItem,
+  FileOperation
 } from '@/types'
 import { useAuthStore } from './authStore'
 
@@ -526,7 +526,7 @@ export const useProjectStore = create<ProjectState>()(
 
         if (result.success) {
           // Update files based on result
-          result.operations?.forEach(op => {
+          result.operations?.forEach((op: FileOperation) => {
             switch (op.type) {
               case 'create':
                 if (op.file && op.content) {

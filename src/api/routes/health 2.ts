@@ -1,78 +1,67 @@
 // Health check API routes
 
 import { NextRequest, NextResponse } from 'next/server'
-import { config } from '../config'
 
-// GET /api/health - Health check endpoint
-export async function GET(_req: NextRequest) {
+// GET /api/v1/health - Health check endpoint
+export const GET = async (_request: NextRequest) => {
   const startTime = Date.now()
 
-  try {
-    // Check various services and dependencies
-    const healthChecks = await Promise.allSettled([
-      checkDatabase(),
-      checkExternalServices(),
-      checkMemoryUsage(),
-      checkDiskSpace()
-    ])
+  // Check various services and dependencies
+  const healthChecks = await Promise.allSettled([
+    checkDatabase(),
+    checkExternalServices(),
+    checkMemoryUsage(),
+    checkDiskSpace()
+  ])
 
-    const results = {
-      database: healthChecks[0].status === 'fulfilled' ? healthChecks[0].value : { status: 'unhealthy', error: 'Database connection failed' },
-      external_services: healthChecks[1].status === 'fulfilled' ? healthChecks[1].value : { status: 'unhealthy', error: 'External services unavailable' },
-      memory: healthChecks[2].status === 'fulfilled' ? healthChecks[2].value : { status: 'unhealthy', error: 'Memory check failed' },
-      disk: healthChecks[3].status === 'fulfilled' ? healthChecks[3].value : { status: 'unhealthy', error: 'Disk check failed' }
-    }
-
-    // Determine overall health status
-    const allHealthy = Object.values(results).every(check => check.status === 'healthy')
-    const hasWarnings = Object.values(results).some(check => check.status === 'warning')
-
-    let overallStatus: 'healthy' | 'warning' | 'unhealthy' = 'healthy'
-    if (!allHealthy) {
-      overallStatus = 'unhealthy'
-    } else if (hasWarnings) {
-      overallStatus = 'warning'
-    }
-
-    const responseTime = Date.now() - startTime
-
-    const healthData = {
-      status: overallStatus,
-      timestamp: new Date().toISOString(),
-      version: process.env.APP_VERSION || '2.0.0',
-      environment: config.name,
-      uptime: process.uptime(),
-      response_time: responseTime,
-      checks: results,
-      system: {
-        node_version: process.version,
-        platform: process.platform,
-        arch: process.arch,
-        memory: process.memoryUsage(),
-        pid: process.pid
-      }
-    }
-
-    // Return appropriate status code
-    const statusCode = overallStatus === 'unhealthy' ? 503 : 200
-
-    const response = NextResponse.json(healthData, { status: statusCode })
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
-    response.headers.set('X-Health-Status', overallStatus)
-    response.headers.set('X-Response-Time', `${responseTime}ms`)
-
-    return response
-
-  } catch (error) {
-    const errorResponse = {
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: error instanceof Error ? error.message : 'Unknown health check error',
-      uptime: process.uptime()
-    }
-
-    return NextResponse.json(errorResponse, { status: 503 })
+  const results = {
+    database: healthChecks[0].status === 'fulfilled' ? healthChecks[0].value : { status: 'unhealthy', error: 'Database connection failed' },
+    external_services: healthChecks[1].status === 'fulfilled' ? healthChecks[1].value : { status: 'unhealthy', error: 'External services unavailable' },
+    memory: healthChecks[2].status === 'fulfilled' ? healthChecks[2].value : { status: 'unhealthy', error: 'Memory check failed' },
+    disk: healthChecks[3].status === 'fulfilled' ? healthChecks[3].value : { status: 'unhealthy', error: 'Disk check failed' }
   }
+
+  // Determine overall health status
+  const allHealthy = Object.values(results).every(check => check.status === 'healthy')
+  const hasWarnings = Object.values(results).some(check => check.status === 'warning')
+
+  let overallStatus: 'healthy' | 'warning' | 'unhealthy' = 'healthy'
+  if (!allHealthy) {
+    overallStatus = 'unhealthy'
+  } else if (hasWarnings) {
+    overallStatus = 'warning'
+  }
+
+  const responseTime = Date.now() - startTime
+
+  const healthData = {
+    status: overallStatus,
+    timestamp: new Date().toISOString(),
+    version: process.env.APP_VERSION || '2.0.0',
+    environment: 'development',
+    uptime: process.uptime(),
+    response_time: responseTime,
+    checks: results,
+    system: {
+      node_version: process.version,
+      platform: process.platform,
+      arch: process.arch,
+      memory: process.memoryUsage(),
+      pid: process.pid
+    }
+  }
+
+  // Return appropriate status code
+  const statusCode = overallStatus === 'unhealthy' ? 503 : 200
+
+  return NextResponse.json(healthData, {
+    status: statusCode,
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'X-Health-Status': overallStatus,
+      'X-Response-Time': `${responseTime}ms`
+    }
+  })
 }
 
 // Service health check functions

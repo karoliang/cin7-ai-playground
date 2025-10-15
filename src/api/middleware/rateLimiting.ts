@@ -64,7 +64,6 @@ class MemoryRateLimiter {
 
   async check(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
     const now = Date.now()
-    const windowStart = now - config.windowMs
 
     // Clean up expired entries
     for (const [k, v] of this.storage.entries()) {
@@ -129,26 +128,25 @@ class RedisRateLimiter {
 
   async check(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
     const now = Date.now()
-    const windowStart = now - config.windowMs
     const resetTime = now + config.windowMs
 
     // Use Redis pipeline for atomic operations
     const pipeline = this.redis.pipeline()
 
     // Remove expired entries
-    pipeline.zremrangebyscore(key, 0, windowStart)
+    pipeline.zremrangebyscore(key, 0, now - config.windowMs)
 
     // Count current requests
     pipeline.zcard(key)
 
     // Add current request
-    pipeline.zadd(key, now, `${now}-${Math.random()}`)
+    pipeline.zadd(key, { score: now, member: `${now}-${Math.random()}` })
 
     // Set expiration
     pipeline.expire(key, Math.ceil(config.windowMs / 1000))
 
     const results = await pipeline.exec()
-    const count = (results?.[1]?.[1] as number) || 0
+    const count = Number((results as any)?.[1]?.[1]) || 0
 
     const remaining = Math.max(0, config.maxRequests - count)
     const success = count <= config.maxRequests
@@ -344,7 +342,7 @@ export function withTieredRateLimit(tiers: {
 /**
  * Get user tier (placeholder implementation)
  */
-function getUserTier(userId?: string): 'free' | 'pro' | 'enterprise' {
+function getUserTier(_userId?: string): 'free' | 'pro' | 'enterprise' {
   // This would typically come from your user database
   // For now, return 'free' for all users
   return 'free'
@@ -380,7 +378,6 @@ export function withSlidingWindowRateLimit(config: {
   ) => {
     return async (request: NextRequest, context?: any): Promise<NextResponse> => {
       const key = defaultKeyGenerator(request, context)
-      const now = Date.now()
 
       // Check each window
       for (const window of config.windows) {

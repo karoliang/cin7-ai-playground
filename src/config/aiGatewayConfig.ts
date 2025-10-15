@@ -537,7 +537,7 @@ export class AIGatewayConfigManager {
       source: this.configSource,
       lastUpdated: this.lastUpdated,
       version: '2.0.0',
-      environment: import.meta.env.MODE,
+      environment: process.env.NODE_ENV,
       hasConfig: this.config !== null
     }
   }
