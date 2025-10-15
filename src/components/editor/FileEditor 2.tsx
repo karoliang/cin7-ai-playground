@@ -10,12 +10,7 @@ import {
   Banner,
   TextContainer
 } from '@shopify/polaris'
-import CodeMirror from '@uiw/react-codemirror'
-import { javascript } from '@codemirror/lang-javascript'
-import { css } from '@codemirror/lang-css'
-import { html } from '@codemirror/lang-html'
-import { json } from '@codemirror/lang-json'
-import { oneDark } from '@codemirror/theme-one-dark'
+import { CodeMirrorEditor } from './CodeMirrorEditor'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { ProjectFile, FileType } from '@/types'
 
@@ -74,27 +69,7 @@ export const FileEditor: React.FC<FileEditorProps> = ({
     setIsValid(true)
   }, [file])
 
-  // Get language extension for CodeMirror
-  const getLanguageExtension = useCallback(() => {
-    if (!file) return null
-
-    switch (file.type) {
-      case 'javascript':
-      case 'jsx':
-      case 'typescript':
-      case 'tsx':
-        return javascript({ jsx: true, typescript: true })
-      case 'css':
-        return css()
-      case 'html':
-        return html()
-      case 'json':
-        return json()
-      default:
-        return null
-    }
-  }, [file])
-
+  
   // Validate file content based on type
   const validateContent = useCallback((value: string) => {
     if (!file) return true
@@ -234,30 +209,14 @@ export const FileEditor: React.FC<FileEditorProps> = ({
           )}
 
           {/* Code Editor */}
-          <div style={{
-            border: '1px solid var(--p-color-border)',
-            borderRadius: '0.5rem',
-            overflow: 'hidden'
-          }}>
-            <CodeMirror
-              value={content}
-              height="400px"
-              theme={resolvedTheme === 'dark' ? oneDark : undefined}
-              extensions={[getLanguageExtension()].filter(Boolean)}
-              onChange={handleContentChange}
-              basicSetup={{
-                lineNumbers: true,
-                foldGutter: true,
-                dropCursor: false,
-                allowMultipleSelections: false,
-                indentOnInput: true,
-                bracketMatching: true,
-                closeBrackets: true,
-                autocompletion: true,
-                highlightSelectionMatches: true
-              }}
-            />
-          </div>
+          <CodeMirrorEditor
+            value={content}
+            height="400px"
+            theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+            language={file?.type}
+            onChange={handleContentChange}
+            basicSetup={true}
+          />
 
           {/* Editor Tips */}
           <Card>

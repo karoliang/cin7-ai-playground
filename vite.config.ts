@@ -54,7 +54,7 @@ export default defineConfig({
       mangle: {
         safari10: true,
         // Preserve variable names that might cause circular dependency issues
-        reserved: ['e', 'j', 't', 'i', 's', 'n', 'o', 'r', 'h', 'l', 'a', 'c', 'd', 'u', 'f', 'p', 'g', 'm', 'v', 'w', 'b', 'y', 'x']
+        reserved: ['e', 'j', 't', 'i', 's', 'n', 'o', 'r', 'h', 'l', 'a', 'c', 'd', 'u', 'f', 'p', 'g', 'm', 'v', 'w', 'b', 'y', 'x', 'S', 'EditorState', 'Compartment']
       },
       format: {
         // Preserve certain formatting for better debugging
@@ -79,9 +79,15 @@ export default defineConfig({
             if (id.includes('zustand') || id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor'
             }
-            // Consolidate all CodeMirror dependencies to avoid circular dependency issues
-            if (id.includes('@codemirror') || id.includes('codemirror') || id.includes('@uiw/react-codemirror')) {
-              return 'codemirror-complete'
+            // Split CodeMirror dependencies to avoid circular dependency issues
+            if (id.includes('@codemirror/state') || id.includes('@codemirror/view') || id.includes('@codemirror/language') || id.includes('@codemirror/commands') || id.includes('@codemirror/search') || id.includes('@codemirror/autocomplete') || id.includes('@codemirror/lint')) {
+              return 'codemirror-core'
+            }
+            if (id.includes('@codemirror/lang-') || id.includes('@codemirror/theme-')) {
+              return 'codemirror-extensions'
+            }
+            if (id.includes('react-codemirror') || id.includes('@uiw/react-codemirror')) {
+              return 'codemirror-react'
             }
             if (id.includes('framer-motion')) {
               return 'animation-vendor'
@@ -221,22 +227,8 @@ export default defineConfig({
       '@shopify/polaris',
       'framer-motion',
       'jszip',
-      // CodeMirror dependencies to pre-bundle - include ALL packages
-      '@codemirror/state',
-      '@codemirror/view',
-      '@codemirror/language',
-      '@codemirror/commands',
-      '@codemirror/search',
-      '@codemirror/autocomplete',
-      '@codemirror/lint',
-      '@codemirror/lang-javascript',
-      '@codemirror/lang-css',
-      '@codemirror/lang-html',
-      '@codemirror/lang-json',
-      '@codemirror/theme-one-dark',
-      '@uiw/react-codemirror',
-      '@uiw/codemirror-extensions-basic-setup',
-      'codemirror'
+      // CodeMirror dependencies - exclude from pre-bundling to avoid circular dependencies
+      // These will be bundled separately with proper ordering
     ]
   }
 })
