@@ -297,7 +297,7 @@ router.init()
 
       // Add nested routes if specified
       if ('children' in page && page.children && Array.isArray(page.children)) {
-        const childRoutes: RouteConfig[] = page.children.map((child: any) => ({
+        const childRoutes: RouteConfig[] = (page.children as any[]).map((child: any) => ({
           path: child.path,
           component: `${child.name}Component`,
           meta: {

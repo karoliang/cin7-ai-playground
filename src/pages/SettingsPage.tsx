@@ -96,7 +96,8 @@ export const SettingsPage: React.FC = () => {
     try {
       await updateProfile({
         name: profileName,
-        email: profileEmail
+        email: profileEmail,
+        company: profileCompany
       })
       console.log('Profile saved successfully')
     } catch (error) {
@@ -470,13 +471,11 @@ export const SettingsPage: React.FC = () => {
       <Layout>
         <Layout.Section>
           <Card>
-            <div>
-              <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab} fitted />
-            </div>
+            <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab} fitted />
           </Card>
 
           <Card>
-            <div>
+            <BlockStack gap="400">
               <Text variant="headingMd" as="h3">Quick Actions</Text>
               <BlockStack gap="200">
                 <Button icon={ExportIcon} fullWidth onClick={() => setShowExportModal(true)}>
@@ -489,115 +488,115 @@ export const SettingsPage: React.FC = () => {
                   Clear Cache
                 </Button>
                 <Divider />
-                <Button icon={DeleteIcon} fullWidth tone="critical" onClick={() => setShowDeleteModal(true)}>
+                <Button icon={DeleteIcon} fullWidth variant="critical" onClick={() => setShowDeleteModal(true)}>
                   Delete Account
                 </Button>
               </BlockStack>
-            </div>
+            </BlockStack>
           </Card>
         </Layout.Section>
 
         <Layout.Section>
           {selectedTab === 0 && (
             <Card>
-              <div>
+              <BlockStack gap="400">
                 <Text variant="headingMd" as="h3">Profile Settings</Text>
                 <FormLayout>
-                <TextField
-                  label="Full Name"
-                  value={profileName}
-                  onChange={setProfileName}
-                  placeholder="Enter your full name"
-                  disabled={!isAuthenticated}
-                  autoComplete="name"
-                />
-                <TextField
-                  label="Email Address"
-                  value={profileEmail}
-                  onChange={setProfileEmail}
-                  placeholder="your.email@example.com"
-                  type="email"
-                  disabled={!isAuthenticated}
-                  autoComplete="email"
-                />
-                <TextField
-                  label="Company"
-                  value={profileCompany}
-                  onChange={setProfileCompany}
-                  placeholder="Your company name"
-                  disabled={!isAuthenticated}
-                  autoComplete="organization"
-                />
-                <Select
-                  label="Theme Preference"
-                  options={themeOptions}
-                  value={resolvedTheme}
-                  onChange={(value) => setTheme(value as 'light' | 'dark' | 'auto')}
-                />
-                <Divider />
-                <Text variant="headingMd" as="h3">Account Status</Text>
-                <InlineStack gap="200">
-                  <Badge tone="success">Active</Badge>
-                  <Text variant="bodySm" as="span">
-                    Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
-                  </Text>
-                </InlineStack>
+                  <TextField
+                    label="Full Name"
+                    value={profileName}
+                    onChange={setProfileName}
+                    placeholder="Enter your full name"
+                    disabled={!isAuthenticated}
+                    autoComplete="name"
+                  />
+                  <TextField
+                    label="Email Address"
+                    value={profileEmail}
+                    onChange={setProfileEmail}
+                    placeholder="your.email@example.com"
+                    type="email"
+                    disabled={!isAuthenticated}
+                    autoComplete="email"
+                  />
+                  <TextField
+                    label="Company"
+                    value={profileCompany}
+                    onChange={setProfileCompany}
+                    placeholder="Your company name"
+                    disabled={!isAuthenticated}
+                    autoComplete="organization"
+                  />
+                  <Select
+                    label="Theme Preference"
+                    options={themeOptions}
+                    value={resolvedTheme}
+                    onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
+                  />
+                  <Divider />
+                  <Text variant="headingMd" as="h3">Account Status</Text>
+                  <InlineStack gap="200">
+                    <Badge tone="success">Active</Badge>
+                    <Text variant="bodySm" as="span">
+                      Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
+                    </Text>
+                  </InlineStack>
                 </FormLayout>
-              </div>
+              </BlockStack>
             </Card>
           )}
 
           {selectedTab === 1 && (
             <Card>
-              <div>
+              <BlockStack gap="400">
                 <Text variant="headingMd" as="h3">Project Settings</Text>
                 <FormLayout>
-                <Select
-                  label="Default Template"
-                  options={templateOptions}
-                  value={defaultTemplate}
-                  onChange={setDefaultTemplate}
-                  disabled={!isAuthenticated}
-                />
-                <Checkbox
-                  label="Enable auto-save"
-                  checked={autoSave}
-                  onChange={setAutoSave}
-                  disabled={!isAuthenticated}
-                />
-                {autoSave && (
-                  <RangeSlider
-                    label="Auto-save interval (seconds)"
-                    value={autoSaveInterval}
-                    min={10}
-                    max={300}
-                    step={10}
-                    onChange={(value) => setAutoSaveInterval(Array.isArray(value) ? value[0] : value)}
-                    output
+                  <Select
+                    label="Default Template"
+                    options={templateOptions}
+                    value={defaultTemplate}
+                    onChange={setDefaultTemplate}
                     disabled={!isAuthenticated}
                   />
-                )}
-                <ChoiceList
-                  title="Default project permissions"
-                  choices={[
-                    { label: 'Private (only you can view)', value: 'private' },
-                    { label: 'Team (team members can view)', value: 'team' },
-                    { label: 'Public (anyone can view)', value: 'public' }
-                  ]}
-                  selected={['private']}
-                  onChange={() => {}}
-                  disabled={!isAuthenticated}
-                />
-              </FormLayout>
-              </div>
+                  <Checkbox
+                    label="Enable auto-save"
+                    checked={autoSave}
+                    onChange={setAutoSave}
+                    disabled={!isAuthenticated}
+                  />
+                  {autoSave && (
+                    <RangeSlider
+                      label="Auto-save interval (seconds)"
+                      value={autoSaveInterval}
+                      min={10}
+                      max={300}
+                      step={10}
+                      onChange={(value) => setAutoSaveInterval(Array.isArray(value) ? value[0] : value)}
+                      output
+                      disabled={!isAuthenticated}
+                    />
+                  )}
+                  <ChoiceList
+                    title="Default project permissions"
+                    choices={[
+                      { label: 'Private (only you can view)', value: 'private' },
+                      { label: 'Team (team members can view)', value: 'team' },
+                      { label: 'Public (anyone can view)', value: 'public' }
+                    ]}
+                    selected={['private']}
+                    onChange={() => {}}
+                    disabled={!isAuthenticated}
+                  />
+                </FormLayout>
+              </BlockStack>
             </Card>
           )}
 
           {selectedTab === 2 && (
             <Card>
-              <div>
+              <BlockStack gap="400">
                 <Text variant="headingMd" as="h3">Export Settings</Text>
-              <FormLayout>
+                <FormLayout>
                 <Select
                   label="Default export format"
                   options={exportFormatOptions}
@@ -654,16 +653,16 @@ export const SettingsPage: React.FC = () => {
                     Export settings are saved per project. You can override these settings when exporting individual projects.
                   </Text>
                 </Banner>
-              </FormLayout>
-              </div>
+                </FormLayout>
+              </BlockStack>
             </Card>
           )}
 
           {selectedTab === 3 && (
             <Card>
-              <div>
+              <BlockStack gap="400">
                 <Text variant="headingMd" as="h3">Advanced Settings</Text>
-              <FormLayout>
+                <FormLayout>
                 <Banner tone="warning" title="Advanced Features">
                   <Text variant="bodySm" as="p">
                     These settings are intended for advanced users. Changing these values may affect the performance of the application.
@@ -713,8 +712,8 @@ export const SettingsPage: React.FC = () => {
                     Export Settings
                   </Button>
                 </ButtonGroup>
-              </FormLayout>
-              </div>
+                </FormLayout>
+              </BlockStack>
             </Card>
           )}
         </Layout.Section>
