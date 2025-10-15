@@ -171,7 +171,7 @@ export class SecureAPIKeyManager {
   /**
    * Rotate API keys for a provider
    */
-  async rotateKeys(provider: string, newApiKey: string): Promise<string> {
+  rotateKeys(provider: string, newApiKey: string): string {
     // Deactivate old keys
     for (const [keyId, config] of this.keyStore) {
       if (config.provider === provider && config.isActive) {
@@ -180,7 +180,7 @@ export class SecureAPIKeyManager {
     }
 
     // Add new key
-    return await this.addAPIKey(provider, newApiKey)
+    return this.addAPIKey(provider, newApiKey)
   }
 
   /**
@@ -432,9 +432,7 @@ export class EnvironmentAPIKeyManager {
 
   private constructor(encryptionKey: string) {
     this.keyManager = new SecureAPIKeyManager(encryptionKey)
-    this.initializeFromEnvironment().catch(error => {
-      console.error('Failed to initialize from environment:', error)
-    })
+    this.initializeFromEnvironment()
   }
 
   static getInstance(encryptionKey?: string): EnvironmentAPIKeyManager {
@@ -447,17 +445,17 @@ export class EnvironmentAPIKeyManager {
     return EnvironmentAPIKeyManager.instance
   }
 
-  private async initializeFromEnvironment(): Promise<void> {
+  private initializeFromEnvironment(): void {
     // GLM API Key
     const glmKey = this.getSecureEnvVar('GLM_API_KEY')
     if (glmKey) {
-      await this.keyManager.addAPIKey('glm', glmKey)
+      this.keyManager.addAPIKey('glm', glmKey)
     }
 
     // OpenAI API Key (if available)
     const openaiKey = this.getSecureEnvVar('OPENAI_API_KEY')
     if (openaiKey) {
-      await this.keyManager.addAPIKey('openai', openaiKey)
+      this.keyManager.addAPIKey('openai', openaiKey)
     }
 
     // Add other providers as needed
@@ -477,14 +475,14 @@ export class EnvironmentAPIKeyManager {
     return value
   }
 
-  async getAPIKey(provider: string): Promise<string | null> {
+  getAPIKey(provider: string): string | null {
     const keys = this.keyManager.getActiveKeys(provider)
     if (keys.length === 0) {
       return null
     }
 
     // Use the most recently created key
-    return await this.keyManager.getAPIKey(keys[0].keyId)
+    return this.keyManager.getAPIKey(keys[0].keyId)
   }
 
   getKeyManager(): SecureAPIKeyManager {

@@ -66,19 +66,17 @@ export default defineConfig({
         manualChunks: (id) => {
           // Vendor chunks
           if (id.includes('node_modules')) {
-            // Bundle React with Polaris to prevent createContext errors
-            if (id.includes('react') || id.includes('react-dom') || id.includes('@shopify/polaris')) {
-              return 'polaris-vendor'
-            }
-            if (id.includes('react-router-dom')) {
-              return 'router-vendor'
+            // Bundle ALL React-related packages together to prevent hook call errors
+            if (id.includes('react') || id.includes('react-dom') || id.includes('@shopify/polaris') ||
+                id.includes('react-router') || id.includes('@monaco-editor/react')) {
+              return 'react-vendor'
             }
             if (id.includes('zustand') || id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor'
             }
-            // Split Monaco Editor dependencies for better performance
-            if (id.includes('@monaco-editor/react') || id.includes('monaco-editor')) {
-              return 'monaco-editor'
+            // Monaco core can be separate from React wrapper
+            if (id.includes('monaco-editor') && !id.includes('@monaco-editor/react')) {
+              return 'monaco-core'
             }
             if (id.includes('framer-motion')) {
               return 'animation-vendor'
@@ -209,18 +207,19 @@ export default defineConfig({
   optimizeDeps: {
     force: true,
     include: [
+      // React ecosystem - bundle together to prevent hook call errors
       'react',
       'react-dom',
       'react-router-dom',
-      'zustand',
-      'date-fns',
-      'clsx',
+      '@monaco-editor/react',
       '@shopify/polaris',
       '@shopify/polaris-icons',
       '@shopify/polaris-tokens',
+      'zustand',
+      'date-fns',
+      'clsx',
       'framer-motion',
       'jszip',
-      '@monaco-editor/react',
       'monaco-editor'
     ]
   }

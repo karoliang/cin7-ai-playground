@@ -21,7 +21,7 @@ import { GenerateRequest, GenerateResponse, ProjectFile, FileOperation } from '@
 
 // Import the zhipu-sdk-js
 import ZhipuAI from 'zhipu-sdk-js'
-import { EnvironmentBrowserAPIKeyManager } from '@/security/browserApiKeyManager'
+import { EnvironmentAPIKeyManager } from '@/security/apiKeyManager'
 
 export class GLMService {
   private config: GLMConfig
@@ -29,7 +29,7 @@ export class GLMService {
   private client: ZhipuAI
   private requestMetrics: GLMRequestMetrics[] = []
   private healthStatus: GLMServiceHealth
-  private apiKeyManager: EnvironmentBrowserAPIKeyManager
+  private apiKeyManager: EnvironmentAPIKeyManager
 
   constructor(config: GLMConfig, options: GLMServiceOptions = {}) {
     this.config = { ...DEFAULT_GLM_CONFIG, ...config }
@@ -37,32 +37,11 @@ export class GLMService {
 
     // SECURITY: Use secure API key management
     try {
-      this.apiKeyManager = EnvironmentBrowserAPIKeyManager.getInstance()
+      this.apiKeyManager = EnvironmentAPIKeyManager.getInstance()
     } catch (error) {
       throw new Error('Failed to initialize secure API key manager')
     }
 
-    // Initialize client asynchronously
-    this.initializeClient().catch(error => {
-      this.logError('Failed to initialize GLM client', error)
-      this.healthStatus = {
-        status: 'unhealthy',
-        last_check: Date.now(),
-        error_rate: 100,
-        error_message: 'Failed to initialize client'
-      }
-    })
-
-    this.healthStatus = {
-      status: 'healthy',
-      last_check: Date.now(),
-      error_rate: 0
-    }
-
-    this.log('GLM Service initialized', { config: { ...this.config, apiKey: '***' } })
-  }
-
-  private async initializeClient(): Promise<void> {
     // Get API key securely
     const secureApiKey = this.getSecureAPIKey()
     if (!secureApiKey) {
@@ -72,6 +51,14 @@ export class GLMService {
     this.client = new ZhipuAI({
       apiKey: secureApiKey
     })
+
+    this.healthStatus = {
+      status: 'healthy',
+      last_check: Date.now(),
+      error_rate: 0
+    }
+
+    this.log('GLM Service initialized', { config: { ...this.config, apiKey: '***' } })
   }
 
   /**
@@ -599,10 +586,14 @@ export function validateGLMConfig(config: Partial<GLMConfig>): string[] {
 }
 
 export function createGLMConfigFromEnv(): GLMConfig {
-  // For browser environment, we'll use the browser API key manager
-  // so we don't need to expose the API key in the config
+  const apiKey = (import.meta.env as any).VITE_GLM_API_KEY
+
+  if (!apiKey) {
+    throw new Error('VITE_GLM_API_KEY environment variable is required')
+  }
+
   return {
-    apiKey: 'managed-by-browser-key-manager',
+    apiKey,
     baseURL: (import.meta.env as any).VITE_GLM_BASE_URL || DEFAULT_GLM_CONFIG.baseURL,
     timeout: parseInt((import.meta.env as any).VITE_GLM_TIMEOUT || '30000'),
     retryAttempts: parseInt((import.meta.env as any).VITE_GLM_RETRY_ATTEMPTS || '3'),
