@@ -9,7 +9,8 @@ import {
   ButtonGroup,
   Text,
   Badge,
-  Stack,
+  BlockStack,
+  InlineStack,
   ProgressBar,
   Divider,
   ChoiceList,
@@ -17,7 +18,7 @@ import {
   TextField,
   DatePicker
 } from '@shopify/polaris'
-import { ExportMinor, DownloadMajor, FilterMajor } from '@shopify/polaris-icons'
+import { ExportIcon, DownloadIcon, FilterIcon } from '@shopify/polaris-icons'
 import { useAuthStore } from '@/stores/authStore'
 import { exportService, BulkExportOptions, BulkExportProgress, BulkExportResult } from '@/services/exportService'
 import { ActionModal } from '@/components/ui/PolarisComponents'
@@ -62,7 +63,7 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
 
       // Estimate size based on actual projects
       const totalSize = filteredProjects.reduce((acc, project) => {
-        return acc + exportService.getExportInfo(project, exportOptions).estimatedSize
+        return acc + exportService.getExportInfo(project, exportOptions as any).estimatedSize
       }, 0)
       setEstimatedSize(totalSize)
 
@@ -255,7 +256,7 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
         open={open}
         onClose={onClose}
         title="Export All Projects"
-        large
+        size="large"
         primaryAction={
           exportResult?.success
             ? undefined
@@ -264,7 +265,7 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
                 onAction: handleExport,
                 loading: isExporting,
                 disabled: !user || isExporting || previewProjects === 0,
-                icon: ExportMinor
+                icon: ExportIcon
               }
         }
         secondaryActions={[
@@ -277,47 +278,47 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
       >
         <Modal.Section>
           {exportResult?.success ? (
-            <Card sectioned>
-              <Stack vertical spacing="loose">
-                <Banner status="success" title="Bulk Export Successful!">
-                  <Text>
+            <Card>
+              <BlockStack gap="400">
+                <Banner tone="success" title="Bulk Export Successful!">
+                  <Text as="p">
                     Your projects have been exported successfully. The download should have started automatically.
                   </Text>
                 </Banner>
 
-                <div>
-                  <Text variant="bodySm" color="subdued">
+                <BlockStack gap="100">
+                  <Text as="p" variant="bodySm">
                     Total Projects: {exportResult.summary.totalProjects}
                   </Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text as="p" variant="bodySm">
                     Successful: {exportResult.summary.successfulExports}
                   </Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text as="p" variant="bodySm">
                     Failed: {exportResult.summary.failedExports}
                   </Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text as="p" variant="bodySm">
                     Skipped: {exportResult.summary.skippedProjects}
                   </Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text as="p" variant="bodySm">
                     File size: {formatFileSize(exportResult.size || 0)}
                   </Text>
-                  <Text variant="bodySm" color="subdued">
+                  <Text as="p" variant="bodySm">
                     File name: {exportResult.filename}
                   </Text>
-                </div>
+                </BlockStack>
 
                 {exportResult.summary.failedExports > 0 && (
-                  <Banner status="warning">
-                    <Text>
+                  <Banner tone="warning">
+                    <Text as="p">
                       {exportResult.summary.failedExports} project(s) failed to export.
                       Check the export details for more information.
                     </Text>
                   </Banner>
                 )}
 
-                <ButtonGroup>
+                <InlineStack gap="200">
                   <Button
-                    icon={DownloadMajor}
+                    icon={DownloadIcon}
                     onClick={() => {
                       if (exportResult.blob) {
                         exportService.downloadFile(
@@ -330,60 +331,63 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
                     Download Again
                   </Button>
                   <Button onClick={onClose}>Close</Button>
-                </ButtonGroup>
-              </Stack>
+                </InlineStack>
+              </BlockStack>
             </Card>
           ) : (
-            <Stack vertical spacing="loose">
+            <BlockStack gap="400">
               {exportProgress && (
-                <Card sectioned>
-                  <Stack vertical spacing="tight">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Card>
+                  <BlockStack gap="200">
+                    <InlineStack align="space-between">
                       <Text variant="headingSm" as="h3">
                         {exportProgress.stage.charAt(0).toUpperCase() + exportProgress.stage.slice(1)}
                       </Text>
-                      <Badge status={exportProgress.stage === 'error' ? 'critical' : 'info'}>
+                      <Badge tone={exportProgress.stage === 'error' ? 'critical' : 'info'}>
                         {exportProgress.progress}%
                       </Badge>
-                    </div>
+                    </InlineStack>
                     <ProgressBar
                       progress={exportProgress.progress}
                       size="small"
-                      color={exportProgress.stage === 'error' ? 'critical' : 'primary'}
+                      tone={exportProgress.stage === 'error' ? 'critical' : 'primary'}
                     />
-                    <Text variant="bodySm" color="subdued">
+                    <Text as="p" variant="bodySm">
                       {exportProgress.message}
                     </Text>
                     {exportProgress.currentProject && (
-                      <Text variant="bodySm" color="subdued">
+                      <Text as="p" variant="bodySm">
                         Current: {exportProgress.currentProject} ({exportProgress.completedProjects}/{exportProgress.totalProjects})
                       </Text>
                     )}
-                  </Stack>
+                  </BlockStack>
                 </Card>
               )}
 
               {/* Project Preview */}
-              <Card title="Export Summary" sectioned>
-                <Stack vertical spacing="tight">
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Text variant="bodySm" color="subdued">Projects to export:</Text>
+              <Card>
+                <BlockStack gap="200">
+                  <Text variant="headingMd" as="h3">Export Summary</Text>
+                  <InlineStack align="space-between">
+                    <Text as="span" variant="bodySm">Projects to export:</Text>
                     <Badge>{previewProjects}</Badge>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Text variant="bodySm" color="subdued">Estimated size:</Text>
-                    <Text variant="bodySm">{formatFileSize(estimatedSize)}</Text>
-                  </div>
+                  </InlineStack>
+                  <InlineStack align="space-between">
+                    <Text as="span" variant="bodySm">Estimated size:</Text>
+                    <Text as="span" variant="bodySm">{formatFileSize(estimatedSize)}</Text>
+                  </InlineStack>
                   {previewProjects === 0 && (
-                    <Banner status="warning">
-                      <Text>No projects found matching the current filters.</Text>
+                    <Banner tone="warning">
+                      <Text as="p">No projects found matching the current filters.</Text>
                     </Banner>
                   )}
-                </Stack>
+                </BlockStack>
               </Card>
 
               {/* Basic Export Settings */}
-              <Card title="Export Settings" sectioned>
+              <Card>
+                <BlockStack gap="400">
+                  <Text variant="headingMd" as="h3">Export Settings</Text>
                 <FormLayout>
                   <Select
                     label="Export Format"
@@ -465,81 +469,80 @@ export const BulkExportModal: React.FC<BulkExportModalProps> = ({ open, onClose 
                     disabled={isExporting}
                   />
                 </FormLayout>
+                </BlockStack>
               </Card>
 
               {/* Project Filters */}
-              <Card
-                title={
-                  <Stack>
-                    <Text variant="headingMd">Project Filters</Text>
+              <Card>
+                <BlockStack gap="400">
+                  <InlineStack align="space-between">
+                    <Text as="h3" variant="headingMd">Project Filters</Text>
                     <Button
                       size="slim"
-                      icon={FilterMajor}
+                      icon={FilterIcon}
                       onClick={() => setShowFilters(!showFilters)}
                     >
                       {showFilters ? 'Hide' : 'Show'} Filters
                     </Button>
-                  </Stack>
-                }
-                sectioned
-              >
-                {showFilters && (
-                  <FormLayout>
-                    <ChoiceList
-                      title="Project Status"
-                      choices={statusOptions}
-                      selected={exportOptions.projectFilter?.status || []}
-                      onChange={(values) => updateProjectFilter('status', values as string[])}
-                      allowMultiple
-                    />
+                  </InlineStack>
+                  {showFilters && (
+                    <FormLayout>
+                      <ChoiceList
+                        title="Project Status"
+                        choices={statusOptions}
+                        selected={exportOptions.projectFilter?.status || []}
+                        onChange={(values) => updateProjectFilter('status', values as string[])}
+                        allowMultiple
+                      />
 
-                    <ChoiceList
-                      title="Templates"
-                      choices={templateOptions}
-                      selected={exportOptions.projectFilter?.template || []}
-                      onChange={(values) => updateProjectFilter('template', values as string[])}
-                      allowMultiple
-                    />
+                      <ChoiceList
+                        title="Templates"
+                        choices={templateOptions}
+                        selected={exportOptions.projectFilter?.template || []}
+                        onChange={(values) => updateProjectFilter('template', values as string[])}
+                        allowMultiple
+                      />
 
-                    <ChoiceList
-                      title="Frameworks"
-                      choices={frameworkOptions}
-                      selected={exportOptions.projectFilter?.frameworks || []}
-                      onChange={(values) => updateProjectFilter('frameworks', values as string[])}
-                      allowMultiple
-                    />
-                  </FormLayout>
-                )}
+                      <ChoiceList
+                        title="Frameworks"
+                        choices={frameworkOptions}
+                        selected={exportOptions.projectFilter?.frameworks || []}
+                        onChange={(values) => updateProjectFilter('frameworks', values as string[])}
+                        allowMultiple
+                      />
+                    </FormLayout>
+                  )}
+                </BlockStack>
               </Card>
 
               {/* Advanced Options */}
-              <Card
-                title={
-                  <Stack>
-                    <Text variant="headingMd">Advanced Options</Text>
+              <Card>
+                <BlockStack gap="400">
+                  <InlineStack align="space-between">
+                    <Text as="h3" variant="headingMd">Advanced Options</Text>
                     <Button
                       size="slim"
                       onClick={() => setShowAdvanced(!showAdvanced)}
                     >
                       {showAdvanced ? 'Hide' : 'Show'} Advanced
                     </Button>
-                  </Stack>
-                }
-                sectioned
-              >
-                {showAdvanced && (
-                  <FormLayout>
-                    <Text variant="bodySm" color="subdued">
-                      Advanced options allow you to customize the export process further.
-                      Date filtering and custom configurations will be available in future updates.
-                    </Text>
-                  </FormLayout>
-                )}
+                  </InlineStack>
+                  {showAdvanced && (
+                    <FormLayout>
+                      <Text as="p" variant="bodySm">
+                        Advanced options allow you to customize the export process further.
+                        Date filtering and custom configurations will be available in future updates.
+                      </Text>
+                    </FormLayout>
+                  )}
+                </BlockStack>
               </Card>
-            </Stack>
+            </BlockStack>
           )}
         </Modal.Section>
       </Modal>
     </>
   )
 }
+
+export default BulkExportModal

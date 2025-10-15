@@ -308,7 +308,7 @@ export class ImportService {
   }
 
   // Get GitHub repository information
-  private async getGitHubRepoInfo(url: string): Promise<GitHubRepoInfo> {
+  async getGitHubRepoInfo(url: string): Promise<GitHubRepoInfo> {
     // In a real implementation, you would use GitHub API
     // For now, return mock data
     return {

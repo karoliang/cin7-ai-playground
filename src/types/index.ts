@@ -91,6 +91,7 @@ export interface FileOperation {
 }
 
 export interface ProjectMetadata {
+  name?: string
   architecture?: ProjectArchitecture
   framework?: SupportedFramework
   template?: ProjectTemplate

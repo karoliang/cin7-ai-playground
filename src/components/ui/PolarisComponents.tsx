@@ -71,7 +71,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <Card
-      background={project.featured ? 'bg-surface-subdued' : 'bg-surface'}
       sectioned
       actions={actions.length > 0 ? actions : undefined}
     >
@@ -135,7 +134,6 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
 }) => {
   return (
     <Card
-      background={template.featured ? 'bg-surface-subdued' : 'bg-surface'}
       sectioned
       actions={[
         {

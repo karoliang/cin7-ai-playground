@@ -1,11 +1,10 @@
 import React, { useState, useCallback } from 'react'
 import {
   Modal,
-  Title,
   Text,
   Button,
   ButtonGroup,
-  Stack,
+  BlockStack,
   Card,
   InlineStack,
   Banner,
@@ -204,32 +203,32 @@ export const FileEditor: React.FC<FileEditorProps> = ({
       ]}
     >
       <Modal.Section>
-        <Stack vertical spacing="loose">
+        <BlockStack gap="400">
           {/* File Info */}
           <Card>
-            <Stack vertical spacing="tight">
-              <InlineStack gap="4">
-                <Text variant="bodySm" color="subdued">Type:</Text>
-                <Text variant="bodySm" fontWeight="semibold">
+            <BlockStack gap="200">
+              <InlineStack gap="400">
+                <Text as="span" variant="bodySm">Type:</Text>
+                <Text as="span" variant="bodySm" fontWeight="semibold">
                   {getFileTypeDisplayName(file.type)}
                 </Text>
               </InlineStack>
-              <InlineStack gap="4">
-                <Text variant="bodySm" color="subdued">Size:</Text>
-                <Text variant="bodySm">{content.length} characters</Text>
+              <InlineStack gap="400">
+                <Text as="span" variant="bodySm">Size:</Text>
+                <Text as="span" variant="bodySm">{content.length} characters</Text>
               </InlineStack>
-              <InlineStack gap="4">
-                <Text variant="bodySm" color="subdued">Language:</Text>
-                <Text variant="bodySm">{file.language || file.type}</Text>
+              <InlineStack gap="400">
+                <Text as="span" variant="bodySm">Language:</Text>
+                <Text as="span" variant="bodySm">{file.language || file.type}</Text>
               </InlineStack>
-            </Stack>
+            </BlockStack>
           </Card>
 
           {/* Validation Error */}
           {!isValid && validationError && (
-            <Banner status="critical">
+            <Banner tone="critical">
               <TextContainer>
-                <Text variant="bodySm">{validationError}</Text>
+                <Text as="p" variant="bodySm">{validationError}</Text>
               </TextContainer>
             </Banner>
           )}
@@ -262,12 +261,12 @@ export const FileEditor: React.FC<FileEditorProps> = ({
 
           {/* Editor Tips */}
           <Card>
-            <Text variant="bodySm" color="subdued">
+            <Text as="p" variant="bodySm">
               <strong>Tips:</strong> Use Ctrl+S (Cmd+S on Mac) to save, Ctrl+Z to undo, and Ctrl+Y to redo.
               The editor supports syntax highlighting and basic validation for {getFileTypeDisplayName(file.type)} files.
             </Text>
           </Card>
-        </Stack>
+        </BlockStack>
       </Modal.Section>
     </Modal>
   )

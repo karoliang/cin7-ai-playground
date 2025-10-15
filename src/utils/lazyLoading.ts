@@ -38,7 +38,7 @@ export function createLazyComponent<T extends ComponentType<any>>(
     loadWithRetry(importFunc, { maxAttempts: retryAttempts, delay: retryDelay, timeout })
   )
 
-  const LazyWrapper = React.forwardRef<HTMLElement, LazyComponentProps>((props, _ref) => {
+  const LazyWrapper = React.forwardRef<any, LazyComponentProps>((props, _ref) => {
     const FallbackComponent = props.fallback || CustomFallback
 
     return React.createElement(
@@ -212,33 +212,21 @@ export function preloadComponents(components: Array<{ key: string; importFunc: (
 }
 
 // Pre-defined lazy loaded components for common use cases
-export const LazyHomePage = createLazyComponent(() => import('@/pages/HomePage').then(m => ({ default: m.HomePage || m })), {
-  fallback: PageSkeleton
-})
+export const LazyHomePage = createLazyComponent(() => import('@/pages/HomePage'))
 
-export const LazyProjectPage = createLazyComponent(() => import('@/pages/ProjectPage').then(m => ({ default: m.ProjectPage || m })), {
-  fallback: PageSkeleton
-})
+export const LazyProjectPage = createLazyComponent(() => import('@/pages/ProjectPage'))
 
-export const LazyCodeGeneratorPage = createLazyComponent(() => import('@/pages/CodeGeneratorPage').then(m => ({ default: m.CodeGeneratorPage || m })), {
-  fallback: PageSpinner
-})
+export const LazyCodeGeneratorPage = createLazyComponent(() => import('@/pages/CodeGeneratorPage'))
 
-export const LazySettingsPage = createLazyComponent(() => import('@/pages/SettingsPage').then(m => ({ default: m.SettingsPage || m })), {
-  fallback: PageSpinner
-})
+export const LazySettingsPage = createLazyComponent(() => import('@/pages/SettingsPage'))
 
-export const LazyProjectWorkspace = createLazyComponent(() => import('@/components/project/ProjectWorkspace').then(m => ({ default: m.ProjectWorkspace || m })), {
-  fallback: PageSpinner
-})
+export const LazyProjectWorkspace = createLazyComponent(() => import('@/components/project/ProjectWorkspace'))
 
-export const LazyFileEditor = createLazyComponent(() => import('@/components/editor/FileEditor').then(m => ({ default: m.FileEditor || m })), {
-  fallback: PageSpinner
-})
+export const LazyFileEditor = createLazyComponent(() => import('@/components/editor/FileEditor'))
 
-export const LazyBulkExportModal = createLazyComponent(() => import('@/components/export/BulkExportModal').then(m => ({ default: m.BulkExportModal || m })))
+export const LazyBulkExportModal = createLazyComponent(() => import('@/components/export/BulkExportModal'))
 
-export const LazyImportModal = createLazyComponent(() => import('@/components/import/ImportModal').then(m => ({ default: m.ImportModal || m })))
+export const LazyImportModal = createLazyComponent(() => import('@/components/import/ImportModal'))
 
 // Performance monitoring for lazy loading
 export function trackLazyLoadingPerformance() {

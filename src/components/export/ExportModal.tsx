@@ -9,15 +9,17 @@ import {
   ButtonGroup,
   Text,
   Badge,
-  Stack,
+  BlockStack,
+  InlineStack,
   ProgressBar,
   Divider,
   ChoiceList,
   Banner
 } from '@shopify/polaris'
-import { ExportMinor, DownloadMajor } from '@shopify/polaris-icons'
+import { ExportIcon, DownloadIcon } from '@shopify/polaris-icons'
 import { Project } from '@/types'
-import { exportService, ExportOptions, ExportProgress } from '@/services/exportService'
+import { exportService, ExportProgress } from '@/services/exportService'
+import { ExportOptions } from '@/lib/projectPackager'
 import { ActionModal } from '@/components/ui/PolarisComponents'
 
 interface ExportModalProps {
@@ -109,7 +111,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
         open={open}
         onClose={onClose}
         title={`Export "${project?.name || 'Project'}"`}
-        large
+        size="large"
         primaryAction={
           exportResult?.success
             ? undefined
@@ -118,7 +120,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
                 onAction: handleExport,
                 loading: isExporting,
                 disabled: !project || isExporting,
-                icon: ExportMinor
+                icon: ExportIcon
               }
         }
         secondaryActions={[
@@ -136,28 +138,28 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
       >
         <Modal.Section>
           {exportResult?.success ? (
-            <Card sectioned>
-              <Stack vertical spacing="loose">
-                <Banner status="success" title="Export Successful!">
-                  <Text>
+            <Card>
+              <BlockStack gap="400">
+                <Banner tone="success" title="Export Successful!">
+                  <Text as="p">
                     Your project has been exported successfully. The download should have started automatically.
                   </Text>
                 </Banner>
 
                 {exportResult.size && (
-                  <div>
-                    <Text variant="bodySm" color="subdued">
+                  <BlockStack gap="100">
+                    <Text as="p" variant="bodySm">
                       File size: {formatFileSize(exportResult.size)}
                     </Text>
-                    <Text variant="bodySm" color="subdued">
+                    <Text as="p" variant="bodySm">
                       File name: {exportResult.filename}
                     </Text>
-                  </div>
+                  </BlockStack>
                 )}
 
-                <ButtonGroup>
+                <InlineStack gap="200">
                   <Button
-                    icon={DownloadMajor}
+                    icon={DownloadIcon}
                     onClick={() => {
                       if (exportResult.blob) {
                         exportService.downloadFile(
@@ -170,35 +172,37 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
                     Download Again
                   </Button>
                   <Button onClick={onClose}>Close</Button>
-                </ButtonGroup>
-              </Stack>
+                </InlineStack>
+              </BlockStack>
             </Card>
           ) : (
-            <Stack vertical spacing="loose">
+            <BlockStack gap="400">
               {exportProgress && (
-                <Card sectioned>
-                  <Stack vertical spacing="tight">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Card>
+                  <BlockStack gap="200">
+                    <InlineStack align="space-between">
                       <Text variant="headingSm" as="h3">
                         {exportProgress.stage.charAt(0).toUpperCase() + exportProgress.stage.slice(1)}
                       </Text>
-                      <Badge status={exportProgress.stage === 'error' ? 'critical' : 'info'}>
+                      <Badge tone={exportProgress.stage === 'error' ? 'critical' : 'info'}>
                         {exportProgress.progress}%
                       </Badge>
-                    </div>
+                    </InlineStack>
                     <ProgressBar
                       progress={exportProgress.progress}
                       size="small"
-                      color={exportProgress.stage === 'error' ? 'critical' : 'primary'}
+                      tone={exportProgress.stage === 'error' ? 'critical' : 'primary'}
                     />
-                    <Text variant="bodySm" color="subdued">
+                    <Text as="p" variant="bodySm">
                       {exportProgress.message}
                     </Text>
-                  </Stack>
+                  </BlockStack>
                 </Card>
               )}
 
-              <Card title="Export Settings" sectioned>
+              <Card>
+                <BlockStack gap="400">
+                  <Text variant="headingMd" as="h3">Export Settings</Text>
                 <FormLayout>
                   <Select
                     label="Export Format"
@@ -249,41 +253,45 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
                     disabled={isExporting}
                   />
                 </FormLayout>
+                </BlockStack>
               </Card>
 
               {exportInfo && (
-                <Card title="Project Information" sectioned>
-                  <Stack vertical spacing="tight">
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text variant="bodySm" color="subdued">Framework:</Text>
+                <Card>
+                  <BlockStack gap="400">
+                    <Text variant="headingMd" as="h3">Project Information</Text>
+                  <BlockStack gap="200">
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodySm">Framework:</Text>
                       <Badge>{exportInfo.framework}</Badge>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text variant="bodySm" color="subdued">Build Tool:</Text>
-                      <Text variant="bodySm">{exportInfo.buildTool}</Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text variant="bodySm" color="subdued">Files:</Text>
-                      <Text variant="bodySm">{exportInfo.fileCount}</Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text variant="bodySm" color="subdued">Estimated Size:</Text>
-                      <Text variant="bodySm">{formatFileSize(exportInfo.estimatedSize)}</Text>
-                    </div>
+                    </InlineStack>
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodySm">Build Tool:</Text>
+                      <Text as="span" variant="bodySm">{exportInfo.buildTool}</Text>
+                    </InlineStack>
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodySm">Files:</Text>
+                      <Text as="span" variant="bodySm">{exportInfo.fileCount}</Text>
+                    </InlineStack>
+                    <InlineStack align="space-between">
+                      <Text as="span" variant="bodySm">Estimated Size:</Text>
+                      <Text as="span" variant="bodySm">{formatFileSize(exportInfo.estimatedSize)}</Text>
+                    </InlineStack>
                     {exportInfo.dependencies.length > 0 && (
-                      <div>
-                        <Text variant="bodySm" color="subdued">Main Dependencies:</Text>
-                        <Stack spacing="tight">
+                      <BlockStack gap="200">
+                        <Text as="span" variant="bodySm">Main Dependencies:</Text>
+                        <InlineStack gap="200">
                           {exportInfo.dependencies.map((dep, index) => (
                             <Badge key={index}>{dep}</Badge>
                           ))}
-                        </Stack>
-                      </div>
+                        </InlineStack>
+                      </BlockStack>
                     )}
-                  </Stack>
+                  </BlockStack>
+                  </BlockStack>
                 </Card>
               )}
-            </Stack>
+            </BlockStack>
           )}
         </Modal.Section>
       </Modal>
@@ -298,7 +306,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, project
           onAction: () => setShowPreview(false)
         }}
       >
-        <Text>
+        <Text as="p">
           Preview functionality will show the package.json structure and file organization
           before export. This helps you verify what will be included in the export.
         </Text>

@@ -191,7 +191,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Badge status="critical">Search Error</Badge>
             )}
             <Badge status="success">Pro</Badge>
-            <Text variant="bodySm" color="subdued">
+            <Text as="span" variant="bodySm">
               {user?.email}
             </Text>
           </div>
@@ -362,7 +362,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             borderTop: '1px solid var(--p-color-border)',
             textAlign: 'center'
           }}>
-            <Text variant="bodySm" color="subdued" as="p">
+            <Text as="p" variant="bodySm">
               Build professional multi-page applications with AI •
               <Button
                 onClick={() => navigate('/')}

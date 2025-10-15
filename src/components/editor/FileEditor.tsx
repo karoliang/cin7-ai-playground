@@ -214,20 +214,20 @@ export const FileEditor: React.FC<FileEditorProps> = ({
               </InlineStack>
               <InlineStack gap="400">
                 <Text as="span" tone="subdued">Size:</Text>
-                <Text variant="bodySm">{content.length} characters</Text>
+                <Text as="span" variant="bodySm">{content.length} characters</Text>
               </InlineStack>
               <InlineStack gap="400">
                 <Text as="span" tone="subdued">Language:</Text>
-                <Text variant="bodySm">{file.language || file.type}</Text>
+                <Text as="span" variant="bodySm">{file.language || file.type}</Text>
               </InlineStack>
             </BlockStack>
           </Card>
 
           {/* Validation Error */}
           {!isValid && validationError && (
-            <Banner status="critical">
+            <Banner tone="critical">
               <TextContainer>
-                <Text variant="bodySm">{validationError}</Text>
+                <Text as="p" variant="bodySm">{validationError}</Text>
               </TextContainer>
             </Banner>
           )}
@@ -270,3 +270,5 @@ export const FileEditor: React.FC<FileEditorProps> = ({
     </Modal>
   )
 }
+
+export default FileEditor

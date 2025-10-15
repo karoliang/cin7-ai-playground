@@ -171,14 +171,14 @@ export class GLMService {
       const systemPrompt = this.buildContextualUpdatePrompt(context, files)
       const userPrompt = messages[messages.length - 1]?.content || 'Update the code based on the context'
 
-      const glmRequest: GLMChatCompletionRequest = {
+      const glmRequest: any = {
         model: 'glm-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.2,
-        maxTokens: 4000,
+        max_tokens: 4000,
         response_format: {
           type: 'json_object'
         }
@@ -226,7 +226,7 @@ export class GLMService {
     try {
       this.log('Starting streaming code generation', { requestId })
 
-      const glmRequest = {
+      const glmRequest: any = {
         ...this.convertToGLMRequest(request),
         stream: true
       }
@@ -302,8 +302,8 @@ export class GLMService {
 
   // Private methods
 
-  private convertToGLMRequest(request: GenerateRequest): GLMChatCompletionRequest {
-    const messages: GLMMessage[] = []
+  private convertToGLMRequest(request: GenerateRequest): any {
+    const messages: any[] = []
 
     // Add system prompt
     messages.push({
@@ -331,7 +331,7 @@ export class GLMService {
       model: 'glm-4',
       messages,
       temperature: request.options?.temperature || 0.7,
-      maxTokens: request.options?.max_tokens || 4000,
+      max_tokens: request.options?.max_tokens || 4000,
       response_format: {
         type: 'json_object'
       }

@@ -1000,3 +1000,5 @@ export const SettingsPage: React.FC = () => {
     </Page>
   )
 }
+
+export default SettingsPage

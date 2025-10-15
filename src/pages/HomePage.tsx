@@ -8,7 +8,6 @@ import {
   Page,
   Text,
   Grid,
-  Thumbnail,
   Badge,
   Icon,
   Banner
@@ -229,9 +228,9 @@ export const HomePage: React.FC = () => {
         <Layout.Section>
           {/* Template Gallery */}
           <Card title="Start with a Template" sectioned>
-            <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4 }} gap="4">
+            <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4 }}>
               {templates.map((template, index) => (
-                <div key={index} style={{ height: '100%' }}>
+                <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
                   <TemplateCard
                     template={template}
                     onSelect={handleTemplateClick}
@@ -247,9 +246,9 @@ export const HomePage: React.FC = () => {
           <Layout.Section>
             {/* Recent Projects */}
             <Card title="Recent Projects" sectioned>
-              <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }} gap="4">
+              <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
                 {recentProjects.map((project: any, index) => (
-                  <div key={index} style={{ height: '100%' }}>
+                  <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
                     <Card
                       sectioned
                       actions={[
@@ -281,3 +280,5 @@ export const HomePage: React.FC = () => {
     </Page>
   )
 }
+
+export default HomePage

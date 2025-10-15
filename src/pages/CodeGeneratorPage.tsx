@@ -494,3 +494,5 @@ export const CodeGeneratorPage: React.FC = () => {
     </Page>
   )
 }
+
+export default CodeGeneratorPage

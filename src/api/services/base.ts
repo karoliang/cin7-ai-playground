@@ -64,7 +64,7 @@ export abstract class BaseService {
         page,
         limit,
         total,
-        total_pages: totalPages,
+        totalPages,
         has_next: page < totalPages,
         has_prev: page > 1
       }

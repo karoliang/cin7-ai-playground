@@ -10,7 +10,8 @@ import {
   ButtonGroup,
   Text,
   Badge,
-  Stack,
+  BlockStack,
+  InlineStack,
   ProgressBar,
   Divider,
   Banner,
@@ -19,10 +20,10 @@ import {
   Icon
 } from '@shopify/polaris'
 import {
-  ImportMinor,
-  CirclePlusMajor,
-  MobileMajor,
-  FileMajor
+  ImportIcon,
+  CircleUpIcon,
+  MobileIcon,
+  FileIcon
 } from '@shopify/polaris-icons'
 import {
   ImportOptions,
@@ -178,21 +179,21 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
   }
 
   const fileUploadMarkup = (
-    <Card sectioned>
+    <Card>
       <DropZone onDrop={handleFileDrop} accept=".zip" allowMultiple={false}>
         {selectedFile ? (
-          <Stack vertical spacing="tight">
-            <Thumbnail size="large" alt={selectedFile.name} source={FileMajor} />
-            <div>
-              <Text variant="bodySm" as="p">
+          <BlockStack gap="200">
+            <Thumbnail size="large" alt={selectedFile.name} source={FileIcon} />
+            <BlockStack gap="100">
+              <Text as="p" variant="bodySm">
                 <strong>{selectedFile.name}</strong>
               </Text>
-              <Text variant="bodySm" color="subdued" as="p">
+              <Text as="p" variant="bodySm">
                 {formatFileSize(selectedFile.size)}
               </Text>
-            </div>
+            </BlockStack>
             <Button onClick={() => setSelectedFile(null)}>Remove file</Button>
-          </Stack>
+          </BlockStack>
         ) : (
           <DropZone.FileUpload actionHint="or drop files" />
         )}
@@ -201,65 +202,72 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
   )
 
   const githubImportMarkup = (
-    <Card sectioned>
-      <FormLayout>
-        <TextField
-          label="GitHub Repository URL"
-          placeholder="https://github.com/username/repository"
-          value={githubUrl}
-          onChange={setGithubUrl}
-          onBlur={validateImport}
-          error={validation?.errors.find(e => e.includes('URL'))}
-          helpText="Enter the URL of the GitHub repository you want to import"
-        />
-        <TextField
-          label="Branch"
-          placeholder="main"
-          value={githubBranch}
-          onChange={setGithubBranch}
-          helpText="Specify the branch to import (defaults to main)"
-        />
-      </FormLayout>
+    <Card>
+      <BlockStack gap="400">
+        <FormLayout>
+          <TextField
+            label="GitHub Repository URL"
+            placeholder="https://github.com/username/repository"
+            value={githubUrl}
+            onChange={setGithubUrl}
+            onBlur={validateImport}
+            autoComplete="off"
+            error={validation?.errors.find(e => e.includes('URL'))}
+            helpText="Enter the URL of the GitHub repository you want to import"
+          />
+          <TextField
+            label="Branch"
+            placeholder="main"
+            value={githubBranch}
+            onChange={setGithubBranch}
+            autoComplete="off"
+            helpText="Specify the branch to import (defaults to main)"
+          />
+        </FormLayout>
 
-      {repoInfo && (
-        <Card sectioned title="Repository Information">
-          <Stack vertical spacing="tight">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Text variant="bodySm" color="subdued">Name:</Text>
-              <Text variant="bodySm">{repoInfo.name}</Text>
-            </div>
-            {repoInfo.description && (
-              <div>
-                <Text variant="bodySm" color="subdued">Description:</Text>
-                <Text variant="bodySm">{repoInfo.description}</Text>
-              </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Text variant="bodySm" color="subdued">Default Branch:</Text>
-              <Text variant="bodySm">{repoInfo.defaultBranch}</Text>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Text variant="bodySm" color="subdued">Languages:</Text>
-              <Stack spacing="tight">
-                {repoInfo.languages.map((lang, index) => (
-                  <Badge key={index}>{lang}</Badge>
-                ))}
-              </Stack>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Text variant="bodySm" color="subdued">Files:</Text>
-              <Text variant="bodySm">{repoInfo.fileCount}</Text>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Text variant="bodySm" color="subdued">Size:</Text>
-              <Text variant="bodySm">{formatFileSize(repoInfo.size * 1024)}</Text>
-            </div>
-            {repoInfo.isPrivate && (
-              <Badge status="attention">Private Repository</Badge>
-            )}
-          </Stack>
-        </Card>
-      )}
+        {repoInfo && (
+          <Card>
+            <BlockStack gap="400">
+              <Text variant="headingMd" as="h3">Repository Information</Text>
+              <BlockStack gap="200">
+                <InlineStack align="space-between">
+                  <Text as="span" variant="bodySm">Name:</Text>
+                  <Text as="span" variant="bodySm">{repoInfo.name}</Text>
+                </InlineStack>
+                {repoInfo.description && (
+                  <BlockStack gap="100">
+                    <Text as="span" variant="bodySm">Description:</Text>
+                    <Text as="span" variant="bodySm">{repoInfo.description}</Text>
+                  </BlockStack>
+                )}
+                <InlineStack align="space-between">
+                  <Text as="span" variant="bodySm">Default Branch:</Text>
+                  <Text as="span" variant="bodySm">{repoInfo.defaultBranch}</Text>
+                </InlineStack>
+                <InlineStack align="space-between">
+                  <Text as="span" variant="bodySm">Languages:</Text>
+                  <InlineStack gap="200">
+                    {repoInfo.languages.map((lang, index) => (
+                      <Badge key={index}>{lang}</Badge>
+                    ))}
+                  </InlineStack>
+                </InlineStack>
+                <InlineStack align="space-between">
+                  <Text as="span" variant="bodySm">Files:</Text>
+                  <Text as="span" variant="bodySm">{repoInfo.fileCount}</Text>
+                </InlineStack>
+                <InlineStack align="space-between">
+                  <Text as="span" variant="bodySm">Size:</Text>
+                  <Text as="span" variant="bodySm">{formatFileSize(repoInfo.size * 1024)}</Text>
+                </InlineStack>
+                {repoInfo.isPrivate && (
+                  <Badge tone="attention">Private Repository</Badge>
+                )}
+              </BlockStack>
+            </BlockStack>
+          </Card>
+        )}
+      </BlockStack>
     </Card>
   )
 
@@ -273,7 +281,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
       open={open}
       onClose={handleClose}
       title="Import Project"
-      large
+      size="large"
       primaryAction={
         importResult?.success
           ? undefined
@@ -282,7 +290,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
               onAction: handleImport,
               loading: isImporting,
               disabled: !isFormValid() || isImporting,
-              icon: ImportMinor
+              icon: ImportIcon
             }
       }
       secondaryActions={[
@@ -295,23 +303,21 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
     >
       <Modal.Section>
         {importResult?.success ? (
-          <Card sectioned>
-            <Stack vertical spacing="loose">
-              <Banner status="success" title="Import Successful!">
-                <Text>
+          <Card>
+            <BlockStack gap="400">
+              <Banner tone="success" title="Import Successful!">
+                <Text as="p">
                   Your project has been imported successfully. You will be redirected to the project page shortly.
                 </Text>
               </Banner>
 
               {importResult.importedFiles && (
-                <div>
-                  <Text variant="bodySm" color="subdued">
-                    Files imported: {importResult.importedFiles}
-                  </Text>
-                </div>
+                <Text as="p" variant="bodySm">
+                  Files imported: {importResult.importedFiles}
+                </Text>
               )}
 
-              <ButtonGroup>
+              <InlineStack gap="200">
                 <Button
                   onClick={() => {
                     if (importResult.project) {
@@ -323,141 +329,149 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
                   View Project
                 </Button>
                 <Button onClick={handleClose}>Close</Button>
-              </ButtonGroup>
-            </Stack>
+              </InlineStack>
+            </BlockStack>
           </Card>
         ) : (
-          <Stack vertical spacing="loose">
+          <BlockStack gap="400">
             {importProgress && (
-              <Card sectioned>
-                <Stack vertical spacing="tight">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Card>
+                <BlockStack gap="200">
+                  <InlineStack align="space-between">
                     <Text variant="headingSm" as="h3">
                       {importProgress.stage.charAt(0).toUpperCase() + importProgress.stage.slice(1)}
                     </Text>
-                    <Badge status={importProgress.stage === 'error' ? 'critical' : 'info'}>
+                    <Badge tone={importProgress.stage === 'error' ? 'critical' : 'info'}>
                       {importProgress.progress}%
                     </Badge>
-                  </div>
+                  </InlineStack>
                   <ProgressBar
                     progress={importProgress.progress}
                     size="small"
-                    color={importProgress.stage === 'error' ? 'critical' : 'primary'}
+                    tone={importProgress.stage === 'error' ? 'critical' : 'primary'}
                   />
-                  <Text variant="bodySm" color="subdued">
+                  <Text as="p" variant="bodySm">
                     {importProgress.message}
                     {importProgress.currentFile && (
                       <> • {importProgress.currentFile}</>
                     )}
                   </Text>
-                </Stack>
+                </BlockStack>
               </Card>
             )}
 
             {validation && !validation.isValid && (
-              <Banner status="critical" title="Validation Error">
-                <ul>
+              <Banner tone="critical" title="Validation Error">
+                <Text as="p">
                   {validation.errors.map((error, index) => (
-                    <li key={index}>{error}</li>
+                    <div key={index}>• {error}</div>
                   ))}
-                </ul>
+                </Text>
               </Banner>
             )}
 
             {importResult?.error && (
-              <Banner status="critical" title="Import Failed">
-                <Text>{importResult.error}</Text>
+              <Banner tone="critical" title="Import Failed">
+                <Text as="p">{importResult.error}</Text>
               </Banner>
             )}
 
-            <Card title="Import Source" sectioned>
-              <FormLayout>
-                <Select
-                  label="Import Type"
-                  options={importSourceOptions}
-                  value={importSource}
-                  onChange={(value) => {
-                    setImportSource(value as 'file' | 'github')
-                    setValidation(null)
-                    setRepoInfo(null)
-                  }}
-                  disabled={isImporting}
-                />
+            <Card>
+              <BlockStack gap="400">
+                <Text variant="headingMd" as="h3">Import Source</Text>
+                <FormLayout>
+                  <Select
+                    label="Import Type"
+                    options={importSourceOptions}
+                    value={importSource}
+                    onChange={(value) => {
+                      setImportSource(value as 'file' | 'github')
+                      setValidation(null)
+                      setRepoInfo(null)
+                    }}
+                    disabled={isImporting}
+                  />
 
-                {importSource === 'file' ? fileUploadMarkup : githubImportMarkup}
-              </FormLayout>
-            </Card>
+                  {importSource === 'file' ? fileUploadMarkup : githubImportMarkup}
+                </FormLayout>
+                </BlockStack>
+              </Card>
 
-            <Card title="Import Options" sectioned>
-              <FormLayout>
-                <TextField
-                  label="Project Name"
-                  placeholder="My Imported Project"
-                  value={importOptions.projectName || ''}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, projectName: value })
-                  }
-                  disabled={isImporting}
-                />
+              <Card>
+                <BlockStack gap="400">
+                  <Text variant="headingMd" as="h3">Import Options</Text>
+                  <FormLayout>
+                    <TextField
+                      label="Project Name"
+                      placeholder="My Imported Project"
+                      value={importOptions.projectName || ''}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, projectName: value })
+                      }
+                      disabled={isImporting}
+                      autoComplete="off"
+                    />
 
-                <TextField
-                  label="Project Description"
-                  placeholder="Description of the imported project"
-                  value={importOptions.projectDescription || ''}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, projectDescription: value })
-                  }
-                  disabled={isImporting}
-                  multiline={3}
-                />
+                    <TextField
+                      label="Project Description"
+                      placeholder="Description of the imported project"
+                      value={importOptions.projectDescription || ''}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, projectDescription: value })
+                      }
+                      disabled={isImporting}
+                      multiline={3}
+                      autoComplete="off"
+                    />
 
-                <Checkbox
-                  label="Create new project"
-                  checked={importOptions.createNewProject}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, createNewProject: value })
-                  }
-                  disabled={isImporting}
-                />
+                    <Checkbox
+                      label="Create new project"
+                      checked={importOptions.createNewProject}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, createNewProject: value })
+                      }
+                      disabled={isImporting}
+                    />
 
-                <Checkbox
-                  label="Auto-detect framework"
-                  checked={importOptions.frameworkDetection}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, frameworkDetection: value })
-                  }
-                  disabled={isImporting}
-                />
+                    <Checkbox
+                      label="Auto-detect framework"
+                      checked={importOptions.frameworkDetection}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, frameworkDetection: value })
+                      }
+                      disabled={isImporting}
+                    />
 
-                <Checkbox
-                  label="Include test files"
-                  checked={importOptions.includeTests}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, includeTests: value })
-                  }
-                  disabled={isImporting}
-                />
+                    <Checkbox
+                      label="Include test files"
+                      checked={importOptions.includeTests}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, includeTests: value })
+                      }
+                      disabled={isImporting}
+                    />
 
-                <Checkbox
-                  label="Skip dependency installation"
-                  checked={importOptions.skipDependencies}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, skipDependencies: value })
-                  }
-                  disabled={isImporting}
-                />
+                    <Checkbox
+                      label="Skip dependency installation"
+                      checked={importOptions.skipDependencies}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, skipDependencies: value })
+                      }
+                      disabled={isImporting}
+                    />
 
-                <Checkbox
-                  label="Overwrite existing files"
-                  checked={importOptions.overwriteExisting}
-                  onChange={(value) =>
-                    setImportOptions({ ...importOptions, overwriteExisting: value })
-                  }
-                  disabled={isImporting}
-                />
-              </FormLayout>
-            </Card>
-          </Stack>
+                    <Checkbox
+                      label="Overwrite existing files"
+                      checked={importOptions.overwriteExisting}
+                      onChange={(value) =>
+                        setImportOptions({ ...importOptions, overwriteExisting: value })
+                      }
+                      disabled={isImporting}
+                    />
+                  </FormLayout>
+                </BlockStack>
+              </Card>
+            </BlockStack>
         )}
       </Modal.Section>
 
@@ -471,3 +485,5 @@ export const ImportModal: React.FC<ImportModalProps> = ({ open, onClose }) => {
     </Modal>
   )
 }
+
+export default ImportModal

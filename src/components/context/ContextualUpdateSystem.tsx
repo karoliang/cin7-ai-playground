@@ -76,10 +76,10 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
 
   // Calculate context metrics
   const contextMetrics: ContextMetrics = {
-    totalInstructions: contextualUpdates.length,
-    unappliedInstructions: contextualUpdates.filter(ctx => !ctx.applied).length,
-    lastUpdate: lastUpdate || Date.now(),
-    changesSinceLastGen
+    total_instructions: contextualUpdates.length,
+    unapplied_instructions: contextualUpdates.filter(ctx => !ctx.applied).length,
+    last_update: lastUpdate || Date.now(),
+    changes_since_last_gen: changesSinceLastGen
   }
 
   // Generate unique context ID
@@ -112,7 +112,7 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
       content,
       priority,
       scope,
-      targetFiles,
+      target_files: targetFiles,
       timestamp: Date.now(),
       applied: false
     }
@@ -150,7 +150,7 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
     if (isProcessingUpdate) {
       console.warn('⚠️ Update already in progress, queuing request')
       return new Promise<void>((resolve) => {
-        setUpdateQueue(prev => [...prev, resolve])
+        setUpdateQueue(prev => [...prev, () => Promise.resolve().then(resolve)])
       })
     }
 
@@ -265,8 +265,11 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
         id: triggerContext.id,
         type: triggerContext.type,
         content: triggerContext.content,
+        priority: triggerContext.priority,
         scope: triggerContext.scope,
-        target_files: triggerContext.targetFiles
+        target_files: triggerContext.target_files,
+        timestamp: triggerContext.timestamp,
+        applied: triggerContext.applied
       },
       context_metrics: contextMetrics
     }
@@ -302,8 +305,8 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
         if (ctx.scope !== 'global') {
           prompt += ` (Scope: ${ctx.scope})`
         }
-        if (ctx.targetFiles) {
-          prompt += ` (Target files: ${ctx.targetFiles.join(', ')})`
+        if (ctx.target_files) {
+          prompt += ` (Target files: ${ctx.target_files.join(', ')})`
         }
         prompt += '\n'
       })
@@ -337,7 +340,7 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
     switch (triggerContext.scope) {
       case 'file-specific':
         strategy.type = 'targeted'
-        strategy.targetFiles = triggerContext.targetFiles
+        strategy.target_files = triggerContext.target_files
         strategy.reasoning.push('File-specific scope detected')
         break
       case 'component':
@@ -362,8 +365,8 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
 
     // Consider project size
     if (enhancedContext.existing_files.length > 10) {
-      strategy.type = strategy.type === 'full' ? 'selective' : strategy.type
-      strategy.reasoning.push('Large project - avoiding full regeneration')
+      // Always keep selective or targeted for large projects
+      strategy.reasoning.push('Large project - using targeted approach')
     }
 
     console.log('🎯 Update strategy determined:', strategy)
@@ -384,9 +387,11 @@ export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> =
         existing_files: enhancedContext.existing_files,
         chat_history: enhancedContext.chat_history,
         context: {
-          projectMetadata: enhancedContext.project_metadata,
-          strategy: strategy,
-          contextualInstructions: enhancedContext.contextual_instructions
+          project_id: projectRef.current?.id,
+          framework: enhancedContext.project_metadata.framework,
+          template: enhancedContext.project_metadata.template,
+          architecture: enhancedContext.project_metadata.architecture,
+          constraints: enhancedContext.contextual_instructions.map(ctx => ctx.content)
         },
         options: {
           temperature: 0.7,

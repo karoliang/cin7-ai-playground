@@ -82,3 +82,5 @@ export const ProjectPage: React.FC = () => {
     </Page>
   )
 }
+
+export default ProjectPage

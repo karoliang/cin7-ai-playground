@@ -631,3 +631,5 @@ export const ProjectWorkspace: React.FC = () => {
     </>
   )
 }
+
+export default ProjectWorkspace

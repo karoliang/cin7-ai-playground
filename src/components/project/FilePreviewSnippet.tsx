@@ -3,16 +3,16 @@ import {
   Card,
   Text,
   Button,
-  Stack,
+  BlockStack,
   InlineStack,
   Badge,
   Icon,
   Scrollable
 } from '@shopify/polaris'
 import {
-  EditMinor,
-  CodeMajor,
-  ViewMajor
+  EditIcon,
+  CodeIcon,
+  ViewIcon
 } from '@shopify/polaris-icons'
 import { ProjectFile, FileType } from '@/types'
 
@@ -112,7 +112,6 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
 
   return (
     <Card
-      sectioned
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleEdit}
@@ -123,20 +122,20 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
         backgroundColor: isHovered ? 'var(--p-color-bg-surface-hover)' : 'var(--p-color-bg-surface-subdued)'
       }}
     >
-      <Stack vertical spacing="tight">
+      <BlockStack gap="200">
         {/* Header with file info */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <InlineStack gap="2" alignItems="center">
-            <Icon source={CodeMajor} size="small" />
-            <Text variant="bodySm" fontWeight="semibold">
+        <InlineStack align="space-between">
+          <InlineStack gap="200" blockAlign="center">
+            <Icon source={CodeIcon} size="small" />
+            <Text as="span" variant="bodySm" fontWeight="semibold">
               {file.name}
             </Text>
-            <Badge size="small" status={typeDisplay.color}>
+            <Badge size="small" tone={typeDisplay.color}>
               {typeDisplay.label}
             </Badge>
           </InlineStack>
           <Button
-            icon={EditMinor}
+            icon={EditIcon}
             size="slim"
             variant="plain"
             onClick={(e) => {
@@ -144,22 +143,22 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
               handleEdit()
             }}
           />
-        </div>
+        </InlineStack>
 
         {/* File metadata */}
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <Text variant="bodyXs" color="subdued">
+        <InlineStack gap="400">
+          <Text as="span" variant="bodyXs">
             {stats.lines} lines
           </Text>
-          <Text variant="bodyXs" color="subdued">
+          <Text as="span" variant="bodyXs">
             {stats.chars} chars
           </Text>
           {file.type !== 'image' && (
-            <Text variant="bodyXs" color="subdued">
+            <Text as="span" variant="bodyXs">
               {stats.words} words
             </Text>
           )}
-        </div>
+        </InlineStack>
 
         {/* Preview content */}
         {file.type === 'image' ? (
@@ -170,8 +169,8 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
             textAlign: 'center',
             border: '1px dashed var(--p-color-border)'
           }}>
-            <Icon source={ViewMajor} size="large" color="subdued" />
-            <Text variant="bodySm" color="subdued">
+            <Icon source={ViewIcon} size="large" tone="subdued" />
+            <Text as="p" variant="bodySm">
               Image file - Click to view
             </Text>
           </div>
@@ -218,10 +217,10 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
         )}
 
         {/* Action hint */}
-        <Text variant="bodyXs" color="subdued" alignment="center">
+        <Text as="p" variant="bodyXs" alignment="center">
           {isHovered ? 'Click to edit in code editor' : 'Hover to preview'}
         </Text>
-      </Stack>
+      </BlockStack>
     </Card>
   )
 }

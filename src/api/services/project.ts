@@ -16,7 +16,7 @@ export class ProjectService extends BaseService {
     const offset = this.getOffset(page, limit)
 
     // Build query filters
-    const filters: any = { user_id: userId }
+    const filters: any = { user_id: userId, userId: userId } // Support both naming conventions
     if (status) filters.status = status
     if (search) {
       filters.$or = [
@@ -91,7 +91,7 @@ export class ProjectService extends BaseService {
         throw ErrorFactory.notFound('Project', projectId)
       }
 
-      if (project.user_id !== userId) {
+      if (project.user_id !== userId && project.userId !== userId) {
         throw ErrorFactory.forbidden('access', 'project')
       }
 
@@ -165,9 +165,12 @@ export class ProjectService extends BaseService {
           }
         },
         status: 'draft',
-        user_id: userId,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        userId: userId,
+        user_id: userId, // Keep both for compatibility
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(), // Keep both for compatibility
+        updated_at: new Date().toISOString() // Keep both for compatibility
       }
 
       // Merge user-provided settings with defaults
@@ -199,7 +202,8 @@ export class ProjectService extends BaseService {
       const updatedProject: Project = {
         ...existingProject,
         ...data,
-        updated_at: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        updated_at: new Date().toISOString() // Keep both for compatibility
       }
 
       // Deep merge metadata and settings if provided
@@ -281,8 +285,10 @@ export class ProjectService extends BaseService {
         id: this.generateUUID(),
         name: newName || `${originalProject.name} (Copy)`,
         status: 'draft',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        created_at: new Date().toISOString(), // Keep both for compatibility
+        updated_at: new Date().toISOString() // Keep both for compatibility
       }
 
       // In a real implementation, save to database
@@ -365,9 +371,12 @@ export class ProjectService extends BaseService {
           }
         },
         status,
-        user_id: userId,
-        created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString()
+        userId: userId,
+        user_id: userId, // Keep both for compatibility
+        createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        created_at: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(), // Keep both for compatibility
+        updated_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString() // Keep both for compatibility
       })
     }
 

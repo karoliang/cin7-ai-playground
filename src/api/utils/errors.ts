@@ -234,6 +234,8 @@ export const ErrorFactory = {
     new ValidationError(`Field '${field}' must be in ${format} format`, [{ field, message: `Invalid format`, code: 'INVALID_FORMAT' }]),
 
   // Resource errors
+  NotFoundError: (resource: string, id?: string) => new NotFoundError(resource, id),
+  AuthorizationError: (message?: string) => new AuthorizationError(message),
   notFound: (resource: string, id?: string) => new NotFoundError(resource, id),
   alreadyExists: (resource: string, field: string, value: any) =>
     new ConflictError(`${resource} with ${field} '${value}' already exists`, { resource, field, value }),

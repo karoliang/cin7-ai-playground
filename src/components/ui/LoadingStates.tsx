@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Spinner, DisplayText, Text } from '@shopify/polaris'
+import { Spinner, Text } from '@shopify/polaris'
 
 export interface PageSpinnerProps {
   size?: 'small' | 'medium' | 'large'
@@ -224,7 +224,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         padding: '40px',
         minHeight: '200px'
       }}>
-        <DisplayText size="small">Something went wrong</DisplayText>
+        <Text variant="headingMd" as="h2">Something went wrong</Text>
         <Text color="subdued" as="p">{error.message}</Text>
         {retry && (
           <button
