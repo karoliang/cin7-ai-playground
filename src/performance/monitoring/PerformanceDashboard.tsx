@@ -162,7 +162,7 @@ export const PerformanceDashboard: React.FC = () => {
               <Text variant="heading2xl" as="p">
                 {latestMetric.cpu?.toFixed(1) || 0}%
               </Text>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" as="span" tone="subdued">
                 {latestMetric.cpu > 80 ? 'Critical' : latestMetric.cpu > 60 ? 'Warning' : 'Normal'}
               </Text>
             </BlockStack>
@@ -189,7 +189,7 @@ export const PerformanceDashboard: React.FC = () => {
               <Text variant="heading2xl" as="p">
                 {latestMetric.memory?.toFixed(1) || 0}%
               </Text>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" as="span" tone="subdued">
                 {latestMetric.memory > 85 ? 'Critical' : latestMetric.memory > 70 ? 'Warning' : 'Normal'}
               </Text>
             </BlockStack>
@@ -216,7 +216,7 @@ export const PerformanceDashboard: React.FC = () => {
               <Text variant="heading2xl" as="p">
                 {latestMetric.avgLatency?.toFixed(0) || 0}ms
               </Text>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" as="span" tone="subdued">
                 {latestMetric.avgLatency > 1000 ? 'Poor' : latestMetric.avgLatency > 500 ? 'Fair' : 'Good'}
               </Text>
             </BlockStack>
@@ -243,7 +243,7 @@ export const PerformanceDashboard: React.FC = () => {
               <Text variant="heading2xl" as="p">
                 {latestMetric.cacheHitRate?.toFixed(1) || 0}%
               </Text>
-              <Text variant="bodySm" tone="subdued">
+              <Text variant="bodySm" as="span" tone="subdued">
                 {latestMetric.cacheHitRate < 60 ? 'Poor' : latestMetric.cacheHitRate < 80 ? 'Fair' : 'Good'}
               </Text>
             </BlockStack>
@@ -337,7 +337,7 @@ export const PerformanceDashboard: React.FC = () => {
             <Text variant="headingMd" as="h3">Recent Alerts</Text>
           <div style={{ padding: '16px', maxHeight: '400px', overflowY: 'auto' }}>
             {alerts.length === 0 ? (
-              <Text variant="bodyMd" tone="subdued" alignment="center">
+              <Text variant="bodyMd" as="p" tone="subdued" alignment="center">
                 No performance alerts
               </Text>
             ) : (
@@ -360,9 +360,9 @@ export const PerformanceDashboard: React.FC = () => {
                           </Text>
                         </div>
                       </div>
-                      <Text variant="bodySm">{alert.description}</Text>
-                      <Text variant="bodySm" tone="subdued">{alert.recommendation}</Text>
-                      <Text variant="bodyXs" tone="subdued">
+                      <Text variant="bodySm" as="p">{alert.description}</Text>
+                      <Text variant="bodySm" as="span" tone="subdued">{alert.recommendation}</Text>
+                      <Text variant="bodyXs" as="span" tone="subdued">
                         {new Date(alert.timestamp).toLocaleString()}
                       </Text>
                     </BlockStack>
@@ -391,30 +391,32 @@ export const PerformanceDashboard: React.FC = () => {
                 justifyContent: 'center',
                 margin: '0 auto'
               }}>
-                <Text variant="heading3xl" as="p" tone="white">
+                <Text variant="heading3xl" as="p" tone="text-inverse">
                   {calculateHealthScore(latestMetric)}
                 </Text>
               </div>
-              <Text variant="headingMd" as="h3" marginTop="tight">
-                System Health
-              </Text>
+              <div style={{ marginTop: '8px' }}>
+                <Text variant="headingMd" as="h3">
+                  System Health
+                </Text>
+              </div>
             </div>
 
             <BlockStack gap="400">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text variant="bodySm">Request Success Rate</Text>
+                <Text variant="bodySm" as="span">Request Success Rate</Text>
                 <Badge tone="success">95.2%</Badge>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text variant="bodySm">Error Rate</Text>
+                <Text variant="bodySm" as="span">Error Rate</Text>
                 <Badge tone="success">0.8%</Badge>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text variant="bodySm">Cache Efficiency</Text>
+                <Text variant="bodySm" as="span">Cache Efficiency</Text>
                 <Badge tone="attention">72%</Badge>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text variant="bodySm">Resource Utilization</Text>
+                <Text variant="bodySm" as="span">Resource Utilization</Text>
                 <Badge tone="success">Optimal</Badge>
               </div>
             </BlockStack>
@@ -491,22 +493,22 @@ export const PerformanceDashboard: React.FC = () => {
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Average Response Time</Text>
                 <Text variant="headingLg" as="p">{latestMetric.avgLatency?.toFixed(0) || 0}ms</Text>
-                <Text variant="bodySm" tone="subdued">Last 24 hours</Text>
+                <Text variant="bodySm" as="span" tone="subdued">Last 24 hours</Text>
               </Grid.Cell>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Tokens Processed</Text>
                 <Text variant="headingLg" as="p">{latestMetric.tokensPerSecond?.toFixed(0) || 0}/sec</Text>
-                <Text variant="bodySm" tone="subdued">Current rate</Text>
+                <Text variant="bodySm" as="span" tone="subdued">Current rate</Text>
               </Grid.Cell>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Cache Hit Rate</Text>
                 <Text variant="headingLg" as="p">{latestMetric.cacheHitRate?.toFixed(1) || 0}%</Text>
-                <Text variant="bodySm" tone="subdued">AI responses</Text>
+                <Text variant="bodySm" as="span" tone="subdued">AI responses</Text>
               </Grid.Cell>
               <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                 <Text variant="headingMd" as="h3">Cost Efficiency</Text>
                 <Text variant="headingLg" as="p">${(latestMetric.cost || 0).toFixed(3)}</Text>
-                <Text variant="bodySm" tone="subdued">Per request</Text>
+                <Text variant="bodySm" as="span" tone="subdued">Per request</Text>
               </Grid.Cell>
             </Grid>
           </div>
@@ -536,7 +538,7 @@ export const PerformanceDashboard: React.FC = () => {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
+                    label={({ name, value }) => `${name}: ${(value as number).toFixed(1)}%`}
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
@@ -593,30 +595,36 @@ export const PerformanceDashboard: React.FC = () => {
               <BlockStack gap="400">
                 <div>
                   <Text variant="headingMd" as="h3">Enable Semantic Caching</Text>
-                  <Text variant="bodySm" tone="subdued">
+                  <Text variant="bodySm" as="p" tone="subdued">
                     Implement semantic similarity matching to improve cache hit rates for similar but not identical queries.
                   </Text>
-                  <Button marginTop="tight">Implement</Button>
+                  <div style={{ marginTop: '8px' }}>
+                    <Button>Implement</Button>
+                  </div>
                 </div>
 
                 <Divider />
 
                 <div>
                   <Text variant="headingMd" as="h3">Optimize TTL Settings</Text>
-                  <Text variant="bodySm" tone="subdued">
+                  <Text variant="bodySm" as="p" tone="subdued">
                     Adjust time-to-live values based on content volatility and usage patterns.
                   </Text>
-                  <Button marginTop="tight">Configure</Button>
+                  <div style={{ marginTop: '8px' }}>
+                      <Button>Configure</Button>
+                    </div>
                 </div>
 
                 <Divider />
 
                 <div>
                   <Text variant="headingMd" as="h3">Implement Predictive Preloading</Text>
-                  <Text variant="bodySm" tone="subdued">
+                  <Text variant="bodySm" as="p" tone="subdued">
                     Preload cache entries based on user behavior patterns and request sequences.
                   </Text>
-                  <Button marginTop="tight">Enable</Button>
+                  <div style={{ marginTop: '8px' }}>
+                      <Button>Enable</Button>
+                    </div>
                 </div>
               </BlockStack>
             </div>
@@ -710,22 +718,22 @@ export const PerformanceDashboard: React.FC = () => {
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Total Cost Today</Text>
                   <Text variant="headingLg" as="p">$12.45</Text>
-                  <Text variant="bodySm" tone="subdued">↓ 15% from yesterday</Text>
+                  <Text variant="bodySm" as="span" tone="subdued">↓ 15% from yesterday</Text>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Cost per Request</Text>
                   <Text variant="headingLg" as="p">$0.042</Text>
-                  <Text variant="bodySm" tone="subdued">↓ 8% from average</Text>
+                  <Text variant="bodySm" as="span" tone="subdued">↓ 8% from average</Text>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Saved by Caching</Text>
                   <Text variant="headingLg" as="p">$3.21</Text>
-                  <Text variant="bodySm" tone="subdued">25.8% of total</Text>
+                  <Text variant="bodySm" as="span" tone="subdued">25.8% of total</Text>
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{ xs: 6, sm: 3, md: 3, lg: 3, xl: 3 }}>
                   <Text variant="headingMd" as="h3">Projected Monthly</Text>
                   <Text variant="headingLg" as="p">$374</Text>
-                  <Text variant="bodySm" tone="subdued">On current trend</Text>
+                  <Text variant="bodySm" as="span" tone="subdued">On current trend</Text>
                 </Grid.Cell>
               </Grid>
             </div>
@@ -745,7 +753,7 @@ export const PerformanceDashboard: React.FC = () => {
           <div style={{ textAlign: 'center', padding: '40px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>✅</div>
             <Text variant="headingMd" as="h3">All Systems Optimal</Text>
-            <Text variant="bodyMd" tone="subdued">
+            <Text variant="bodyMd" as="p" tone="subdued">
               No performance alerts detected. All systems are running within optimal parameters.
             </Text>
           </div>
@@ -765,24 +773,26 @@ export const PerformanceDashboard: React.FC = () => {
                         <Badge tone={alert.type === 'critical' ? 'critical' : alert.type === 'warning' ? 'attention' : 'info'}>
                           {alert.type.toUpperCase()}
                         </Badge>
-                        <Text variant="headingSm" as="h3" fontWeight="semibold" marginLeft="tight">
-                          {alert.title}
-                        </Text>
+                        <div style={{ marginLeft: '8px' }}>
+                          <Text variant="headingSm" as="h3" fontWeight="semibold">
+                            {alert.title}
+                          </Text>
+                        </div>
                       </div>
-                      <Text variant="bodyXs" tone="subdued">
+                      <Text variant="bodyXs" as="span" tone="subdued">
                         {new Date(alert.timestamp).toLocaleString()}
                       </Text>
                     </div>
                   </div>
-                  <Text variant="bodySm">{alert.description}</Text>
+                  <Text variant="bodySm" as="p">{alert.description}</Text>
                   <Divider />
                   <div>
-                    <Text variant="bodySm" fontWeight="semibold">Impact:</Text>
-                    <Text variant="bodySm" tone="subdued">{alert.impact}</Text>
+                    <Text variant="bodySm" as="p" fontWeight="semibold">Impact:</Text>
+                    <Text variant="bodySm" as="span" tone="subdued">{alert.impact}</Text>
                   </div>
                   <div>
-                    <Text variant="bodySm" fontWeight="semibold">Recommendation:</Text>
-                    <Text variant="bodySm" tone="subdued">{alert.recommendation}</Text>
+                    <Text variant="bodySm" as="p" fontWeight="semibold">Recommendation:</Text>
+                    <Text variant="bodySm" as="span" tone="subdued">{alert.recommendation}</Text>
                   </div>
                   <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
                     <Button size="slim" variant="primary">Apply Fix</Button>
@@ -876,7 +886,7 @@ export const PerformanceDashboard: React.FC = () => {
                   backgroundColor: isRealTime ? '#51cf66' : '#868e96',
                   animation: isRealTime ? 'pulse 2s infinite' : 'none'
                 }} />
-                <Text variant="bodySm" tone="subdued">
+                <Text variant="bodySm" as="span" tone="subdued">
                   {isRealTime ? 'Live' : 'Paused'}
                 </Text>
               </div>
@@ -913,7 +923,7 @@ export const PerformanceDashboard: React.FC = () => {
         </Layout.Section>
       </Layout>
 
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0% { opacity: 1; }
           50% { opacity: 0.5; }

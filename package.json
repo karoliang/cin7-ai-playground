@@ -28,7 +28,13 @@
     "docs:dev": "vitepress dev docs",
     "pre-push": "npm run test && npm run lint",
     "prepare": "husky install",
-    "commit": "git-cz"
+    "commit": "git-cz",
+    "netlify:monitor": "node scripts/netlify-monitoring/quick-monitor.cjs",
+    "netlify:monitor:continuous": "node scripts/netlify-monitoring/continuous-monitor.js",
+    "netlify:monitor:status": "node scripts/netlify-monitoring/continuous-monitor.js --status",
+    "netlify:fix-errors": "node scripts/netlify-monitoring/simple-fixer.cjs",
+    "netlify:fix-and-build": "node scripts/netlify-monitoring/simple-fixer.cjs --run-build",
+    "netlify:trigger-deploy": "netlify deploy --prod --dir=dist"
   },
   "dependencies": {
     "@codemirror/lang-css": "^6.3.1",

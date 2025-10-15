@@ -483,7 +483,6 @@ export const CodeGeneratorPage: React.FC = () => {
     <Page
       title="AI Code Generator"
       subtitle="Generate code, components, and full applications with AI"
-      breadcrumbs={[{ content: 'Home', url: '/' }]}
     >
       <>{NotificationComponent}</>
 

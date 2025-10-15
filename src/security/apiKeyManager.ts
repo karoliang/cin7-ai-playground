@@ -79,7 +79,7 @@ export class SecureAPIKeyManager {
     }
 
     // Check if key is too old
-    if (Date.now() - config.createdAt > this.MAX_KEY_AGE) {
+    if (Date.now() - config.createdAt > SecureAPIKeyManager.MAX_KEY_AGE) {
       this.deactivateKey(keyId, 'Key too old')
       return null
     }
@@ -156,7 +156,7 @@ export class SecureAPIKeyManager {
     }
 
     const oldestKey = keys[keys.length - 1]
-    return Date.now() - oldestKey.createdAt > this.KEY_ROTATION_INTERVAL
+    return Date.now() - oldestKey.createdAt > SecureAPIKeyManager.KEY_ROTATION_INTERVAL
   }
 
   /**
@@ -215,14 +215,14 @@ export class SecureAPIKeyManager {
 
     // Clean up old usage logs
     this.usageLogs = this.usageLogs.filter(
-      log => now - log.timestamp < this.USAGE_LOG_RETENTION
+      log => now - log.timestamp < SecureAPIKeyManager.USAGE_LOG_RETENTION
     )
 
     // Deactivate expired keys
     for (const [keyId, config] of this.keyStore) {
       if (config.expiresAt && now > config.expiresAt) {
         this.deactivateKey(keyId, 'Key expired during cleanup')
-      } else if (now - config.createdAt > this.MAX_KEY_AGE) {
+      } else if (now - config.createdAt > SecureAPIKeyManager.MAX_KEY_AGE) {
         this.deactivateKey(keyId, 'Key too old during cleanup')
       }
     }
@@ -272,7 +272,7 @@ export class SecureAPIKeyManager {
 
   private encrypt(text: string): string {
     const iv = crypto.randomBytes(16)
-    const cipher = crypto.createCipher(this.ENCRYPTION_ALGORITHM, this.encryptionKey)
+    const cipher = crypto.createCipher(SecureAPIKeyManager.ENCRYPTION_ALGORITHM, this.encryptionKey)
     cipher.setAAD(Buffer.from('api-key', 'utf8'))
 
     let encrypted = cipher.update(text, 'utf8', 'hex')
@@ -293,7 +293,7 @@ export class SecureAPIKeyManager {
     const authTag = Buffer.from(parts[1], 'hex')
     const encrypted = parts[2]
 
-    const decipher = crypto.createDecipher(this.ENCRYPTION_ALGORITHM, this.encryptionKey)
+    const decipher = crypto.createDecipher(SecureAPIKeyManager.ENCRYPTION_ALGORITHM, this.encryptionKey)
     decipher.setAAD(Buffer.from('api-key', 'utf8'))
     decipher.setAuthTag(authTag)
 

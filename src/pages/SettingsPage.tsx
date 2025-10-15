@@ -13,7 +13,8 @@ import {
   Badge,
   Tabs,
   Banner,
-  Stack,
+  BlockStack,
+  InlineStack,
   Divider,
   ChoiceList,
   RangeSlider,
@@ -95,8 +96,7 @@ export const SettingsPage: React.FC = () => {
     try {
       await updateProfile({
         name: profileName,
-        email: profileEmail,
-        company: profileCompany
+        email: profileEmail
       })
       console.log('Profile saved successfully')
     } catch (error) {
@@ -247,7 +247,7 @@ export const SettingsPage: React.FC = () => {
 
         const { exportService } = await import('@/services/exportService')
         const options = exportService.validateExportOptions({
-          format: exportFormat,
+          format: exportFormat as 'zip' | 'github' | 'docker',
           includeDependencies,
           includeReadme: true,
           includeBuildScripts: true,
@@ -441,7 +441,7 @@ export const SettingsPage: React.FC = () => {
   const themeOptions = [
     { label: 'Light', value: 'light' },
     { label: 'Dark', value: 'dark' },
-    { label: 'System', value: 'system' }
+    { label: 'Auto', value: 'auto' }
   ]
 
   const templateOptions = [
@@ -454,15 +454,12 @@ export const SettingsPage: React.FC = () => {
   const exportFormatOptions = [
     { label: 'JSON (Full Data)', value: 'json' },
     { label: 'CSV (Summary)', value: 'csv' },
-    { label: 'ZIP Archive', value: 'zip' },
-    { label: 'GitHub Repository', value: 'github' },
-    { label: 'Docker Container', value: 'docker' }
+    { label: 'ZIP Archive', value: 'zip' }
   ]
 
   return (
     <Page
       title="Settings"
-      breadcrumbs={[{ content: 'Dashboard', url: '/' }]}
       primaryAction={{
         content: 'Save Changes',
         onAction: handleSaveProfile,
@@ -473,37 +470,37 @@ export const SettingsPage: React.FC = () => {
       <Layout>
         <Layout.Section>
           <Card>
-            <Card.Section>
+            <div>
               <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab} fitted />
-            </Card.Section>
+            </div>
           </Card>
 
           <Card>
-            <Card.Section>
+            <div>
               <Text variant="headingMd" as="h3">Quick Actions</Text>
-            <Stack vertical spacing="tight">
-              <Button icon={ExportIcon} fullWidth onClick={() => setShowExportModal(true)}>
-                Export All Projects
-              </Button>
-              <Button icon={ImportIcon} fullWidth>
-                Import Projects
-              </Button>
-              <Button icon={RefreshIcon} fullWidth>
-                Clear Cache
-              </Button>
-              <Divider />
-              <Button icon={DeleteIcon} fullWidth destructive onClick={() => setShowDeleteModal(true)}>
-                Delete Account
-              </Button>
-            </Stack>
-            </Card.Section>
+              <BlockStack gap="200">
+                <Button icon={ExportIcon} fullWidth onClick={() => setShowExportModal(true)}>
+                  Export All Projects
+                </Button>
+                <Button icon={ImportIcon} fullWidth>
+                  Import Projects
+                </Button>
+                <Button icon={RefreshIcon} fullWidth>
+                  Clear Cache
+                </Button>
+                <Divider />
+                <Button icon={DeleteIcon} fullWidth tone="critical" onClick={() => setShowDeleteModal(true)}>
+                  Delete Account
+                </Button>
+              </BlockStack>
+            </div>
           </Card>
         </Layout.Section>
 
         <Layout.Section>
           {selectedTab === 0 && (
             <Card>
-              <Card.Section>
+              <div>
                 <Text variant="headingMd" as="h3">Profile Settings</Text>
                 <FormLayout>
                 <TextField
@@ -512,6 +509,7 @@ export const SettingsPage: React.FC = () => {
                   onChange={setProfileName}
                   placeholder="Enter your full name"
                   disabled={!isAuthenticated}
+                  autoComplete="name"
                 />
                 <TextField
                   label="Email Address"
@@ -520,6 +518,7 @@ export const SettingsPage: React.FC = () => {
                   placeholder="your.email@example.com"
                   type="email"
                   disabled={!isAuthenticated}
+                  autoComplete="email"
                 />
                 <TextField
                   label="Company"
@@ -527,29 +526,30 @@ export const SettingsPage: React.FC = () => {
                   onChange={setProfileCompany}
                   placeholder="Your company name"
                   disabled={!isAuthenticated}
+                  autoComplete="organization"
                 />
                 <Select
                   label="Theme Preference"
                   options={themeOptions}
                   value={resolvedTheme}
-                  onChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}
+                  onChange={(value) => setTheme(value as 'light' | 'dark' | 'auto')}
                 />
                 <Divider />
                 <Text variant="headingMd" as="h3">Account Status</Text>
-                <Stack>
+                <InlineStack gap="200">
                   <Badge tone="success">Active</Badge>
                   <Text variant="bodySm" as="span">
                     Member since {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
                   </Text>
-                </Stack>
+                </InlineStack>
                 </FormLayout>
-              </Card.Section>
+              </div>
             </Card>
           )}
 
           {selectedTab === 1 && (
             <Card>
-              <Card.Section>
+              <div>
                 <Text variant="headingMd" as="h3">Project Settings</Text>
                 <FormLayout>
                 <Select
@@ -572,7 +572,7 @@ export const SettingsPage: React.FC = () => {
                     min={10}
                     max={300}
                     step={10}
-                    onChange={setAutoSaveInterval}
+                    onChange={(value) => setAutoSaveInterval(Array.isArray(value) ? value[0] : value)}
                     output
                     disabled={!isAuthenticated}
                   />
@@ -589,13 +589,13 @@ export const SettingsPage: React.FC = () => {
                   disabled={!isAuthenticated}
                 />
               </FormLayout>
-              </Card.Section>
+              </div>
             </Card>
           )}
 
           {selectedTab === 2 && (
             <Card>
-              <Card.Section>
+              <div>
                 <Text variant="headingMd" as="h3">Export Settings</Text>
               <FormLayout>
                 <Select
@@ -639,7 +639,7 @@ export const SettingsPage: React.FC = () => {
                 />
 
                 <Banner tone="info">
-                  <Text variant="bodySm">
+                  <Text variant="bodySm" as="p">
                     <strong>Export Formats:</strong><br/>
                     • <strong>JSON:</strong> Complete project data with all files, messages, and settings<br/>
                     • <strong>CSV:</strong> Project summary with statistics for analysis<br/>
@@ -650,22 +650,22 @@ export const SettingsPage: React.FC = () => {
                 </Banner>
 
                 <Banner tone="warning">
-                  <Text variant="bodySm">
+                  <Text variant="bodySm" as="p">
                     Export settings are saved per project. You can override these settings when exporting individual projects.
                   </Text>
                 </Banner>
               </FormLayout>
-              </Card.Section>
+              </div>
             </Card>
           )}
 
           {selectedTab === 3 && (
             <Card>
-              <Card.Section>
+              <div>
                 <Text variant="headingMd" as="h3">Advanced Settings</Text>
               <FormLayout>
                 <Banner tone="warning" title="Advanced Features">
-                  <Text variant="bodySm">
+                  <Text variant="bodySm" as="p">
                     These settings are intended for advanced users. Changing these values may affect the performance of the application.
                   </Text>
                 </Banner>
@@ -686,6 +686,7 @@ export const SettingsPage: React.FC = () => {
                   label="Custom API URL"
                   placeholder="https://your-api-endpoint.com"
                   disabled={!isAuthenticated}
+                  autoComplete="url"
                 />
 
                 <Checkbox
@@ -713,7 +714,7 @@ export const SettingsPage: React.FC = () => {
                   </Button>
                 </ButtonGroup>
               </FormLayout>
-              </Card.Section>
+              </div>
             </Card>
           )}
         </Layout.Section>
@@ -750,7 +751,7 @@ export const SettingsPage: React.FC = () => {
         ]}
       >
         <TextContainer>
-          <Text>
+          <Text as="p">
             This will export all your projects in the selected format. The export will include:
           </Text>
 
@@ -780,7 +781,7 @@ export const SettingsPage: React.FC = () => {
                 <li>Project status and timestamps</li>
                 <li>Framework and architecture information</li>
               </ul>
-              <Text variant="bodySm" as="span">
+              <Text variant="bodySm" as="p">
                 CSV export provides a quick overview of all projects suitable for analysis.
               </Text>
             </>
@@ -804,7 +805,7 @@ export const SettingsPage: React.FC = () => {
           )}
 
           {exportFormat === 'github' && (
-            <Text variant="bodySm" as="span">
+            <Text variant="bodySm" as="p">
               GitHub export will create a repository with your project files and documentation.
             </Text>
           )}
@@ -814,7 +815,7 @@ export const SettingsPage: React.FC = () => {
               <Divider />
               <Text variant="headingMd" as="h3">Export Progress</Text>
               <div style={{ marginBottom: '8px' }}>
-                <Text>{exportStatus}</Text>
+                <Text as="span">{exportStatus}</Text>
               </div>
               <div
                 style={{
@@ -865,14 +866,12 @@ export const SettingsPage: React.FC = () => {
               : 'Continue'),
           onAction: handleDeleteAccount,
           loading: isLoading || authIsLoading,
-          disabled: isLoading || authIsLoading || deleteProgress > 0 || countdown > 0,
-          destructive: true
+          disabled: isLoading || authIsLoading || deleteProgress > 0 || countdown > 0
         }}
         secondaryActions={[
           {
             content: 'Cancel',
-            onAction: handleCloseDeleteModal,
-            disabled: isLoading || authIsLoading || deleteProgress > 0
+            onAction: handleCloseDeleteModal
           }
         ]}
       >
@@ -880,7 +879,7 @@ export const SettingsPage: React.FC = () => {
           {!showPasswordInput ? (
             <>
               <Banner tone="critical">
-                <Text>
+                <Text as="p">
                   <strong>⚠️ WARNING: This action cannot be undone</strong>
                 </Text>
               </Banner>
@@ -895,7 +894,7 @@ export const SettingsPage: React.FC = () => {
               </ul>
 
               <Banner tone="warning">
-                <Text variant="bodySm">
+                <Text variant="bodySm" as="p">
                   <strong>Before you delete your account:</strong><br/>
                   • Export any projects you want to keep<br/>
                   • Save important configurations or settings<br/>
@@ -907,7 +906,7 @@ export const SettingsPage: React.FC = () => {
               <Divider />
 
               <Text variant="headingMd" as="h3">Data Recovery</Text>
-              <Text variant="bodySm" as="span">
+              <Text variant="bodySm" as="p">
                 Once your account is deleted, there is no way to recover your data.
                 We recommend exporting your projects before proceeding.
               </Text>
@@ -922,7 +921,7 @@ export const SettingsPage: React.FC = () => {
           ) : (
             <>
               <Banner tone="critical">
-                <Text>
+                <Text as="p">
                   <strong>⚠️ FINAL CONFIRMATION REQUIRED</strong>
                 </Text>
               </Banner>
@@ -936,6 +935,7 @@ export const SettingsPage: React.FC = () => {
                 placeholder="Enter your current password"
                 disabled={isLoading || authIsLoading}
                 helpText="This verifies your identity before account deletion"
+                autoComplete="current-password"
               />
 
               <Divider />
@@ -947,6 +947,7 @@ export const SettingsPage: React.FC = () => {
                 placeholder="DELETE"
                 disabled={isLoading || authIsLoading}
                 helpText="This confirms you understand this action cannot be undone"
+                autoComplete="off"
               />
 
               {deleteProgress > 0 && (
@@ -954,7 +955,7 @@ export const SettingsPage: React.FC = () => {
                   <Divider />
                   <Text variant="headingMd" as="h3">Deletion Progress</Text>
                   <div style={{ marginBottom: '8px' }}>
-                    <Text>{deleteStatus}</Text>
+                    <Text as="span">{deleteStatus}</Text>
                   </div>
                   <div
                     style={{
@@ -983,13 +984,13 @@ export const SettingsPage: React.FC = () => {
 
               {authError && (
                 <Banner tone="critical">
-                  <Text variant="bodySm">{authError}</Text>
+                  <Text variant="bodySm" as="p">{authError}</Text>
                 </Banner>
               )}
 
               {countdown > 0 && (
                 <Banner tone="warning">
-                  <Text variant="bodySm">
+                  <Text variant="bodySm" as="p">
                     <strong>Countdown:</strong> {countdown} seconds remaining until deletion begins.
                     You can still cancel by closing this dialog.
                   </Text>
@@ -997,13 +998,13 @@ export const SettingsPage: React.FC = () => {
               )}
 
               {deleteStatus && deleteProgress === 0 && (
-                <Banner status={deleteStatus.includes('failed') ? 'critical' : 'info'}>
-                  <Text variant="bodySm">{deleteStatus}</Text>
+                <Banner tone={deleteStatus.includes('failed') ? 'critical' : 'info'}>
+                  <Text variant="bodySm" as="p">{deleteStatus}</Text>
                 </Banner>
               )}
 
               <Banner tone="warning">
-                <Text variant="bodySm">
+                <Text variant="bodySm" as="p">
                   <strong>Important:</strong> Account deletion is permanent and cannot be reversed.
                   All your data will be immediately and permanently removed.
                 </Text>

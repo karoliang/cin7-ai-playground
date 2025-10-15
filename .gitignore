@@ -169,3 +169,5 @@ test-results.xml
 # Local development
 .local/
 .temp/
+# Local Netlify folder
+.netlify
