@@ -8,7 +8,8 @@ import {
   Button,
   Badge,
   Icon,
-  Stack,
+  InlineStack,
+  BlockStack,
   Spinner,
   Scrollable,
   FormLayout,
@@ -20,7 +21,7 @@ import {
   Divider
 } from '@shopify/polaris'
 import {
-  ChatBubbleIcon,
+  ChatIcon,
   CodeIcon,
   ViewIcon,
   SettingsIcon,
@@ -114,32 +115,17 @@ export const ProjectWorkspace: React.FC = () => {
   const tabs = [
     {
       id: 'chat',
-      content: (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Icon source={ChatBubbleIcon} />
-          AI Assistant
-        </span>
-      ),
+      content: 'AI Assistant',
       panelID: 'chat-panel'
     },
     {
       id: 'files',
-      content: (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Icon source={CodeIcon} />
-          Files ({files.length})
-        </span>
-      ),
+      content: `Files (${files.length})`,
       panelID: 'files-panel'
     },
     {
       id: 'preview',
-      content: (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Icon source={ViewIcon} />
-          Preview
-        </span>
-      ),
+      content: 'Preview',
       panelID: 'preview-panel'
     }
   ]
@@ -169,9 +155,9 @@ export const ProjectWorkspace: React.FC = () => {
         <Card>
           <Tabs tabs={tabs} selected={selectedTab} onSelect={setSelectedTab}>
             {selectedTab === 0 && (
-              <Card.Section>
+              <div style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <Text variant="headingMd">AI Assistant</Text>
+                  <Text variant="headingMd" as="h2">AI Assistant</Text>
                   <Button
                     size="slim"
                     onClick={clearChat}
@@ -197,7 +183,7 @@ export const ProjectWorkspace: React.FC = () => {
                       <Button
                         size="slim"
                         onClick={clearError}
-                        plain
+                        variant="plain"
                       >
                         Dismiss
                       </Button>
@@ -208,7 +194,7 @@ export const ProjectWorkspace: React.FC = () => {
                     <div style={{ padding: '1rem', minHeight: '300px' }}>
                       {messages.length === 0 ? (
                         <div style={{ textAlign: 'center', color: '#6b7280', padding: '2rem 1rem' }}>
-                          <Icon source={ChatBubbleIcon} size="large" />
+                          <Icon source={ChatIcon} />
                           <Text variant="bodyLg" as="p" fontWeight="semibold">
                             Welcome to your AI Assistant
                           </Text>
@@ -253,7 +239,7 @@ export const ProjectWorkspace: React.FC = () => {
                                 marginLeft: message.role === 'user' ? 'auto' : '0',
                                 whiteSpace: 'pre-wrap'
                               }}>
-                                <Text variant="bodySm">{message.content}</Text>
+                                <Text variant="bodySm" as="span">{message.content}</Text>
                               </div>
                             </div>
                           ))}
@@ -279,7 +265,7 @@ export const ProjectWorkspace: React.FC = () => {
                                 marginLeft: '0',
                                 whiteSpace: 'pre-wrap'
                               }}>
-                                <Text variant="bodySm">{streamingMessage}</Text>
+                                <Text variant="bodySm" as="span">{streamingMessage}</Text>
                               </div>
                             </div>
                           )}
@@ -322,7 +308,7 @@ export const ProjectWorkspace: React.FC = () => {
                         onChange={setChatMessage}
                         multiline={2}
                         disabled={isTyping}
-                        onKeyPress={(event) => {
+                        onKeyDown={(event) => {
                           if (event.key === 'Enter' && !event.shiftKey) {
                             event.preventDefault()
                             handleChatSend()
@@ -332,7 +318,7 @@ export const ProjectWorkspace: React.FC = () => {
                           <Button
                             onClick={handleChatSend}
                             disabled={!chatMessage.trim() || isTyping}
-                            primary
+                            variant="primary"
                             loading={isTyping}
                           >
                             Send
@@ -342,13 +328,13 @@ export const ProjectWorkspace: React.FC = () => {
                     </FormLayout>
                   </div>
                 </div>
-              </Card.Section>
+              </div>
             )}
 
             {selectedTab === 1 && (
-              <Card.Section>
+              <div style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <Text variant="headingMd">Project Files</Text>
+                  <Text variant="headingMd" as="h2">Project Files</Text>
                   <Popover
                     active={fileActionActive}
                     activator={
@@ -372,13 +358,13 @@ export const ProjectWorkspace: React.FC = () => {
                     <Text variant="bodySm" as="p">
                       Start by creating your first file or using the AI assistant
                     </Text>
-                    <Button onClick={() => setShowNewFileDialog(true)} primary>
+                    <Button onClick={() => setShowNewFileDialog(true)} variant="primary">
                       Create First File
                     </Button>
                   </div>
                 ) : (
                   <Scrollable style={{ height: '350px' }}>
-                    <Stack vertical spacing="tight">
+                    <VerticalStack gap="2">
                       {files.map((file) => (
                         <div
                           key={file.id}
@@ -418,7 +404,7 @@ export const ProjectWorkspace: React.FC = () => {
                             <Button
                               icon={DeleteIcon}
                               size="slim"
-                              destructive
+                              tone="critical"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 deleteFile(file.id)
@@ -427,7 +413,7 @@ export const ProjectWorkspace: React.FC = () => {
                           </ButtonGroup>
                         </div>
                       ))}
-                    </Stack>
+                    </VerticalStack>
                   </Scrollable>
                 )}
 
@@ -442,13 +428,13 @@ export const ProjectWorkspace: React.FC = () => {
                     />
                   </div>
                 )}
-              </Card.Section>
+              </div>
             )}
 
             {selectedTab === 2 && (
-              <Card.Section>
+              <div style={{ padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <Text variant="headingMd">Live Preview</Text>
+                  <Text variant="headingMd" as="h2">Live Preview</Text>
                   <ButtonGroup segmented>
                     <Button
                       icon={DesktopIcon}
@@ -481,7 +467,7 @@ export const ProjectWorkspace: React.FC = () => {
                   }}
                 >
                   {isGenerating ? (
-                    <Stack vertical alignment="center" spacing="tight">
+                    <BlockStack align="center" gap="2">
                       <Spinner size="large" />
                       <Text variant="bodyLg" as="p">
                         Generating Preview...
@@ -489,20 +475,20 @@ export const ProjectWorkspace: React.FC = () => {
                       <Text variant="bodySm" as="p">
                         AI is building your application
                       </Text>
-                    </Stack>
+                    </BlockStack>
                   ) : files.length === 0 ? (
-                    <Stack vertical alignment="center" spacing="tight">
-                      <Icon source={ViewIcon} size="large" />
+                    <BlockStack align="center" gap="2">
+                      <Icon source={ViewIcon} />
                       <Text variant="bodyLg" as="p">
                         No preview available
                       </Text>
                       <Text variant="bodySm" as="p">
                         Create files to see a live preview
                       </Text>
-                    </Stack>
+                    </BlockStack>
                   ) : (
-                    <Stack vertical alignment="center" spacing="tight">
-                      <Icon source={RefreshIcon} size="large" />
+                    <BlockStack align="center" gap="2">
+                      <Icon source={RefreshIcon} />
                       <Text variant="bodyLg" as="p">
                         Preview Ready
                       </Text>
@@ -512,10 +498,10 @@ export const ProjectWorkspace: React.FC = () => {
                       <Button onClick={() => console.log('Open in new tab')}>
                         Open in New Tab
                       </Button>
-                    </Stack>
+                    </BlockStack>
                   )}
                 </div>
-              </Card.Section>
+              </div>
             )}
           </Tabs>
         </Card>
@@ -523,9 +509,9 @@ export const ProjectWorkspace: React.FC = () => {
 
       <Layout.Section>
         <Card>
-          <Card.Section>
-            <Text variant="headingMd">Project Information</Text>
-          <Stack vertical spacing="loose">
+          <div style={{ padding: '1rem' }}>
+            <Text variant="headingMd" as="h2">Project Information</Text>
+          <BlockStack gap="4">
             <div>
               <Text variant="headingSm" as="h3">Project Details</Text>
               <Text variant="bodySm" as="p">
@@ -543,7 +529,7 @@ export const ProjectWorkspace: React.FC = () => {
 
             <div>
               <Text variant="headingSm" as="h3">Project Actions</Text>
-              <Stack vertical spacing="tight">
+              <BlockStack gap="2">
                 <Button icon={RefreshIcon} fullWidth>
                   Regenerate Project
                 </Button>
@@ -553,14 +539,14 @@ export const ProjectWorkspace: React.FC = () => {
                 <Button icon={SettingsIcon} fullWidth>
                   Project Settings
                 </Button>
-              </Stack>
+              </BlockStack>
             </div>
 
             <Divider />
 
             <div>
               <Text variant="headingSm" as="h3">Development Status</Text>
-              <Stack vertical spacing="tight">
+              <BlockStack gap="2">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Badge tone={isGenerating ? 'attention' : 'success'}>
                     {isGenerating ? 'Generating' : 'Ready'}
@@ -570,16 +556,16 @@ export const ProjectWorkspace: React.FC = () => {
                 <Text variant="bodyXs" as="p">
                   Last updated: {new Date(currentProject?.updated_at || Date.now()).toLocaleString()}
                 </Text>
-              </Stack>
+              </BlockStack>
             </div>
-          </Stack>
-          </Card.Section>
+          </BlockStack>
+          </div>
         </Card>
 
         {showNewFileDialog && (
           <Card>
-            <Card.Section>
-              <Text variant="headingMd">Create New File</Text>
+            <div style={{ padding: '1rem' }}>
+              <Text variant="headingMd" as="h2">Create New File</Text>
             <FormLayout>
               <TextField
                 label="File name"
@@ -604,12 +590,12 @@ export const ProjectWorkspace: React.FC = () => {
                 <Button onClick={() => setShowNewFileDialog(false)}>
                   Cancel
                 </Button>
-                <Button primary onClick={handleCreateFile} disabled={!newFileName.trim()}>
+                <Button variant="primary" onClick={handleCreateFile} disabled={!newFileName.trim()}>
                   Create File
                 </Button>
               </ButtonGroup>
             </FormLayout>
-            </Card.Section>
+            </div>
           </Card>
         )}
       </Layout.Section>

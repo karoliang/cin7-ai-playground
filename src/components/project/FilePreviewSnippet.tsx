@@ -111,7 +111,7 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
   }
 
   return (
-    <Card
+    <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleEdit}
@@ -119,18 +119,20 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
         cursor: 'pointer',
         transition: 'all 0.2s ease',
         border: isHovered ? '1px solid var(--p-color-border-interactive)' : '1px solid var(--p-color-border)',
-        backgroundColor: isHovered ? 'var(--p-color-bg-surface-hover)' : 'var(--p-color-bg-surface-subdued)'
+        backgroundColor: isHovered ? 'var(--p-color-bg-surface-hover)' : 'var(--p-color-bg-surface-subdued)',
+        borderRadius: '0.5rem',
+        padding: '1rem'
       }}
     >
       <BlockStack gap="200">
         {/* Header with file info */}
         <InlineStack align="space-between">
           <InlineStack gap="200" blockAlign="center">
-            <Icon source={CodeIcon} size="small" />
+            <Icon source={CodeIcon} />
             <Text as="span" variant="bodySm" fontWeight="semibold">
               {file.name}
             </Text>
-            <Badge size="small" tone={typeDisplay.color}>
+            <Badge size="small">
               {typeDisplay.label}
             </Badge>
           </InlineStack>
@@ -169,7 +171,7 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
             textAlign: 'center',
             border: '1px dashed var(--p-color-border)'
           }}>
-            <Icon source={ViewIcon} size="large" tone="subdued" />
+            <Icon source={ViewIcon} />
             <Text as="p" variant="bodySm">
               Image file - Click to view
             </Text>
@@ -221,6 +223,6 @@ export const FilePreviewSnippet: React.FC<FilePreviewSnippetProps> = ({
           {isHovered ? 'Click to edit in code editor' : 'Hover to preview'}
         </Text>
       </BlockStack>
-    </Card>
+    </div>
   )
 }

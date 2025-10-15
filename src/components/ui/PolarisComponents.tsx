@@ -22,7 +22,7 @@ import {
   CodeIcon,
   MobileIcon,
   DesktopIcon,
-  AnalyticsIcon,
+  ChartBarIcon,
   PlusCircleIcon,
   ExportIcon,
   ImportIcon
@@ -70,8 +70,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   }
 
   return (
-    <Card actions={actions.length > 0 ? actions : undefined}>
-      <div style={{ height: '100%' }}>
+    <Card>
+      <div style={{ height: '100%', padding: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Text variant="headingSm" as="h3">
@@ -105,6 +105,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               Open Project
             </Button>
           </div>
+
+          {actions.length > 0 && (
+            <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+              {actions.map((action, index) => (
+                <Button
+                  key={index}
+                  size="slim"
+                  onClick={action.onAction}
+                  tone={action.destructive ? 'critical' : 'base'}
+                >
+                  {action.content}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </Card>
@@ -130,20 +145,11 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
   disabled = false
 }) => {
   return (
-    <Card
-      actions={[
-        {
-          content: 'Use Template',
-          onAction: () => onSelect(template.prompt),
-          disabled
-        }
-      ]}
-    >
-      <div style={{ textAlign: 'center', height: '100%' }}>
+    <Card>
+      <div style={{ textAlign: 'center', height: '100%', padding: '1rem' }}>
         <div style={{ marginBottom: '1rem' }}>
           <Icon
             source={template.icon}
-            size="large"
           />
         </div>
 
@@ -163,6 +169,16 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({
         <Text variant="bodySm" as="p" alignment="center">
           {template.description}
         </Text>
+
+        <div style={{ marginTop: '1rem' }}>
+          <Button
+            onClick={() => onSelect(template.prompt)}
+            disabled={disabled}
+            fullWidth
+          >
+            Use Template
+          </Button>
+        </div>
       </div>
     </Card>
   )
@@ -246,9 +262,9 @@ export const FeatureGrid: React.FC<FeatureGridProps> = ({
     <Grid columns={{ xs: 1, sm: 2, md: 3, lg: columns, xl: columns }}>
       {features.map((feature, index) => (
         <Card key={index}>
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', padding: '1rem' }}>
             <div style={{ marginBottom: '1rem' }}>
-              <Icon source={feature.icon} size="large" />
+              <Icon source={feature.icon} />
             </div>
             <Text variant="headingMd" as="h3" alignment="center">
               {feature.title}

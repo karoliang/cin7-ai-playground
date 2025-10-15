@@ -260,24 +260,27 @@ export const HomePage: React.FC = () => {
               <Grid columns={{ xs: 1, sm: 2, md: 3, lg: 4 }}>
                 {recentProjects.map((project: any, index) => (
                   <div key={index} style={{ height: '100%', padding: '0.5rem' }}>
-                    <Card
-                      actions={[
-                        {
-                          content: 'Open',
-                          onAction: () => navigate(`/project/${project.id}`)
-                        }
-                      ]}
-                    >
-                      <Text variant="headingSm" as="h3">
-                        {project.name}
-                      </Text>
-                      <Text variant="bodySm" as="p">
-                        {project.description || 'No description'}
-                      </Text>
-                      <div style={{ marginTop: '0.5rem' }}>
-                        <Text variant="bodyXs" as="p">
-                          Updated {new Date(project.updated_at).toLocaleDateString()}
+                    <Card>
+                      <div style={{ padding: '1rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                          <Text variant="headingSm" as="h3">
+                            {project.name}
+                          </Text>
+                          <Button
+                            size="slim"
+                            onClick={() => navigate(`/project/${project.id}`)}
+                          >
+                            Open
+                          </Button>
+                        </div>
+                        <Text variant="bodySm" as="p">
+                          {project.description || 'No description'}
                         </Text>
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <Text variant="bodyXs" as="p">
+                            Updated {new Date(project.updated_at).toLocaleDateString()}
+                          </Text>
+                        </div>
                       </div>
                     </Card>
                   </div>

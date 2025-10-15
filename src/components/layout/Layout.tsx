@@ -132,38 +132,34 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       userMenu={
         user
           ? {
-              name: user.name || user.email,
-              detail: user.email,
-              initials: user.name
-                ? user.name.split(' ').map(n => n[0]).join('').toUpperCase()
-                : user.email[0].toUpperCase(),
               actions: [
                 {
                   items: [
                     {
                       content: 'Account settings',
-                      icon: SettingsMinor,
                       onAction: () => navigate('/settings')
                     },
                     {
                       content: resolvedTheme === 'light' ? 'Dark mode' : 'Light mode',
-                      icon: resolvedTheme === 'light' ? QuestionMarkMajor : QuestionMarkMajor,
                       onAction: toggleTheme
                     },
                     {
                       content: 'Documentation',
-                      icon: QuestionMarkMajor,
                       onAction: () => window.open('https://docs.cin7.com', '_blank')
                     },
                     {
                       content: 'Log out',
-                      icon: CircleDisabledMajor,
                       onAction: handleLogout,
                       destructive: true
                     }
                   ]
                 }
-              ]
+              ],
+              avatarInitials: user.name
+                ? user.name.split(' ').map(n => n[0]).join('').toUpperCase()
+                : user.email[0].toUpperCase(),
+              name: user.name || user.email,
+              detail: user.email,
             }
           : {
               actions: [
@@ -171,7 +167,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   items: [
                     {
                       content: 'Sign in',
-                      icon: SettingsMinor,
                       onAction: () => navigate('/auth')
                     }
                   ]
@@ -179,18 +174,23 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               ]
             }
       }
-      searchResults={formattedSearchResults}
+      searchResults={formattedSearchResults.map(result => ({
+        ...result,
+        content: result.title,
+        subcontent: result.subtitle,
+        url: result.url
+      }))}
       searchPlaceholder="Search projects..."
       additionalMetadata={
         isAuthenticated ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             {isLoading && (
-              <Badge status="info">Searching...</Badge>
+              <Badge tone="info">Searching...</Badge>
             )}
             {error && (
-              <Badge status="critical">Search Error</Badge>
+              <Badge tone="critical">Search Error</Badge>
             )}
-            <Badge status="success">Pro</Badge>
+            <Badge tone="success">Pro</Badge>
             <Text as="span" variant="bodySm">
               {user?.email}
             </Text>
@@ -366,8 +366,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               Build professional multi-page applications with AI •
               <Button
                 onClick={() => navigate('/')}
-                plain
-                monochrome
+                variant="plain"
               >
                 Sign in to get started
               </Button>
