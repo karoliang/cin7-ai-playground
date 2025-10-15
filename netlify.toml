@@ -9,3 +9,5 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# No plugins section - let Netlify auto-detect we're using Vite
