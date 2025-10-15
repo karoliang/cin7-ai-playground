@@ -1,0 +1,2 @@
+- can we always and automtically commit and push to github after each sessions, tasks, updates, debugs etc
+- can you ensure we auto commit and sync to github
