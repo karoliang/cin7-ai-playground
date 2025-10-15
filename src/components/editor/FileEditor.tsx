@@ -1,13 +1,11 @@
 import React, { useState, useCallback } from 'react'
 import {
   Modal,
-  Title,
   Text,
   Button,
-  ButtonGroup,
-  Stack,
-  Card,
   InlineStack,
+  BlockStack,
+  Card,
   Banner,
   TextContainer
 } from '@shopify/polaris'
@@ -204,25 +202,25 @@ export const FileEditor: React.FC<FileEditorProps> = ({
       ]}
     >
       <Modal.Section>
-        <Stack vertical spacing="loose">
+        <BlockStack gap="400">
           {/* File Info */}
           <Card>
-            <Stack vertical spacing="tight">
-              <InlineStack gap="4">
-                <Text variant="bodySm" color="subdued">Type:</Text>
-                <Text variant="bodySm" fontWeight="semibold">
+            <BlockStack gap="200">
+              <InlineStack gap="400">
+                <Text as="span" tone="subdued">Type:</Text>
+                <Text as="span" variant="bodySm" fontWeight="semibold">
                   {getFileTypeDisplayName(file.type)}
                 </Text>
               </InlineStack>
-              <InlineStack gap="4">
-                <Text variant="bodySm" color="subdued">Size:</Text>
+              <InlineStack gap="400">
+                <Text as="span" tone="subdued">Size:</Text>
                 <Text variant="bodySm">{content.length} characters</Text>
               </InlineStack>
-              <InlineStack gap="4">
-                <Text variant="bodySm" color="subdued">Language:</Text>
+              <InlineStack gap="400">
+                <Text as="span" tone="subdued">Language:</Text>
                 <Text variant="bodySm">{file.language || file.type}</Text>
               </InlineStack>
-            </Stack>
+            </BlockStack>
           </Card>
 
           {/* Validation Error */}
@@ -262,12 +260,12 @@ export const FileEditor: React.FC<FileEditorProps> = ({
 
           {/* Editor Tips */}
           <Card>
-            <Text variant="bodySm" color="subdued">
+            <Text as="span" tone="subdued">
               <strong>Tips:</strong> Use Ctrl+S (Cmd+S on Mac) to save, Ctrl+Z to undo, and Ctrl+Y to redo.
               The editor supports syntax highlighting and basic validation for {getFileTypeDisplayName(file.type)} files.
             </Text>
           </Card>
-        </Stack>
+        </BlockStack>
       </Modal.Section>
     </Modal>
   )

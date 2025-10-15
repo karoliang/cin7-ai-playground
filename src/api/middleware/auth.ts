@@ -1,10 +1,10 @@
 // Authentication middleware for API requests
 
+import { Request, Response } from 'express'
 import { SupabaseClient } from '@supabase/supabase-js'
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
-export interface AuthenticatedRequest extends NextRequest {
+export interface AuthenticatedRequest extends Request {
   user: {
     id: string
     email: string
@@ -29,22 +29,21 @@ export interface AuthContext {
  * Authentication middleware that validates JWT tokens from Supabase
  */
 export async function authMiddleware(
-  request: NextRequest,
-  supabase: SupabaseClient = createClient()
-): Promise<{ context: AuthContext } | NextResponse> {
+  request: AuthenticatedRequest,
+  response: Response,
+  supabaseClient: SupabaseClient = supabase
+): Promise<{ context: AuthContext } | null> {
   try {
     // Get authorization header
-    const authHeader = request.headers.get('authorization')
+    const authHeader = request.headers.authorization
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Authentication required',
-          code: 'UNAUTHORIZED',
-          timestamp: new Date().toISOString()
-        },
-        { status: 401 }
-      )
+      response.status(401).json({
+        success: false,
+        error: 'Authentication required',
+        code: 'UNAUTHORIZED',
+        timestamp: new Date().toISOString()
+      })
+      return null
     }
 
     const token = authHeader.substring(7) // Remove 'Bearer ' prefix
@@ -54,28 +53,24 @@ export async function authMiddleware(
 
     if (error || !user) {
       console.error('Auth error:', error)
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid or expired token',
-          code: 'UNAUTHORIZED',
-          timestamp: new Date().toISOString()
-        },
-        { status: 401 }
-      )
+      response.status(401).json({
+        success: false,
+        error: 'Invalid or expired token',
+        code: 'UNAUTHORIZED',
+        timestamp: new Date().toISOString()
+      })
+      return null
     }
 
     // Check if email is verified (optional, based on your requirements)
     if (!user.email_confirmed_at) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Email not verified',
-          code: 'EMAIL_NOT_VERIFIED',
-          timestamp: new Date().toISOString()
-        },
-        { status: 403 }
-      )
+      response.status(403).json({
+        success: false,
+        error: 'Email not verified',
+        code: 'EMAIL_NOT_VERIFIED',
+        timestamp: new Date().toISOString()
+      })
+      return null
     }
 
     const context: AuthContext = {
@@ -89,18 +84,19 @@ export async function authMiddleware(
       token
     }
 
+    // Attach user to request object
+    request.user = context.user
+
     return { context }
   } catch (error) {
     console.error('Auth middleware error:', error)
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Authentication failed',
-        code: 'INTERNAL_SERVER_ERROR',
-        timestamp: new Date().toISOString()
-      },
-      { status: 500 }
-    )
+    response.status(500).json({
+      success: false,
+      error: 'Authentication failed',
+      code: 'INTERNAL_SERVER_ERROR',
+      timestamp: new Date().toISOString()
+    })
+    return null
   }
 }
 
@@ -108,17 +104,16 @@ export async function authMiddleware(
  * Higher-order function that wraps API handlers with authentication
  */
 export function withAuth<T extends any[]>(
-  handler: (request: NextRequest, context: AuthContext, ...args: T) => Promise<NextResponse>
+  handler: (request: AuthenticatedRequest, response: Response, context: AuthContext, ...args: T) => Promise<void>
 ) {
-  return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
-    const supabase = createClient()
-    const authResult = await authMiddleware(request, supabase)
+  return async (request: AuthenticatedRequest, response: Response, ...args: T): Promise<void> => {
+    const authResult = await authMiddleware(request, response)
 
-    if (authResult instanceof NextResponse) {
-      return authResult
+    if (!authResult) {
+      return // authMiddleware already sent the response
     }
 
-    return handler(request, authResult.context, ...args)
+    return handler(request, response, authResult.context, ...args)
   }
 }
 
@@ -133,9 +128,9 @@ export function getUserIdFromRequest(request: AuthenticatedRequest): string {
  * Check if user has required permissions
  */
 export function hasPermission(
-  user: AuthContext['user'],
-  resource: string,
-  action: string
+  _user: AuthContext['user'],
+  _resource: string,
+  _action: string
 ): boolean {
   // Implement your permission logic here
   // For now, all authenticated users have access
@@ -150,22 +145,20 @@ export function withPermission(
   action: string
 ) {
   return (
-    handler: (request: NextRequest, context: AuthContext, ...args: any[]) => Promise<NextResponse>
+    handler: (request: AuthenticatedRequest, response: Response, context: AuthContext, ...args: any[]) => Promise<void>
   ) => {
-    return withAuth(async (request: context, ...args) => {
+    return withAuth(async (request, response, context, ...args) => {
       if (!hasPermission(context.user, resource, action)) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: 'Insufficient permissions',
-            code: 'FORBIDDEN',
-            timestamp: new Date().toISOString()
-          },
-          { status: 403 }
-        )
+        response.status(403).json({
+          success: false,
+          error: 'Insufficient permissions',
+          code: 'FORBIDDEN',
+          timestamp: new Date().toISOString()
+        })
+        return
       }
 
-      return handler(request, context, ...args)
+      return handler(request, response, context, ...args)
     })
   }
 }
@@ -174,11 +167,11 @@ export function withPermission(
  * Optional authentication middleware - allows unauthenticated access
  */
 export async function optionalAuthMiddleware(
-  request: NextRequest,
-  supabase: SupabaseClient = createClient()
-): Promise<{ context?: AuthContext } | NextResponse> {
+  request: AuthenticatedRequest,
+  supabaseClient: SupabaseClient = supabase
+): Promise<{ context?: AuthContext }> {
   try {
-    const authHeader = request.headers.get('authorization')
+    const authHeader = request.headers.authorization
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return { context: undefined }
@@ -213,17 +206,12 @@ export async function optionalAuthMiddleware(
  * Higher-order function for optional authentication
  */
 export function withOptionalAuth<T extends any[]>(
-  handler: (request: NextRequest, context?: AuthContext, ...args: T) => Promise<NextResponse>
+  handler: (request: AuthenticatedRequest, response: Response, context?: AuthContext, ...args: T) => Promise<void>
 ) {
-  return async (request: NextRequest, ...args: T): Promise<NextResponse> => {
-    const supabase = createClient()
-    const authResult = await optionalAuthMiddleware(request, supabase)
+  return async (request: AuthenticatedRequest, response: Response, ...args: T): Promise<void> => {
+    const authResult = await optionalAuthMiddleware(request)
 
-    if (authResult instanceof NextResponse) {
-      return authResult
-    }
-
-    return handler(request, authResult.context, ...args)
+    return handler(request, response, authResult.context, ...args)
   }
 }
 
@@ -231,10 +219,10 @@ export function withOptionalAuth<T extends any[]>(
  * API key authentication for service-to-service communication
  */
 export async function apiKeyAuthMiddleware(
-  request: NextRequest,
+  request: AuthenticatedRequest,
   validApiKey: string
 ): Promise<boolean> {
-  const apiKey = request.headers.get('x-api-key')
+  const apiKey = request.headers['x-api-key']
   return apiKey === validApiKey
 }
 
@@ -248,21 +236,22 @@ export function getUserRateLimitKey(userId: string, endpoint: string): string {
 /**
  * CORS middleware helper
  */
-export function addCorsHeaders(response: NextResponse, origin?: string): NextResponse {
-  response.headers.set('Access-Control-Allow-Origin', origin || '*')
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
-  response.headers.set('Access-Control-Max-Age', '86400')
+export function addCorsHeaders(response: Response, origin?: string): Response {
+  response.setHeader('Access-Control-Allow-Origin', origin || '*')
+  response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-API-Key')
+  response.setHeader('Access-Control-Max-Age', '86400')
   return response
 }
 
 /**
  * Handle preflight requests
  */
-export function handleCors(request: NextRequest): NextResponse | null {
+export function handleCors(request: AuthenticatedRequest, response: Response): boolean {
   if (request.method === 'OPTIONS') {
-    const response = new NextResponse(null, { status: 200 })
-    return addCorsHeaders(response, request.headers.get('origin') || undefined)
+    addCorsHeaders(response, request.headers.origin)
+    response.status(200).end()
+    return true
   }
-  return null
+  return false
 }

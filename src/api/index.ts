@@ -1,6 +1,6 @@
 // Main API exports and configuration
 
-export * from './types/api'
+export type * from './types/api'
 export * from './middleware'
 export * from './utils/errors'
 
@@ -12,11 +12,11 @@ export * from './services/file'
 export * from './services/user'
 
 // API routes
-export * from './routes/projects'
-export * from './routes/ai'
-export * from './routes/files'
-export * from './routes/users'
-export * from './routes/health'
+export { default as projectsRoutes } from './routes/projects'
+export { default as aiRoutes } from './routes/ai'
+export { default as filesRoutes } from './routes/files'
+export { default as usersRoutes } from './routes/users'
+export { default as healthRoutes } from './routes/health'
 
 // Configuration
-export { APIConfig, defaultAPIConfig } from './config'
+export { APIConfig, getAPIConfig } from './config'

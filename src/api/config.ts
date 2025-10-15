@@ -1,6 +1,6 @@
 // API configuration
 
-import { APIConfig } from './types/api'
+import type { APIConfig as IAPIConfig } from './types/api'
 
 export interface APIEnvironmentConfig {
   name: string
@@ -129,14 +129,17 @@ export function getAPIConfig(): APIEnvironmentConfig {
 }
 
 // Default API configuration for client
-export const defaultAPIConfig: APIConfig = {
-  baseURL: getAPIConfig().baseURL,
-  timeout: getAPIConfig().timeout,
-  retries: getAPIConfig().retries,
-  retryDelay: getAPIConfig().retryDelay,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
+export const APIConfig: IAPIConfig = {
+  port: parseInt(process.env.PORT || '3000'),
+  host: process.env.HOST || 'localhost',
+  corsOrigins: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+  rateLimit: {
+    windowMs: 60000,
+    max: 100
+  },
+  auth: {
+    jwtSecret: process.env.JWT_SECRET || 'your-secret-key',
+    sessionTimeout: 3600000
   }
 }
 

@@ -1,11 +1,10 @@
 // Health check API routes
 
-import { NextRequest, NextResponse } from 'next/server'
-import { withHealthCheck } from '../middleware/composite'
+import { Request, Response } from 'express'
 import { config } from '../config'
 
 // GET /api/v1/health - Health check endpoint
-export const GET = withHealthCheck(async (request: NextRequest) => {
+export const healthCheck = async (request: Request, response: Response) => {
   const startTime = Date.now()
 
   // Check various services and dependencies
@@ -56,15 +55,18 @@ export const GET = withHealthCheck(async (request: NextRequest) => {
   // Return appropriate status code
   const statusCode = overallStatus === 'unhealthy' ? 503 : 200
 
-  return NextResponse.json(healthData, {
-    status: statusCode,
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'X-Health-Status': overallStatus,
-      'X-Response-Time': `${responseTime}ms`
-    }
-  })
-})
+  response.status(statusCode)
+  response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+  response.setHeader('X-Health-Status', overallStatus)
+  response.setHeader('X-Response-Time', `${responseTime}ms`)
+  response.json(healthData)
+}
+
+// Default export for Express router compatibility
+export default {
+  healthCheck,
+  GET: healthCheck
+}
 
 // Service health check functions
 async function checkDatabase(): Promise<{ status: string; response_time?: number; error?: string }> {

@@ -7,8 +7,6 @@ import { visualizer } from 'rollup-plugin-visualizer'
 export default defineConfig({
   plugins: [
     react({
-      // Enable fast refresh
-      fastRefresh: true,
       // Optimize JSX runtime
       jsxRuntime: 'automatic',
       // Enable React imports optimization
@@ -164,22 +162,6 @@ export default defineConfig({
     // Enable HMR overlay
     hmr: {
       overlay: true
-    },
-    // Optimize dependency pre-bundling
-    optimizeDeps: {
-      include: [
-        'react',
-        'react-dom',
-        'react-router-dom',
-        'zustand',
-        'date-fns',
-        'clsx',
-        '@shopify/polaris',
-        'framer-motion'
-      ],
-      exclude: [
-        '@shopify/polaris/build/esm/styles.css'
-      ]
     }
   },
   // Preview server optimization

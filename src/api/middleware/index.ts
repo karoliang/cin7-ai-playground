@@ -5,16 +5,22 @@ export {
   withAuth,
   withOptionalAuth,
   withPermission,
-  AuthenticatedRequest,
-  AuthContext,
   addCorsHeaders,
   handleCors
+} from './auth'
+
+export type {
+  AuthenticatedRequest,
+  AuthContext
 } from './auth'
 
 export {
   withValidation,
   withMultiValidation,
-  validateSchema,
+  validateSchema
+} from './validation'
+
+export type {
   ValidationResult
 } from './validation'
 
@@ -30,9 +36,12 @@ export {
   resetRateLimit,
   getRateLimitStatus,
   cleanupRateLimits,
-  RateLimitConfig,
-  RateLimitResult,
   DEFAULT_RATE_LIMITS
+} from './rateLimiting'
+
+export type {
+  RateLimitConfig,
+  RateLimitResult
 } from './rateLimiting'
 
 export {
@@ -40,7 +49,10 @@ export {
   withPerformanceLogging,
   withSecurityLogging,
   withAuditLogging,
-  createStructuredLogger,
+  createStructuredLogger
+} from './logging'
+
+export type {
   StructuredLogger,
   LogContext,
   LogEntry,
