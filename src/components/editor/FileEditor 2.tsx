@@ -10,11 +10,11 @@ import {
   Banner,
   TextContainer
 } from '@shopify/polaris'
-import { CodeMirrorEditor } from './CodeMirrorEditor'
+import { MonacoEditor } from './MonacoEditor'
 import { useTheme } from '@/components/ui/ThemeProvider'
 import { ProjectFile, FileType } from '@/types'
 
-// Type extension for CodeMirror
+// Type extension for validation
 declare global {
   interface Window {
     Function: typeof Function
@@ -209,7 +209,7 @@ export const FileEditor: React.FC<FileEditorProps> = ({
           )}
 
           {/* Code Editor */}
-          <CodeMirrorEditor
+          <MonacoEditor
             value={content}
             height="400px"
             theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
@@ -222,7 +222,9 @@ export const FileEditor: React.FC<FileEditorProps> = ({
           <Card>
             <Text as="p" variant="bodySm">
               <strong>Tips:</strong> Use Ctrl+S (Cmd+S on Mac) to save, Ctrl+Z to undo, and Ctrl+Y to redo.
-              The editor supports syntax highlighting and basic validation for {getFileTypeDisplayName(file.type)} files.
+              Monaco Editor provides advanced features: syntax highlighting, IntelliSense auto-completion,
+              error checking, hover information, and code formatting for {getFileTypeDisplayName(file.type)} files.
+              Press Ctrl+Space to trigger suggestions manually.
             </Text>
           </Card>
         </BlockStack>

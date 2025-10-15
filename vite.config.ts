@@ -48,13 +48,12 @@ export default defineConfig({
         drop_console: process.env.NODE_ENV === 'production',
         drop_debugger: true,
         pure_funcs: ['console.log', 'console.info', 'console.debug'],
-        // Preserve function declarations for CodeMirror to avoid TDZ issues
         passes: 2
       },
       mangle: {
         safari10: true,
-        // Preserve variable names that might cause circular dependency issues
-        reserved: ['e', 'j', 't', 'i', 's', 'n', 'o', 'r', 'h', 'l', 'a', 'c', 'd', 'u', 'f', 'p', 'g', 'm', 'v', 'w', 'b', 'y', 'x', 'S', 'EditorState', 'Compartment']
+        // Preserve Monaco Editor variable names
+        reserved: ['monaco', 'editor', 'model', 'range', 'Position']
       },
       format: {
         // Preserve certain formatting for better debugging
@@ -79,15 +78,9 @@ export default defineConfig({
             if (id.includes('zustand') || id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor'
             }
-            // Split CodeMirror dependencies to avoid circular dependency issues
-            if (id.includes('@codemirror/state') || id.includes('@codemirror/view') || id.includes('@codemirror/language') || id.includes('@codemirror/commands') || id.includes('@codemirror/search') || id.includes('@codemirror/autocomplete') || id.includes('@codemirror/lint')) {
-              return 'codemirror-core'
-            }
-            if (id.includes('@codemirror/lang-') || id.includes('@codemirror/theme-')) {
-              return 'codemirror-extensions'
-            }
-            if (id.includes('react-codemirror') || id.includes('@uiw/react-codemirror')) {
-              return 'codemirror-react'
+            // Split Monaco Editor dependencies for better performance
+            if (id.includes('@monaco-editor/react') || id.includes('monaco-editor')) {
+              return 'monaco-editor'
             }
             if (id.includes('framer-motion')) {
               return 'animation-vendor'
@@ -227,8 +220,8 @@ export default defineConfig({
       '@shopify/polaris',
       'framer-motion',
       'jszip',
-      // CodeMirror dependencies - exclude from pre-bundling to avoid circular dependencies
-      // These will be bundled separately with proper ordering
+      '@monaco-editor/react',
+      'monaco-editor'
     ]
   }
 })
