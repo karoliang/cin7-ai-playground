@@ -171,7 +171,7 @@ export class SecureAPIKeyManager {
   /**
    * Rotate API keys for a provider
    */
-  rotateKeys(provider: string, newApiKey: string): string {
+  async rotateKeys(provider: string, newApiKey: string): Promise<string> {
     // Deactivate old keys
     for (const [keyId, config] of this.keyStore) {
       if (config.provider === provider && config.isActive) {
@@ -180,7 +180,7 @@ export class SecureAPIKeyManager {
     }
 
     // Add new key
-    return this.addAPIKey(provider, newApiKey)
+    return await this.addAPIKey(provider, newApiKey)
   }
 
   /**
@@ -475,14 +475,14 @@ export class EnvironmentAPIKeyManager {
     return value
   }
 
-  getAPIKey(provider: string): string | null {
+  async getAPIKey(provider: string): Promise<string | null> {
     const keys = this.keyManager.getActiveKeys(provider)
     if (keys.length === 0) {
       return null
     }
 
     // Use the most recently created key
-    return this.keyManager.getAPIKey(keys[0].keyId)
+    return await this.keyManager.getAPIKey(keys[0].keyId)
   }
 
   getKeyManager(): SecureAPIKeyManager {

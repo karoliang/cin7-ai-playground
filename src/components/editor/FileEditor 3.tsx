@@ -209,13 +209,12 @@ export const FileEditor: React.FC<FileEditorProps> = ({
           )}
 
           {/* Code Editor */}
-          <CodeMirrorEditor
+          <MonacoEditor
             value={content}
             height="400px"
             theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-            language={file?.type}
+            language={file.type}
             onChange={handleContentChange}
-            basicSetup={true}
           />
 
           {/* Editor Tips */}

@@ -42,14 +42,9 @@ export class GLMService {
       throw new Error('Failed to initialize secure API key manager')
     }
 
-    // Get API key securely
-    const secureApiKey = this.getSecureAPIKey()
-    if (!secureApiKey) {
-      throw new Error('GLM API key not found or invalid')
-    }
-
+    // Initialize with placeholder, will be set properly
     this.client = new ZhipuAI({
-      apiKey: secureApiKey
+      apiKey: 'placeholder'
     })
 
     this.healthStatus = {
@@ -59,14 +54,32 @@ export class GLMService {
     }
 
     this.log('GLM Service initialized', { config: { ...this.config, apiKey: '***' } })
+
+    // Initialize API key asynchronously
+    this.initializeAPIKey()
+  }
+
+  private async initializeAPIKey(): Promise<void> {
+    try {
+      const secureApiKey = await this.getSecureAPIKey()
+      if (!secureApiKey) {
+        throw new Error('GLM API key not found or invalid')
+      }
+
+      this.client = new ZhipuAI({
+        apiKey: secureApiKey
+      })
+    } catch (error) {
+      this.logError('Failed to initialize API key', error)
+    }
   }
 
   /**
    * Get API key securely from the key manager
    */
-  private getSecureAPIKey(): string | null {
+  private async getSecureAPIKey(): Promise<string | null> {
     try {
-      return this.apiKeyManager.getAPIKey('glm')
+      return await this.apiKeyManager.getAPIKey('glm')
     } catch (error) {
       this.logError('Failed to get secure API key', error)
       return null
@@ -76,9 +89,9 @@ export class GLMService {
   /**
    * Refresh API key if needed
    */
-  private refreshAPIKey(): boolean {
+  private async refreshAPIKey(): Promise<boolean> {
     try {
-      const newApiKey = this.getSecureAPIKey()
+      const newApiKey = await this.getSecureAPIKey()
       if (newApiKey) {
         this.client = new ZhipuAI({ apiKey: newApiKey })
         this.log('API key refreshed successfully')
