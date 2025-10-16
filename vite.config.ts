@@ -71,8 +71,12 @@ export default defineConfig({
                 id.includes('react-router') || id.includes('@monaco-editor/react')) {
               return 'react-vendor'
             }
-            if (id.includes('zustand') || id.includes('date-fns') || id.includes('clsx')) {
+            // Move zustand to react-vendor since it depends on React hooks
+            if (id.includes('date-fns') || id.includes('clsx')) {
               return 'utils-vendor'
+            }
+            if (id.includes('zustand')) {
+              return 'react-vendor' // Bundle with React to prevent initialization errors
             }
             // Monaco core can be separate from React wrapper
             if (id.includes('monaco-editor') && !id.includes('@monaco-editor/react')) {

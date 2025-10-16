@@ -10,7 +10,6 @@ import {
   ContextItem,
   FileOperation
 } from '@/types'
-import { useAuthStore } from './authStore'
 
 interface ProjectState {
   // Current project
@@ -149,6 +148,8 @@ export const useProjectStore = create<ProjectState>()(
 
         const projectId = `proj_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
+        // Import auth store dynamically to avoid circular dependency
+        const { useAuthStore } = await import('./authStore')
         const { user } = useAuthStore.getState()
         const newProject: Project = {
           id: projectId,
