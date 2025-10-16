@@ -109,8 +109,9 @@ export default defineConfig({
           if (id.includes('src/components/editor/') || id.includes('src/components/context/') || id.includes('src/utils/reactContextSafety')) {
             return 'react-vendor' // Bundle with React to prevent createContext errors
           }
+          // Export components depend on React and other utilities - bundle with react-vendor to prevent circular dependencies
           if (id.includes('src/components/export/')) {
-            return 'export-components'
+            return 'react-vendor'
           }
           if (id.includes('src/components/import/')) {
             return 'import-components'
