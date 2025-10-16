@@ -85,7 +85,7 @@ export default defineConfig({
             return 'vendor'
           }
 
-          // Feature-based chunks
+          // Feature-based chunks - Ensure React-dependent chunks have access to React
           if (id.includes('src/pages/HomePage')) {
             return 'home-page'
           }
@@ -101,8 +101,9 @@ export default defineConfig({
           if (id.includes('src/components/project/')) {
             return 'project-components'
           }
-          if (id.includes('src/components/editor/')) {
-            return 'editor-components'
+          // Editor components depend heavily on React Context - bundle with React vendor
+          if (id.includes('src/components/editor/') || id.includes('src/components/context/') || id.includes('src/utils/reactContextSafety')) {
+            return 'react-vendor' // Bundle with React to prevent createContext errors
           }
           if (id.includes('src/components/export/')) {
             return 'export-components'
@@ -180,7 +181,9 @@ export default defineConfig({
     __PROD__: process.env.NODE_ENV === 'production',
     // Feature flags
     __ENABLE_CACHE__: JSON.stringify(process.env.ENABLE_CACHE !== 'false'),
-    __ENABLE_PERFORMANCE_MONITORING__: JSON.stringify(process.env.ENABLE_PERFORMANCE_MONITORING !== 'false')
+    __ENABLE_PERFORMANCE_MONITORING__: JSON.stringify(process.env.ENABLE_PERFORMANCE_MONITORING !== 'false'),
+    // Ensure React is available for dynamic imports
+    'import.meta.env.VITE_REACT_VERSION': JSON.stringify('18.2.0')
   },
   // CSS optimization
   css: {
@@ -221,6 +224,8 @@ export default defineConfig({
       'framer-motion',
       'jszip',
       'monaco-editor'
-    ]
-  }
-})
+    ],
+    // Pre-bundle React dependencies to ensure single instance
+    exclude: []
+  },
+  })

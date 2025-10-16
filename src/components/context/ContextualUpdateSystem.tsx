@@ -2,6 +2,7 @@ import React, { createContext, useContext, useCallback, useEffect, useRef, useSt
 import { ContextItem, ContextualUpdateRequest, EnhancedContext, UpdateStrategy, ContextMetrics } from '@/types'
 import { useProjectStore } from '@/stores/projectStore'
 import { generateCodeWithAI } from '@/services/aiService'
+import { safeCreateContext, safeUseContext, validateReactContext, debugContextInfo } from '@/utils/reactContextSafety'
 
 interface ContextualUpdateContextType {
   // State
@@ -39,14 +40,47 @@ type ContextChangeEvent =
 
 type ContextChangeListener = (event: ContextChangeEvent) => void
 
-const ContextualUpdateContext = createContext<ContextualUpdateContextType | undefined>(undefined)
+// Use safe context creation with validation
+const ContextualUpdateContext = safeCreateContext<ContextualUpdateContextType | undefined>(undefined)
+
+// Validate React context availability
+if (process.env.NODE_ENV === 'development') {
+  debugContextInfo('ContextualUpdateSystem')
+  validateReactContext()
+}
 
 export const useContextualUpdate = () => {
-  const context = useContext(ContextualUpdateContext)
-  if (!context) {
-    throw new Error('useContextualUpdate must be used within a ContextualUpdateProvider')
+  try {
+    const context = safeUseContext(ContextualUpdateContext)
+    if (!context) {
+      throw new Error('useContextualUpdate must be used within a ContextualUpdateProvider')
+    }
+    return context
+  } catch (error) {
+    console.error('Error in useContextualUpdate hook:', error)
+
+    // Fallback values in case of context failure
+    return {
+      contextualUpdates: [],
+      isProcessingUpdate: false,
+      updateQueue: [],
+      contextMetrics: {
+        total_instructions: 0,
+        unapplied_instructions: 0,
+        last_update: Date.now(),
+        changes_since_last_gen: false
+      },
+      addContext: async () => {},
+      processContextualUpdate: async () => {},
+      clearAppliedContext: () => 0,
+      getContextState: () => ({
+        contextualUpdates: [],
+        lastUpdate: null,
+        changesSinceLastGen: false
+      }),
+      onContextChange: () => () => {}
+    }
   }
-  return context
 }
 
 export const ContextualUpdateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

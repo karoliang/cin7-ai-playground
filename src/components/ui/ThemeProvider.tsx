@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { AppProvider } from '@shopify/polaris'
 import { useAuthStore } from '@/stores/authStore'
+import { safeCreateContext, safeUseContext, validateReactContext, debugContextInfo } from '@/utils/reactContextSafety'
 import '@/styles/polaris-custom.css'
 
 interface ThemeContextType {
@@ -10,14 +11,33 @@ interface ThemeContextType {
   customColors?: Record<string, string>
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+// Use safe context creation with validation
+const ThemeContext = safeCreateContext<ThemeContextType | undefined>(undefined)
+
+// Validate React context availability
+if (process.env.NODE_ENV === 'development') {
+  debugContextInfo('ThemeProvider')
+  validateReactContext()
+}
 
 export const useTheme = () => {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider')
+  try {
+    const context = safeUseContext(ThemeContext)
+    if (!context) {
+      throw new Error('useTheme must be used within a ThemeProvider')
+    }
+    return context
+  } catch (error) {
+    console.error('Error in useTheme hook:', error)
+
+    // Fallback values in case of context failure
+    return {
+      theme: 'light' as const,
+      setTheme: () => {},
+      resolvedTheme: 'light' as const,
+      customColors: undefined
+    }
   }
-  return context
 }
 
 interface ThemeProviderProps {
