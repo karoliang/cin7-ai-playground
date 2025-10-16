@@ -1,18 +1,29 @@
-# Site configuration
+# CIN7 AI Playground - Static Site Configuration
 [build]
-  publish = "dist"
   command = "npm run build"
+  publish = "dist"
 
+# Build environment configuration
 [build.environment]
   NODE_VERSION = "18"
   NPM_CONFIG_PRODUCTION = "false"
   NETLIFY_USE_YARN = "false"
-  # Force static site mode - no framework detection
-  NETLIFY_FRAMEWORK = "static"
+  # Force static site - disable all framework detection
+  NETLIFY_FRAMEWORK = "#1"
+  DISABLE_FRAMEWORK_DETECTION = "true"
   NODE_OPTIONS = "--max-old-space-size=4096"
 
-# SPA routing for React application
+# SPA routing for React single-page application
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Headers configuration for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
